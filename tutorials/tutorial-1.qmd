@@ -17,28 +17,24 @@ Für das geplante Szenario werden vier voneinander getrennte Quellsysteme betrac
 
 Die einzelnen Quellsysteme erfüllen jeweils unterschiedliche Aufgaben und speichern ihre Daten in eigenen relationalen Datenbanken. Dadurch liegen Informationen, die für übergreifende Analysen relevant sind, zunächst voneinander getrennt vor.
 
-Das Data Warehouse soll diese Daten aus den verschiedenen Quellsystemen integrieren und für analytische Zwecke aufbereiten. Dabei sollen gemeinsame Analyseperspektiven wie **Zeit** und **Ort** genutzt werden, um Zusammenhänge zwischen den verschiedenen Bereichen der Stadt untersuchen zu können.
-
-Ein besonderer Fokus liegt auf der Verknüpfung von Mobilitäts-, Umwelt- und Veranstaltungsdaten. So soll beispielsweise untersucht werden können, wie sich Wetterbedingungen auf die Nutzung des Fahrradverleihsystems auswirken oder wie Veranstaltungen das Fahrgastaufkommen des öffentlichen Nahverkehrs beeinflussen. Ebenso können Zusammenhänge zwischen dem Mobilitätsaufkommen und der gemessenen Luftqualität untersucht werden.
-
-Das Data Warehouse dient somit als zentrale analytische Datenbasis. Während die einzelnen Quellsysteme primär für operative Prozesse ausgelegt sind, ermöglicht das Data Warehouse eine systemübergreifende und historische Auswertung der Daten. Die Daten werden hierfür aus den Quellsystemen extrahiert, über ein Staging-Schema verarbeitet und anschließend in einem Core- und Business-Schema für Analysen und Reporting bereitgestellt.
-
 Das übergeordnete Ziel des Projekts besteht darin, eine technische Grundlage zu schaffen, mit der verschiedene Entwicklungen innerhalb der Smart City anhand konsolidierter Daten analysiert werden können.
 
 ## Quellsysteme
 
 ### CityMove
 
-- **Modell**(<u>id</u>, hersteller, bezeichnung, fahrzeugtyp, baujahr)
-- **Fahrzeug**(<u>id</u>, id_modell ↑, fahrzeugnummer, kapazitaet, antriebsart, inbetriebnahme, status)
-- **Linie**(<u>id</u>, liniennummer, bezeichnung, verkehrsmittel, gueltig_ab, gueltig_bis)
-- **Haltestelle**(<u>id</u>, name, stadtteil, latitude, longitude)
-- **Linien_Haltestelle**(<u>id</u>, id_linie ↑, id_haltestelle ↑, reihenfolge, fahrtrichtung)
+- **Modell** (<u>id</u>, hersteller, bezeichnung, fahrzeugtyp, baujahr)
+- **Fahrzeug** (<u>id</u>, id_modell ↑, fahrzeugnummer, kapazitaet, antriebsart, inbetriebnahme, status)
+- **Linie** (<u>id</u>, liniennummer, bezeichnung, verkehrsmittel, gueltig_ab, gueltig_bis)
+- **Haltestelle** (<u>id</u>, name, stadtteil, latitude, longitude)
+- **Linien_Haltestelle** (<u>id</u>, id_linie ↑, id_haltestelle ↑, reihenfolge, fahrtrichtung)
 - Fahrt(<u>id</u>, id_linie ↑, id_fahrzeug ↑, datum, fahrtrichtung, fahrten_status)
-- **Fahrplan**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_geplant, abfahrt_geplant)
-- Fahrt_Haltestelle**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_tatsaechlich, abfahrt_tatsaechlich)
-- **Fahrgastaufkommen**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, einsteiger, aussteiger)
-- **Stoerung**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, typ, beginn, ende, dauer_min, beschreibung)
+- **Fahrplan** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_geplant, abfahrt_geplant)
+- Fahrt_Haltestelle** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_tatsaechlich, abfahrt_tatsaechlich)
+- **Fahrgastaufkommen** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, einsteiger, aussteiger)
+- **Stoerung** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, typ, beginn, ende, dauer_min, beschreibung)
+
+[test](01_tutorial/city_move.qmd)
 
 ```dbml
 Table Modell {
@@ -131,14 +127,16 @@ Table Stoerung {
 
 ### BikeShare
 
-- **Fahrradmodell**(<u>id</u>, hersteller, bezeichnung, fahrradtyp, baujahr)
-- **Fahrrad**(<u>id</u>, id_modell ↑, inventarnummer, anschaffungsdatum, status)
-- **Station**(<u>id</u>, name, stadtteil, latitude, longitude, kapazitaet)
-- **Kunde**(<u>id</u>, registrierungsdatum, kundentyp)
-- **Tarif**(<u>id</u>, bezeichnung, grundgebuehr, preis_pro_minute, gueltig_ab, gueltig_bis)
-- **Fahrt**(<u>id</u>, id_kunde ↑, id_fahrrad ↑, id_startstation ↑, id_zielstation ↑, id_tarif ↑, startzeit, endzeit, fahrtdauer_min, status)
-- **Zahlung**(<u>id</u>, id_fahrt ↑, zahlungszeitpunkt, betrag, zahlungsart, status)
-- **Wartung**(<u>id</u>, id_fahrrad ↑, beginn, ende, wartungsart, kosten, beschreibung)
+- **Fahrradmodell** (<u>id</u>, hersteller, bezeichnung, fahrradtyp, baujahr)
+- **Fahrrad** (<u>id</u>, id_modell ↑, inventarnummer, anschaffungsdatum, status)
+- **Station** (<u>id</u>, name, stadtteil, latitude, longitude, kapazitaet)
+- **Kunde** (<u>id</u>, registrierungsdatum, kundentyp)
+- **Tarif** (<u>id</u>, bezeichnung, grundgebuehr, preis_pro_minute, gueltig_ab, gueltig_bis)
+- **Fahrt** (<u>id</u>, id_kunde ↑, id_fahrrad ↑, id_startstation ↑, id_zielstation ↑, id_tarif ↑, startzeit, endzeit, fahrtdauer_min, status)
+- **Zahlung** (<u>id</u>, id_fahrt ↑, zahlungszeitpunkt, betrag, zahlungsart, status)
+- **Wartung** (<u>id</u>, id_fahrrad ↑, beginn, ende, wartungsart, kosten, beschreibung)
+
+[test](01_tutorial/bikeshare.qmd)
 
 ```dbml
 Table Fahrradmodell {
@@ -216,16 +214,17 @@ Table Wartung {
 
 ### CityEvents
 
-- **Veranstaltung**(<u>id</u>, name, id_typ ↑, id_veranstalter ↑, beschreibung)
-- **Veranstaltungstyp**(<u>id</u>, bezeichnung)
-- Veranstalter(<u>id</u>, name, organisationstyp)
-- **Veranstaltungsort**(<u>id</u>, name, stadtteil, adresse, latitude, longitude, kapazitaet)
-- **Veranstaltungstermin**(<u>id</u>, id_veranstaltung ↑, id_veranstaltungsort ↑, beginn_geplant, ende_geplant, beginn_tatsaechlich, ende_tatsaechlich, status)
-- **Besucher**(<u>id</u>, kundentyp, registrierungsdatum)
-- **Ticket**(<u>id</u>, id_termin ↑, id_besucher ↑, tickettyp, preis, kaufzeitpunkt, status)
-- **Einlass**(<u>id</u>, id_ticket ↑, einlasszeitpunkt, einlass_status)
-- **Stoerung**(<u>id</u>, id_termin ↑, typ, beginn, ende, beschreibung)
+- **Veranstaltung** (<u>id</u>, name, id_typ ↑, id_veranstalter ↑, beschreibung)
+- **Veranstaltungstyp** (<u>id</u>, bezeichnung)
+- **Veranstalter** (<u>id</u>, name, organisationstyp)
+- **Veranstaltungsort** (<u>id</u>, name, stadtteil, adresse, latitude, longitude, kapazitaet)
+- **Veranstaltungstermin** (<u>id</u>, id_veranstaltung ↑, id_veranstaltungsort ↑, beginn_geplant, ende_geplant, beginn_tatsaechlich, ende_tatsaechlich, status)
+- **Besucher** (<u>id</u>, kundentyp, registrierungsdatum)
+- **Ticket** (<u>id</u>, id_termin ↑, id_besucher ↑, tickettyp, preis, kaufzeitpunkt, status)
+- **Einlass** (<u>id</u>, id_ticket ↑, einlasszeitpunkt, einlass_status)
+- **Stoerung** (<u>id</u>, id_termin ↑, typ, beginn, ende, beschreibung)
 
+[test](01_tutorial/city_events.qmd)
 
 ```dbml
 Table Veranstaltung {
@@ -304,11 +303,12 @@ Table Stoerung {
 ### AirSense
 
 
-- **Station**(<u>id</u>, name, stadtteil, latitude, longitude, stations_typ, installationsdatum, status)
-- **Sensor**(<u>id</u>, id_station ↑, sensortyp, hersteller, modell, einheit, installationsdatum, status)
-- **Messung**(<u>id</u>, id_sensor ↑, messzeitpunkt, messwert, qualitaetsstatus)
-- **Sensorwartung**(<u>id</u>, id_sensor ↑, beginn, ende, wartungsart, kosten, beschreibung)
+- **Station** (<u>id</u>, name, stadtteil, latitude, longitude, stations_typ, installationsdatum, status)
+- **Sensor** (<u>id</u>, id_station ↑, sensortyp, hersteller, modell, einheit, installationsdatum, status)
+- **Messung** (<u>id</u>, id_sensor ↑, messzeitpunkt, messwert, qualitaetsstatus)
+- **Sensorwartung** (<u>id</u>, id_sensor ↑, beginn, ende, wartungsart, kosten, beschreibung)
 
+[test](01_tutorial/airsense.qmd)
 
 ```dbml
 
@@ -365,21 +365,11 @@ Auf Basis der Daten aus den verschiedenen Quellsystemen sollen mithilfe des Data
 
 Für diese Analyse werden Daten aus dem Quellsystem **BikeShare** mit den Wetter- und Umweltdaten aus **AirSense** kombiniert. Dabei können beispielsweise die Anzahl der Fahrradfahrten und die durchschnittliche Fahrtdauer in Abhängigkeit von Temperatur, Niederschlag oder Wind untersucht werden.
 
-**Verwendete Quellsysteme:**
-- BikeShare
-- AirSense
+**Verwendete Quellsysteme:** BikeShare, AirSense
 
-**Mögliche Kennzahlen:**
-- Anzahl der Fahrradfahrten
-- durchschnittliche Fahrtdauer
-- durchschnittliche Anzahl der Fahrten pro Station
-- Temperatur
-- Niederschlagsmenge
+**Fakten:** Anzahl der Fahrradfahrten, durchschnittliche Fahrtdauer, durchschnittliche Anzahl der Fahrten pro Station, Temperatur, Niederschlagsmenge
 
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Wetter
+**Analysedimensionen:** Zeit, Ort, Wetter
 
 ---
 
@@ -389,22 +379,11 @@ Für diese Analyse werden Daten aus dem Quellsystem **BikeShare** mit den Wetter
 
 Hierfür werden die Daten aus **CityMove** und **CityEvents** miteinander verknüpft. Dadurch kann untersucht werden, ob und wie sich Veranstaltungen auf das Fahrgastaufkommen an nahegelegenen Haltestellen auswirken.
 
-**Verwendete Quellsysteme:**
-- CityMove
-- CityEvents
+**Verwendete Quellsysteme:** CityMove, CityEvents
 
-**Mögliche Kennzahlen:**
-- Anzahl der Einsteiger
-- Anzahl der Aussteiger
-- gesamtes Fahrgastaufkommen
-- Verspätung in Minuten
-- Anzahl der Besucher
+**Fakten:** Anzahl der Einsteiger, Anzahl der Aussteiger, gesamtes Fahrgastaufkommen, Verspätung in Minuten, Anzahl der Besucher
 
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Linie
-- Veranstaltung
+**Analysedimensionen:** Zeit, Ort, Linie, Veranstaltung
 
 ---
 
@@ -414,21 +393,11 @@ Hierfür werden die Daten aus **CityMove** und **CityEvents** miteinander verkn�
 
 Für diese Analyse werden Veranstaltungsdaten aus **CityEvents** mit den Fahrradfahrten aus **BikeShare** kombiniert. Dabei kann beispielsweise untersuch werden, ob sich die Anzahl der Fahrradfahrten während größerer Veranstaltungen verändert.
 
-**Verwendete Quellsysteme:**
-- CityEvents
-- BikeShare
+**Verwendete Quellsysteme:** CityEvents, BikeShare
 
-**Mögliche Kennzahlen:**
-- Anzahl der Fahrradfahrten
-- durchschnittliche Fahrtdauer
-- Anzahl der Besucher
-- Stationsauslastung
+**Fakten:** Anzahl der Fahrradfahrten, durchschnittliche Fahrtdauer, Anzahl der Besucher, Stationsauslastung
 
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Veranstaltung
-- Fahrrad
+**Analysedimensionen:** Zeit, Ort, Veranstaltung, Fahrrad
 
 ---
 
@@ -438,73 +407,23 @@ Für diese Analyse werden Veranstaltungsdaten aus **CityEvents** mit den Fahrrad
 
 Dazu werden die Fahrgastdaten aus **CityMove** mit den Wetterdaten aus **AirSense** verbunden. Dadurch kann das Fahrgastaufkommen beispielsweise bei unterschiedlichen Temperaturen oder Niederschlagsmengen untersucht werden.
 
-**Verwendete Quellsysteme:**
-- CityMove
-- AirSense
+**Verwendete Quellsysteme:** CityMove, AirSense
 
-**Mögliche Kennzahlen:**
-- Anzahl der Einsteiger
-- Anzahl der Aussteiger
-- gesamtes Fahrgastaufkommen
-- durchschnittliche Verspätung
-- Temperatur
-- Niederschlagsmenge
+**Fakten:** Anzahl der Einsteiger, Anzahl der Aussteiger, gesamtes Fahrgastaufkommen, durchschnittliche Verspätung, Temperatur, Niederschlagsmenge
 
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Wetter
-- Linie
+**Analysedimensionen:** Zeit, Ort, Wetter, Linie
 
 ---
 
-### Fragestellung 5 – Veranstaltungen und Verkehrsaufkommen
-
-> Wie verändert sich das Mobilitätsaufkommen in einem Stadtgebiet bei Veranstaltungen unterschiedlicher Größe?
-
-Für diese Fragestellung werden die Daten aus **CityEvents**, **CityMove** und **BikeShare** gemeinsam ausgewertet. Dadurch kann das Mobilitätsaufkommen rund um Veranstaltungsorte anhand verschiedener Verkehrsmittel betrachtet werden.
-
-**Verwendete Quellsysteme:**
-- CityEvents
-- CityMove
-- BikeShare
-
-**Mögliche Kennzahlen:**
-- Anzahl der ÖPNV-Fahrgäste
-- Anzahl der Fahrradfahrten
-- Anzahl der Besucher
-- durchschnittliche Fahrtdauer
-- Stationsauslastung
-
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Veranstaltung
-- Linie
-- Station
-
----
-
-### Fragestellung 6 – Luftqualität und Mobilitätsaufkommen
+### Fragestellung 5 – Luftqualität und Mobilitätsaufkommen
 
 > Gibt es einen Zusammenhang zwischen dem Mobilitätsaufkommen und der gemessenen Luftqualität in verschiedenen Stadtgebieten?
 
 Hierfür werden die Mobilitätsdaten aus **CityMove** und **BikeShare** mit den Umweltmessungen aus **AirSense** kombiniert. Dadurch können beispielsweise Unterschiede der Luftqualität in Abhängigkeit vom Mobilitätsaufkommen und vom Stadtgebiet untersucht werden.
 
-**Verwendete Quellsysteme:**
-- AirSense
-- CityMove
-- BikeShare
+**Verwendete Quellsysteme:** AirSense, CityMove, BikeShare
 
-**Mögliche Kennzahlen:**
-- Anzahl der ÖPNV-Fahrten bzw. Fahrgäste
-- Anzahl der Fahrradfahrten
-- PM10-Konzentration
-- PM2.5-Konzentration
-- NO₂-Konzentration
+**Fakten:** Anzahl der ÖPNV-Fahrten bzw. Fahrgäste, Anzahl der Fahrradfahrten, PM10-Konzentration, PM2.5-Konzentration, NO₂-Konzentration
 
-**Mögliche Analysedimensionen:**
-- Zeit
-- Ort
-- Verkehrsmittel
+**Analysedimensionen:** Zeit, Ort, Verkehrsmittel
 
