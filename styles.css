@@ -1,0 +1,5 @@
+.table-scroll{overflow:auto;max-height:520px;border:1px solid #8886}
+.table-scroll table.mapping{min-width:1400px;margin:0;font-size:.85rem}
+.table-scroll thead tr:first-child th{position:sticky;top:0;z-index:2;background:var(--bs-body-bg,#fff);text-align:center}
+.table-scroll thead tr:nth-child(2) th{position:sticky;top:2.1rem;z-index:2;background:var(--bs-body-bg,#fff)}
+.table-scroll td.grp{font-weight:600;vertical-align:top;white-space:nowrap}
