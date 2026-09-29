@@ -18,8 +18,8 @@ website:
     contents:
       - section: "Tutorials"
         contents:
-          - tutorials\tutorial-1.qmd
-          - tutorials\tutorial-2.qmd
+          - tutorials/tutorial-1.qmd
+          - tutorials/tutorial-2.qmd
 
 format:
   html:
