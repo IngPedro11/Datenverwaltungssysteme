@@ -34,7 +34,7 @@ Das übergeordnete Ziel des Projekts besteht darin, eine technische Grundlage zu
 - **Fahrgastaufkommen** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, einsteiger, aussteiger)
 - **Stoerung** (<u>id</u>, id_fahrt ↑, id_haltestelle ↑, typ, beginn, ende, dauer_min, beschreibung)
 
-[test](01_tutorial/city_move.qmd)
+[SQL Statements](01_tutorial/city_move.qmd)
 
 ```dbml
 Table Modell {
@@ -136,7 +136,7 @@ Table Stoerung {
 - **Zahlung** (<u>id</u>, id_fahrt ↑, zahlungszeitpunkt, betrag, zahlungsart, status)
 - **Wartung** (<u>id</u>, id_fahrrad ↑, beginn, ende, wartungsart, kosten, beschreibung)
 
-[test](01_tutorial/bikeshare.qmd)
+[SQL Statements](01_tutorial/bikeshare.qmd)
 
 ```dbml
 Table Fahrradmodell {
@@ -224,7 +224,7 @@ Table Wartung {
 - **Einlass** (<u>id</u>, id_ticket ↑, einlasszeitpunkt, einlass_status)
 - **Stoerung** (<u>id</u>, id_termin ↑, typ, beginn, ende, beschreibung)
 
-[test](01_tutorial/city_events.qmd)
+[SQL Statements](01_tutorial/city_events.qmd)
 
 ```dbml
 Table Veranstaltung {
@@ -308,7 +308,7 @@ Table Stoerung {
 - **Messung** (<u>id</u>, id_sensor ↑, messzeitpunkt, messwert, qualitaetsstatus)
 - **Sensorwartung** (<u>id</u>, id_sensor ↑, beginn, ende, wartungsart, kosten, beschreibung)
 
-[test](01_tutorial/airsense.qmd)
+[SQL Statements](01_tutorial/airsense.qmd)
 
 ```dbml
 
@@ -369,7 +369,9 @@ Für diese Analyse werden Daten aus dem Quellsystem **BikeShare** mit den Wetter
 
 **Fakten:** Anzahl der Fahrradfahrten, durchschnittliche Fahrtdauer, durchschnittliche Anzahl der Fahrten pro Station, Temperatur, Niederschlagsmenge
 
-**Analysedimensionen:** Zeit, Ort, Wetter
+**Analysedimensionen:** Zeit, Fahrradstation, Wettersensor
+
+[Logical Data Map](01_tutorial/Frage_01_table.qmd)
 
 ---
 
@@ -383,7 +385,9 @@ Hierfür werden die Daten aus **CityMove** und **CityEvents** miteinander verkn�
 
 **Fakten:** Anzahl der Einsteiger, Anzahl der Aussteiger, gesamtes Fahrgastaufkommen, Verspätung in Minuten, Anzahl der Besucher
 
-**Analysedimensionen:** Zeit, Ort, Linie, Veranstaltung
+**Analysedimensionen:** Zeit, Linie, Veranstaltung
+
+[Logical Data Map](01_tutorial/Frage_02_table.qmd)
 
 ---
 
@@ -397,7 +401,9 @@ Für diese Analyse werden Veranstaltungsdaten aus **CityEvents** mit den Fahrrad
 
 **Fakten:** Anzahl der Fahrradfahrten, durchschnittliche Fahrtdauer, Anzahl der Besucher, Stationsauslastung
 
-**Analysedimensionen:** Zeit, Ort, Veranstaltung, Fahrrad
+**Analysedimensionen:** Zeit, Veranstaltung, Fahrradstation
+
+[Logical Data Map](01_tutorial/Frage_03_table.qmd)
 
 ---
 
@@ -411,7 +417,9 @@ Dazu werden die Fahrgastdaten aus **CityMove** mit den Wetterdaten aus **AirSens
 
 **Fakten:** Anzahl der Einsteiger, Anzahl der Aussteiger, gesamtes Fahrgastaufkommen, durchschnittliche Verspätung, Temperatur, Niederschlagsmenge
 
-**Analysedimensionen:** Zeit, Ort, Wetter, Linie
+**Analysedimensionen:** Zeit, Wettersensor, Linie
+
+[Logical Data Map](01_tutorial/Frage_04_table.qmd)
 
 ---
 
@@ -425,5 +433,8 @@ Hierfür werden die Mobilitätsdaten aus **CityMove** und **BikeShare** mit den 
 
 **Fakten:** Anzahl der ÖPNV-Fahrten bzw. Fahrgäste, Anzahl der Fahrradfahrten, PM10-Konzentration, PM2.5-Konzentration, NO₂-Konzentration
 
-**Analysedimensionen:** Zeit, Ort, Verkehrsmittel
+**Analysedimensionen:** Zeit, Fahrradstation, Linie, Wettersensor
+
+[Logical Data Map](01_tutorial/Frage_05_table.qmd)
+
 
