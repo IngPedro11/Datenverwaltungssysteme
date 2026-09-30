@@ -438,3 +438,16 @@ Hierfür werden die Mobilitätsdaten aus **CityMove** und **BikeShare** mit den 
 [Logical Data Map](01_tutorial/Frage_05_table.qmd)
 
 
+## Data Watehouse 
+
+### Staging 
+
+[SQL Statements](01_tutorial/SQL_staging.qmd)
+
+### Core 
+
+[SQL Statements](01_tutorial/SQL_core.qmd)
+
+### Reporting
+
+[SQL Statements](01_tutorial/SQL_reporting.qmd)
