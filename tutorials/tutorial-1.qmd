@@ -34,9 +34,9 @@ Das übergeordnete Ziel des Projekts besteht darin, eine technische Grundlage zu
 - **Linie**(<u>id</u>, liniennummer, bezeichnung, verkehrsmittel, gueltig_ab, gueltig_bis)
 - **Haltestelle**(<u>id</u>, name, stadtteil, latitude, longitude)
 - **Linien_Haltestelle**(<u>id</u>, id_linie ↑, id_haltestelle ↑, reihenfolge, fahrtrichtung)
-- Fahrt(<u>id</u>, id_linie ↑, id_fahrzeug ↑, datum, fahrtrichtung, fahrten_status)
+- **Fahrt**(<u>id</u>, id_linie ↑, id_fahrzeug ↑, datum, fahrtrichtung, fahrten_status)
 - **Fahrplan**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_geplant, abfahrt_geplant)
-- Fahrt_Haltestelle**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_tatsaechlich, abfahrt_tatsaechlich)
+- **Fahrt_Haltestelle**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, ankunft_tatsaechlich, abfahrt_tatsaechlich)
 - **Fahrgastaufkommen**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, einsteiger, aussteiger)
 - **Stoerung**(<u>id</u>, id_fahrt ↑, id_haltestelle ↑, typ, beginn, ende, dauer_min, beschreibung)
 
