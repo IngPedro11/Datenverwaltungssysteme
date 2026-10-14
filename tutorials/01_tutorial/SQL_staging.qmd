@@ -22,10 +22,10 @@ CREATE TABLE staging.BS_Fahrt (
     endzeit TIMESTAMP,
     status VARCHAR(20),
     FOREIGN KEY (id_startstation)
-        REFERENCES staging.Station(id),
+        REFERENCES staging.BS_Station(id),
 
     FOREIGN KEY (id_zielstation)
-        REFERENCES staging.Station(id)
+        REFERENCES staging.BS_Station(id)
 );
 
 CREATE TABLE staging.AS_Station (
@@ -47,7 +47,7 @@ CREATE TABLE staging.AS_Sensor (
     installationsdatum DATE,
 
     FOREIGN KEY (id_station)
-        REFERENCES staging.Station(id)
+        REFERENCES staging.AS_Station(id)
 );
 
 CREATE TABLE staging.AS_Messung (
@@ -57,7 +57,7 @@ CREATE TABLE staging.AS_Messung (
     messwert DECIMAL(10,2),
 
     FOREIGN KEY (id_sensor)
-        REFERENCES staging.Sensor(id)
+        REFERENCES staging.AS_Sensor(id)
 );
 
 CREATE TABLE staging.CE_Veranstaltungstyp (
@@ -88,10 +88,10 @@ CREATE TABLE staging.CE_Veranstaltung (
     beschreibung VARCHAR(255),
 
     FOREIGN KEY (id_typ)
-        REFERENCES staging.Veranstaltungstyp(id),
+        REFERENCES staging.CE_Veranstaltungstyp(id),
 
     FOREIGN KEY (id_veranstalter)
-        REFERENCES staging.Veranstalter(id)
+        REFERENCES staging.CE_Veranstalter(id)
 );
 
 CREATE TABLE staging.CE_Veranstaltungstermin (
@@ -105,10 +105,10 @@ CREATE TABLE staging.CE_Veranstaltungstermin (
     status VARCHAR(30),
 
     FOREIGN KEY (id_veranstaltung)
-        REFERENCES staging.Veranstaltung(id),
+        REFERENCES staging.CE_Veranstaltung(id),
 
     FOREIGN KEY (id_veranstaltungsort)
-        REFERENCES staging.Veranstaltungsort(id)
+        REFERENCES staging.CE_Veranstaltungsort(id)
 );
 
 CREATE TABLE staging.CE_Ticket (
@@ -124,7 +124,7 @@ CREATE TABLE staging.CE_Einlass (
     einlass_status VARCHAR(20),
 
     FOREIGN KEY (id_ticket)
-        REFERENCES staging.Ticket(id)
+        REFERENCES staging.CE_Ticket(id)
 );
 
 CREATE TABLE staging.CM_Linie (
@@ -157,10 +157,10 @@ CREATE TABLE staging.CM_Fahrt (
     fahrtrichtung VARCHAR(50),
 
     FOREIGN KEY (id_linie)
-        REFERENCES staging.Linie(id),
+        REFERENCES staging.CM_Linie(id),
 
     FOREIGN KEY (id_fahrzeug)
-        REFERENCES staging.Fahrzeug(id)
+        REFERENCES staging.CM_Fahrzeug(id)
 );
 
 CREATE TABLE staging.CM_Fahrplan (
@@ -171,10 +171,10 @@ CREATE TABLE staging.CM_Fahrplan (
     abfahrt_geplant TIMESTAMP,
 
     FOREIGN KEY (id_fahrt)
-        REFERENCES staging.Fahrt(id),
+        REFERENCES staging.CM_Fahrt(id),
 
     FOREIGN KEY (id_haltestelle)
-        REFERENCES staging.Haltestelle(id)
+        REFERENCES staging.CM_Haltestelle(id)
 );
 
 CREATE TABLE staging.CM_Fahrt_Haltestelle (
@@ -185,10 +185,10 @@ CREATE TABLE staging.CM_Fahrt_Haltestelle (
     abfahrt_tatsaechlich TIMESTAMP,
 
     FOREIGN KEY (id_fahrt)
-        REFERENCES staging.Fahrt(id),
+        REFERENCES staging.CM_Fahrt(id),
 
     FOREIGN KEY (id_haltestelle)
-        REFERENCES staging.Haltestelle(id)
+        REFERENCES staging.CM_Haltestelle(id)
 );
 
 CREATE TABLE staging.CM_Fahrgastaufkommen (
@@ -199,9 +199,9 @@ CREATE TABLE staging.CM_Fahrgastaufkommen (
     aussteiger INT,
 
     FOREIGN KEY (id_fahrt)
-        REFERENCES staging.Fahrt(id),
+        REFERENCES staging.CM_Fahrt(id),
 
     FOREIGN KEY (id_haltestelle)
-        REFERENCES staging.Haltestelle(id)
+        REFERENCES staging.CM_Haltestelle(id)
 );
 ```

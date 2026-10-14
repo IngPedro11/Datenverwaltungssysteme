@@ -7,3 +7,4 @@
 /docker/bike_share/data/
 /docker/city_move/data/
 /docker/city_events/data/
+/docker/dwh/data

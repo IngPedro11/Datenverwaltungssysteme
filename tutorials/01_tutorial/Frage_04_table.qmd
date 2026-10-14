@@ -9,9 +9,10 @@ title: Fragestellung 4
 <table class="table table-sm table-bordered mapping">
 <thead>
 <tr><th rowspan="2">Thema</th><th colspan="3">Staging</th><th colspan="3">Core</th><th colspan="2">Reporting</th></tr>
-<tr><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th></tr>
+<tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
+<tr>
 <td rowspan="46" class="grp">Wetter und ÖPNV</td>
 <td>CM_Linie</td>
 <td>id</td>
@@ -30,7 +31,7 @@ title: Fragestellung 4
 <td>CM_Linie_liniennummer</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Liniennummer_key</td>
+<td>Linie_Liniennummer</td>
 </tr>
 <tr>
 <td></td>
@@ -40,7 +41,7 @@ title: Fragestellung 4
 <td>CM_Linie_bezeichnung</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Bezeichnung_key</td>
+<td>Linie_Bezeichnung</td>
 </tr>
 <tr>
 <td></td>
@@ -50,7 +51,7 @@ title: Fragestellung 4
 <td>CM_Linie_verkehrsmittel</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Verkehrsmittel_key</td>
+<td>Linie_Verkehrsmittel</td>
 </tr>
 <tr>
 <td></td>
@@ -60,7 +61,7 @@ title: Fragestellung 4
 <td>CM_Linie_gueltig_ab</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Gueltig_ab_key</td>
+<td>Linie_Gueltig_ab</td>
 </tr>
 <tr>
 <td></td>
@@ -70,7 +71,7 @@ title: Fragestellung 4
 <td>CM_Linie_gueltig_bis</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Gueltig_bis_key</td>
+<td>Linie_Gueltig_bis</td>
 </tr>
 <tr>
 <td>CM_Fahrzeug</td>
@@ -110,7 +111,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_id_linie</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_key</td>
 </tr>
 <tr>
 <td></td>
@@ -120,7 +121,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_fahrzeug</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrzeug_key</td>
 </tr>
 <tr>
 <td></td>
@@ -130,7 +131,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_datum</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Fahrt_Datum_key</td>
+<td>Linie_Fahrt_Datum</td>
 </tr>
 <tr>
 <td></td>
@@ -140,7 +141,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_fahrtrichtung</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Fahrtrichtung_key</td>
+<td>Linie_Fahrtrichtung</td>
 </tr>
 <tr>
 <td>CM_Fahrgastaufkommen</td>
@@ -150,7 +151,7 @@ title: Fragestellung 4
 <td>CM_Fahrgastaufkommen_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -160,7 +161,7 @@ title: Fragestellung 4
 <td>CM_Fahrgastaufkommen_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -190,7 +191,7 @@ title: Fragestellung 4
 <td>CM_Fahrplan_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -200,7 +201,7 @@ title: Fragestellung 4
 <td>CM_Fahrplan_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -230,7 +231,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_Haltestelle_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -240,7 +241,7 @@ title: Fragestellung 4
 <td>CM_Fahrt_Haltestelle_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -280,7 +281,7 @@ title: Fragestellung 4
 <td>CM_Haltestelle_name</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Haltestelle_Name_key</td>
+<td>Linie_Haltestelle_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -290,7 +291,7 @@ title: Fragestellung 4
 <td>CM_Haltestelle_stadtteil</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Haltestelle_Stadtteil_key</td>
+<td>Linie_Haltestelle_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -300,7 +301,7 @@ title: Fragestellung 4
 <td>CM_Haltestelle_latitude</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Haltestelle_latitude_key</td>
+<td>Linie_Haltestelle_latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -310,7 +311,7 @@ title: Fragestellung 4
 <td>CM_Haltestelle_longitude</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Linie_Haltestelle_longitude_key</td>
+<td>Linie_Haltestelle_longitude</td>
 </tr>
 <tr>
 <td>AS_Station</td>
@@ -330,7 +331,7 @@ title: Fragestellung 4
 <td>AS_Station_name</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Name_key</td>
+<td>Wetterstation_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -340,7 +341,7 @@ title: Fragestellung 4
 <td>AS_Station_stadtteil</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Stadtteil_key</td>
+<td>Wetterstation_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -350,7 +351,7 @@ title: Fragestellung 4
 <td>AS_Station_latitude</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_latitude_key</td>
+<td>Wetterstation_latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -360,7 +361,7 @@ title: Fragestellung 4
 <td>AS_Station_longitude</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_longitude_key</td>
+<td>Wetterstation_longitude</td>
 </tr>
 <tr>
 <td></td>
@@ -370,7 +371,7 @@ title: Fragestellung 4
 <td>AS_Station_stations_typ</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Typ_key</td>
+<td>Wetterstation_Typ</td>
 </tr>
 <tr>
 <td></td>
@@ -380,7 +381,7 @@ title: Fragestellung 4
 <td>AS_Station_installationsdatum</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Installationsdatum_key</td>
+<td>Wetterstation_Installationsdatum</td>
 </tr>
 <tr>
 <td></td>
@@ -390,7 +391,7 @@ title: Fragestellung 4
 <td>AS_Station_status</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Status_key</td>
+<td>Wetterstation_Status</td>
 </tr>
 <tr>
 <td>AS_Sensor</td>
@@ -410,7 +411,7 @@ title: Fragestellung 4
 <td>AS_Sensor_id_station</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Wetterstation_Station_key</td>
 </tr>
 <tr>
 <td></td>
@@ -420,7 +421,7 @@ title: Fragestellung 4
 <td>AS_Sensor_sensortyp</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Sensortyp_key</td>
+<td>Wetterstation_Sensortyp</td>
 </tr>
 <tr>
 <td></td>
@@ -440,7 +441,7 @@ title: Fragestellung 4
 <td>AS_Sensor_installationsdatum</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Sensor_Installationsdatum_key</td>
+<td>Wetterstation_Sensor_Installationsdatum</td>
 </tr>
 <tr>
 <td>AS_Messung</td>
@@ -450,7 +451,7 @@ title: Fragestellung 4
 <td>AS_Sensor_id_sensor</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_ÖPNV</td>
-<td></td>
+<td>Wetterstation_Sensor_key</td>
 </tr>
 <tr>
 <td></td>
@@ -460,7 +461,7 @@ title: Fragestellung 4
 <td>AS_Messung_messzeitpunkt</td>
 <td></td>
 <td>Wetter_und_ÖPNV</td>
-<td>Wetterstation_Messzeitpunkt_key</td>
+<td>Wetterstation_Messzeitpunkt</td>
 </tr>
 <tr>
 <td></td>
@@ -474,6 +475,7 @@ title: Fragestellung 4
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::
 
@@ -487,13 +489,14 @@ title: Fragestellung 4
 <tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
-<td rowspan="54" class="grp">Wetter und ÖPNV</td>
+<tr>
+<td rowspan="62" class="grp">Wetter und ÖPNV</td>
 <td></td>
 <td></td>
 <td>Autogenerated</td>
 <td>DIM_Linie</td>
 <td>Linie_Key</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Key</td>
 </tr>
 <tr>
@@ -511,7 +514,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_liniennummer</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_liniennummer</td>
 </tr>
 <tr>
@@ -520,7 +523,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_bezeichnung</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_bezeichnung</td>
 </tr>
 <tr>
@@ -529,7 +532,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_verkehrsmittel</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_verkehrsmittel</td>
 </tr>
 <tr>
@@ -538,7 +541,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_gueltig_ab</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_gueltig_ab</td>
 </tr>
 <tr>
@@ -547,8 +550,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_gueltig_bis</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_gueltig_bis</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrzeug_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Fahrzeug_key</td>
 </tr>
 <tr>
 <td>CM_Fahrzeug</td>
@@ -565,8 +577,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Fahrzeug_kapazität</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Fahrzeug_kapazität</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrt_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td>CM_Fahrt</td>
@@ -592,7 +613,7 @@ title: Fragestellung 4
 <td>Join mit CM_Fahrzeug id</td>
 <td>DIM_Linie</td>
 <td>Linie_fahrzeug</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_fahrzeug</td>
 </tr>
 <tr>
@@ -601,7 +622,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Fahrt_datum</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Fahrt_datum</td>
 </tr>
 <tr>
@@ -610,8 +631,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_fahrtrichtung</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_fahrtrichtung</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrgastaufkommen_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Fahrgastaufkommen_key</td>
 </tr>
 <tr>
 <td>CM_Fahrgastaufkommen</td>
@@ -637,7 +667,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_einsteiger</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_einsteiger</td>
 </tr>
 <tr>
@@ -646,8 +676,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_aussteiger</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_aussteiger</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrplan_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Fahrplan_key</td>
 </tr>
 <tr>
 <td>CM_Fahrplan</td>
@@ -673,7 +712,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_ankunft_geplant</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_ankunft_geplant</td>
 </tr>
 <tr>
@@ -682,8 +721,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_ankunft_geplant</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_ankunft_geplant</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrt_Haltestelle_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Fahrt_Haltestelle_key</td>
 </tr>
 <tr>
 <td>CM_Fahrt_Haltestelle</td>
@@ -709,7 +757,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_ankunft_tatsaechlich</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_ankunft_tatsaechlich</td>
 </tr>
 <tr>
@@ -718,8 +766,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_abfahrt_tatsaechlich</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_abfahrt_tatsaechlich</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Haltestelle_key</td>
+<td>Wetter_und_ÖPNV_Linie</td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td>CM_Haltestelle</td>
@@ -736,7 +793,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Haltestelle_name</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Haltestelle_name</td>
 </tr>
 <tr>
@@ -745,7 +802,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Haltestelle_stadtteil</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Haltestelle_stadtteil</td>
 </tr>
 <tr>
@@ -754,7 +811,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Haltestelle_latitude</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Haltestelle_latitude</td>
 </tr>
 <tr>
@@ -763,17 +820,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Linie</td>
 <td>Linie_Haltestelle_longitude</td>
-<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Wetter_und_ÖPNV_Linie</td>
 <td>Linie_Haltestelle_longitude</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td>Autogenerated</td>
-<td></td>
-<td>Sensor_key</td>
-<td></td>
-<td>Sensor_key</td>
+<td>DIM_Fahrradstation</td>
+<td>Sensor_Station_key</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
+<td>Sensor_Station_key</td>
 </tr>
 <tr>
 <td>AS_Station</td>
@@ -790,7 +847,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_name</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_name</td>
 </tr>
 <tr>
@@ -799,7 +856,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_stadtteil</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_stadtteil</td>
 </tr>
 <tr>
@@ -808,7 +865,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_latitude</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_latitude</td>
 </tr>
 <tr>
@@ -817,7 +874,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_longitude</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_longitude</td>
 </tr>
 <tr>
@@ -826,7 +883,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_stations_typ</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_stations_typ</td>
 </tr>
 <tr>
@@ -835,7 +892,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_installationsdatum</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_installationsdatum</td>
 </tr>
 <tr>
@@ -844,8 +901,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_status</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_status</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Wettersensor</td>
+<td>Sensor_key</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
+<td>Sensor_key</td>
 </tr>
 <tr>
 <td>AS_Sensor</td>
@@ -871,7 +937,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_sensortyp</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_sensortyp</td>
 </tr>
 <tr>
@@ -880,7 +946,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_einheit</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_einheit</td>
 </tr>
 <tr>
@@ -889,8 +955,17 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_installationsdatum</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_installationsdatum</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Wettersensor</td>
+<td>Sensor_Messung_key</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
+<td>Sensor_Messung_key</td>
 </tr>
 <tr>
 <td>AS_Messung</td>
@@ -907,7 +982,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_messzeitpunkt</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_messzeitpunkt</td>
 </tr>
 <tr>
@@ -916,7 +991,7 @@ title: Fragestellung 4
 <td></td>
 <td>DIM_Wettersensor</td>
 <td>Sensor_Messwert</td>
-<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Wetter_und_ÖPNV_Sensor</td>
 <td>Sensor_Messwert</td>
 </tr>
 <tr>
@@ -925,7 +1000,7 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Datum_Key</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Datum_Key</td>
 </tr>
 <tr>
@@ -934,7 +1009,7 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Stunde</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Stunde</td>
 </tr>
 <tr>
@@ -943,7 +1018,7 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Datum</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Datum</td>
 </tr>
 <tr>
@@ -952,7 +1027,7 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Monat</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Monat</td>
 </tr>
 <tr>
@@ -961,7 +1036,7 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Quartal</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Quartal</td>
 </tr>
 <tr>
@@ -970,10 +1045,11 @@ title: Fragestellung 4
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Jahr</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Wetter_und_ÖPNV_Datum</td>
 <td>Jahr</td>
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::

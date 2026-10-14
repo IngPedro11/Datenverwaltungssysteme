@@ -1,0 +1,236 @@
+{
+  "systems": {
+    "citymove": {
+      "api_url": "http://city_move:8000/test",
+      "schema": "staging",
+      "tables": {
+        "linien": {
+          "target_table": "cm_linie",
+          "id_parameter": "linie_id",
+          "columns": [
+            "id",
+            "liniennummer",
+            "bezeichnung",
+            "verkehrsmittel",
+            "gueltig_ab",
+            "gueltig_bis"
+          ]
+        },
+        "haltestellen": {
+          "target_table": "cm_haltestelle",
+          "id_parameter": "haltestelle_id",
+          "columns": [
+            "id",
+            "name",
+            "stadtteil",
+            "latitude",
+            "longitude"
+          ]
+        },
+        "fahrzeuge": {
+          "target_table": "cm_fahrzeug",
+          "id_parameter": "fahrzeug_id",
+          "columns": [
+            "id", 
+            "kapazitaet"
+          ]
+        },
+        "fahrten": {
+          "target_table": "cm_fahrt",
+          "id_parameter": "fahrt_id",
+          "columns": [
+            "id",
+            "id_linie",
+            "id_fahrzeug",
+            "datum",
+            "fahrtrichtung"
+          ]
+        },
+        "fahrplaene": {
+          "target_table": "cm_fahrplan",
+          "id_parameter": "fahrplan_id",
+          "columns": [
+            "id", 
+            "id_fahrt",
+            "id_haltestelle",
+            "ankunft_geplant",
+            "abfahrt_geplant"
+          ]
+        },
+        "fahrt_haltestellen": {
+          "target_table": "cm_fahrt_haltestelle",
+          "id_parameter": "fahrt_haltestelle_id",
+          "columns": [
+            "id",
+            "id_fahrt",
+            "id_haltestelle",
+            "ankunft_tatsaechlich",
+            "abfahrt_tatsaechlich"
+          ]
+        },
+        "fahrgastaufkommen": {
+          "target_table": "cm_fahrgastaufkommen",
+          "id_parameter": "fahrgastaufkommen_id",
+          "columns": [
+            "id",
+            "id_fahrt",
+            "id_haltestelle",
+            "einsteiger",
+            "aussteiger"
+          ]
+        }
+      }
+    },
+    "cityevents": {
+      "api_url": "http://cityevents:8000/get_data",
+      "schema": "staging",
+      "tables": {
+        "veranstaltungstyp": {
+          "target_table": "ce_veranstaltungstyp",
+          "id_parameter": "veranstaltungstyp_id",
+          "columns": [
+            "id",
+            "bezeichnung"
+          ]
+        },
+        "veranstalter": {
+          "target_table": "ce_veranstalter",
+          "id_parameter": "veranstalter_id",
+          "columns": [
+            "id",
+            "name",
+            "organisationstyp"
+          ]
+        },
+        "veranstaltungsort": {
+          "target_table": "ce_veranstaltungsort",
+          "id_parameter": "veranstaltungsort_id",
+          "columns": [
+            "id",
+            "name",
+            "stadtteil",
+            "latitude",
+            "longitude",
+            "kapazitaet"
+          ]
+        },
+        "veranstaltung": {
+          "target_table": "ce_veranstaltung",
+          "id_parameter": "veranstaltung_id",
+          "columns": [
+            "id",
+            "name",
+            "id_typ",
+            "id_veranstalter",
+            "beschreibung"
+          ]
+        },
+        "veranstaltungstermin": {
+          "target_table": "ce_veranstaltungstermin",
+          "id_parameter": "veranstaltungstermin_id",
+          "columns": [
+            "id",
+            "id_veranstaltung",
+            "id_veranstaltungsort",
+            "beginn_geplant",
+            "ende_geplant",
+            "beginn_tatsaechlich",
+            "ende_tatsaechlich",
+            "status"
+          ]
+        },
+        "ticket": {
+          "target_table": "ce_ticket",
+          "id_parameter": "ticket_id",
+          "columns": [
+            "id",
+            "id_termin",
+            "tickettyp",
+            "status"
+          ]
+        },
+        "einlass": {
+          "target_table": "ce_einlass",
+          "id_parameter": "einlass_id",
+          "columns": [
+            "id",
+            "id_ticket",
+            "einlasszeitpunkt",
+            "einlass_status"
+          ]
+        }
+      }
+    },
+    "bikeshare": {
+      "api_url": "http://bikeshare:8000/get_data",
+      "schema": "staging",
+      "tables": {
+        "station": {
+          "target_table": "bs_station",
+          "id_parameter": "station_id",
+          "columns": [
+            "id",
+            "name",
+            "stadtteil",
+            "latitude",
+            "longitude",
+            "kapazitaet"
+          ]
+        },
+        "fahrt": {
+          "target_table": "bs_fahrt",
+          "id_parameter": "fahrt_id",
+          "columns": [
+            "id",
+            "id_startstation",
+            "id_zielstation",
+            "startzeit",
+            "endzeit",
+            "status"
+          ]
+        }
+      }
+    },
+    "airsense": {
+      "api_url": "http://airsense:8000/get_data",
+      "schema": "staging",
+      "tables": {
+        "station": {
+          "target_table": "as_station",
+          "id_parameter": "station_id",
+          "columns": [
+            "id",
+            "name",
+            "stadtteil",
+            "latitude",
+            "longitude",
+            "stations_typ",
+            "installationsdatum",
+            "status"
+          ]
+        },
+        "sensor": {
+          "target_table": "as_sensor",
+          "id_parameter": "sensor_id",
+          "columns": [
+            "id",
+            "id_station",
+            "sensortyp",
+            "einheit",
+            "installationsdatum"
+          ]
+        },
+        "messung": {
+          "target_table": "as_messung",
+          "id_parameter": "messung_id",
+          "columns": [
+            "id",
+            "id_sensor",
+            "messzeitpunkt",
+            "messwert"
+          ]
+        }
+      }
+    }
+  }
+}
