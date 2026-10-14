@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import psycopg2
+from psycopg2.extras import RealDictCursor
 import os
 
 app = FastAPI(
@@ -26,68 +27,124 @@ def root():
         "status": "running"
     }
 
-
-@app.get("/linien")
-def get_linien():
-
+@app.get("/test")
+def get_data(
+    linie_id: int,
+    haltestelle_id: int,
+    fahrzeug_id: int,
+    fahrt_id: int,
+    fahrplan_id: int,
+    fahrt_haltestelle_id: int,
+    fahrgastaufkommen_id: int
+):
     conn = get_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT
             id,
             liniennummer,
             bezeichnung,
-            verkehrsmittel
-        FROM linie
-        ORDER BY liniennummer;
-    """)
+            verkehrsmittel,
+            gueltig_ab,
+            gueltig_bis
+        FROM citymove.Linie
+        WHERE id > %s   
+        ORDER BY id;
+    """, (linie_id,))
 
-    rows = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return [
-        {
-            "id": row[0],
-            "liniennummer": row[1],
-            "bezeichnung": row[2],
-            "verkehrsmittel": row[3]
-        }
-        for row in rows
-    ]
-
-
-@app.get("/haltestellen")
-def get_haltestellen():
-
-    conn = get_connection()
-    cursor = conn.cursor()
+    linien = cursor.fetchall()
 
     cursor.execute("""
-        SELECT
+        SELECT 
             id,
             name,
             stadtteil,
             latitude,
             longitude
-        FROM haltestelle
-        ORDER BY name;
-    """)
+        FROM citymove.Haltestelle
+        WHERE id > %s 
+        ORDER BY id;
+    """, (haltestelle_id,))
 
-    rows = cursor.fetchall()
+    haltestellen = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT 
+            id, 
+            kapazitaet
+        FROM citymove.Fahrzeug
+        WHERE id > %s
+        ORDER BY id;
+    """, (fahrzeug_id,))
+
+    fahrzeug = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT 
+            id,
+            id_linie,
+            id_fahrzeug,
+            datum,
+            fahrtrichtung
+        FROM citymove.Fahrt
+        WHERE id > %s
+        ORDER BY id;
+    """, (fahrt_id,))
+
+    fahrt = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT 
+            id, 
+            id_fahrt,
+            id_haltestelle,
+            ankunft_geplant,
+            abfahrt_geplant
+        FROM citymove.Fahrplan
+        WHERE id > %s
+        ORDER BY id;
+    """, (fahrplan_id,))
+
+    fahrplan = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT 
+            id,
+            id_fahrt,
+            id_haltestelle,
+            ankunft_tatsaechlich,
+            abfahrt_tatsaechlich
+        FROM citymove.Fahrt_Haltestelle
+        WHERE id > %s
+        ORDER BY id;
+    """, (fahrt_haltestelle_id,))
+
+    fahrt_haltestelle = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT 
+            id,
+            id_fahrt,
+            id_haltestelle,
+            einsteiger,
+            aussteiger
+        FROM citymove.Fahrgastaufkommen
+        WHERE id > %s 
+        ORDER BY id;
+    """, (fahrgastaufkommen_id,))
+    
+    fahrgastaufkommen = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return [
-        {
-            "id": row[0],
-            "name": row[1],
-            "stadtteil": row[2],
-            "latitude": float(row[3]),
-            "longitude": float(row[4])
-        }
-        for row in rows
-    ]
+    return {
+        "linien": linien,
+        "haltestellen": haltestellen,
+        "fahrzeuge": fahrzeug,
+        "fahrten": fahrt,
+        "fahrplaene": fahrplan,
+        "fahrt_haltestellen": fahrt_haltestelle,
+        "fahrgastaufkommen": fahrgastaufkommen
+    }

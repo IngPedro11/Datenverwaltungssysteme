@@ -10,9 +10,10 @@ title: "Fragestellung 1"
 <table class="table table-sm table-bordered mapping">
 <thead>
 <tr><th rowspan="2">Thema</th><th colspan="3">Staging</th><th colspan="3">Core</th><th colspan="2">Reporting</th></tr>
-<tr><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th></tr>
+<tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
+<tr>
 <td rowspan="27" class="grp">Wetter und Fahrradnutzung</td>
 <td>BS_Fahrt</td>
 <td>id_startstation</td>
@@ -20,8 +21,8 @@ title: "Fragestellung 1"
 <td>Topic_Wetter_und_Fahrradnutzung</td>
 <td>BS_Fahrt_id_startstation</td>
 <td>Degenerierte Dimension</td>
-<td></td>
-<td></td>
+<td>Wetter_und_Fahrradnutzung</td>
+<td>Fahrradstation_Startstation_key</td>
 </tr>
 <tr>
 <td></td>
@@ -30,8 +31,8 @@ title: "Fragestellung 1"
 <td>Topic_Wetter_und_Fahrradnutzung</td>
 <td>BS_Fahrt_id_endstation</td>
 <td>Degenerierte Dimension</td>
-<td></td>
-<td></td>
+<td>Wetter_und_Fahrradnutzung</td>
+<td>Fahrradstation_Endstation_key</td>
 </tr>
 <tr>
 <td></td>
@@ -61,7 +62,7 @@ title: "Fragestellung 1"
 <td>BS_Fahrt_status</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Fahrradstation_Status_Key</td>
+<td>Fahrradstation_Status</td>
 </tr>
 <tr>
 <td>BS_Station</td>
@@ -81,7 +82,7 @@ title: "Fragestellung 1"
 <td>BS_Station_name</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Fahrradstation_Name_key</td>
+<td>Fahrradstation_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -91,7 +92,7 @@ title: "Fragestellung 1"
 <td>BS_Station_stadtteil</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Fahrradstation_Stadtteil_key</td>
+<td>Fahrradstation_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -101,7 +102,7 @@ title: "Fragestellung 1"
 <td>BS_Station_latitude</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Fahrradstation_Latitude_key</td>
+<td>Fahrradstation_Latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -111,7 +112,7 @@ title: "Fragestellung 1"
 <td>BS_Station_longitude</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Fahrradstation_Longitude_key</td>
+<td>Fahrradstation_Longitude</td>
 </tr>
 <tr>
 <td></td>
@@ -141,7 +142,7 @@ title: "Fragestellung 1"
 <td>AS_Station_name</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Name_key</td>
+<td>Wetterstation_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -151,7 +152,7 @@ title: "Fragestellung 1"
 <td>AS_Station_stadtteil</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Stadtteil_key</td>
+<td>Wetterstation_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -161,7 +162,7 @@ title: "Fragestellung 1"
 <td>AS_Station_latitude</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_latitude_key</td>
+<td>Wetterstation_latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -171,7 +172,7 @@ title: "Fragestellung 1"
 <td>AS_Station_longitude</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_longitude_key</td>
+<td>Wetterstation_longitude</td>
 </tr>
 <tr>
 <td></td>
@@ -181,7 +182,7 @@ title: "Fragestellung 1"
 <td>AS_Station_stations_typ</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Typ_key</td>
+<td>Wetterstation_Typ</td>
 </tr>
 <tr>
 <td></td>
@@ -191,7 +192,7 @@ title: "Fragestellung 1"
 <td>AS_Station_installationsdatum</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Installationsdatum_key</td>
+<td>Wetterstation_Installationsdatum</td>
 </tr>
 <tr>
 <td></td>
@@ -201,7 +202,7 @@ title: "Fragestellung 1"
 <td>AS_Station_status</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Status_key</td>
+<td>Wetterstation_Status</td>
 </tr>
 <tr>
 <td>AS_Sensor</td>
@@ -221,7 +222,7 @@ title: "Fragestellung 1"
 <td>AS_Sensor_id_station</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td></td>
+<td>Wetterstation_Station_key</td>
 </tr>
 <tr>
 <td></td>
@@ -231,7 +232,7 @@ title: "Fragestellung 1"
 <td>AS_Sensor_sensortyp</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Sensortyp_key</td>
+<td>Wetterstation_Sensortyp</td>
 </tr>
 <tr>
 <td></td>
@@ -251,7 +252,7 @@ title: "Fragestellung 1"
 <td>AS_Sensor_installationsdatum</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Sensor_Installationsdatum_key</td>
+<td>Wetterstation_Sensor_Installationsdatum</td>
 </tr>
 <tr>
 <td>AS_Messung</td>
@@ -261,7 +262,7 @@ title: "Fragestellung 1"
 <td>AS_Sensor_id_sensor</td>
 <td>Degenerierte Dimension</td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td></td>
+<td>Wetterstation_Sensor_key</td>
 </tr>
 <tr>
 <td></td>
@@ -271,7 +272,7 @@ title: "Fragestellung 1"
 <td>AS_Messung_messzeitpunkt</td>
 <td></td>
 <td>Wetter_und_Fahrradnutzung</td>
-<td>Wetterstation_Messzeitpunkt_key</td>
+<td>Wetterstation_Messzeitpunkt</td>
 </tr>
 <tr>
 <td></td>
@@ -285,6 +286,7 @@ title: "Fragestellung 1"
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::
 
@@ -298,11 +300,12 @@ title: "Fragestellung 1"
 <tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
-<td rowspan="35" class="grp">Wetter und Fahrradnutzung</td>
+<tr>
+<td rowspan="38" class="grp">Wetter und Fahrradnutzung</td>
 <td></td>
 <td></td>
 <td>Autogenerated</td>
-<td></td>
+<td>DIM_Fahrradstation</td>
 <td>Fahrt_key</td>
 <td>Wetter_und_Fahrradnutzung_Fahradstation</td>
 <td>Fahrt_key</td>
@@ -353,6 +356,15 @@ title: "Fragestellung 1"
 <td>Fahrt_status</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Fahrradstation</td>
+<td>Fahrt_Station_key</td>
+<td>Wetter_und_Fahrradnutzung_Fahradstation</td>
+<td>Fahrt_Station_key</td>
+</tr>
+<tr>
 <td>BS_Station</td>
 <td>id</td>
 <td></td>
@@ -410,10 +422,10 @@ title: "Fragestellung 1"
 <td></td>
 <td></td>
 <td>Autogenerated</td>
-<td></td>
-<td>Sensor_key</td>
-<td></td>
-<td>Sensor_key</td>
+<td>DIM_Fahrradstation</td>
+<td>Sensor_Station_key</td>
+<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Sensor_Station_key</td>
 </tr>
 <tr>
 <td>AS_Station</td>
@@ -488,6 +500,15 @@ title: "Fragestellung 1"
 <td>Sensor_status</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Wettersensor</td>
+<td>Sensor_key</td>
+<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Sensor_key</td>
+</tr>
+<tr>
 <td>AS_Sensor</td>
 <td>id</td>
 <td></td>
@@ -531,6 +552,15 @@ title: "Fragestellung 1"
 <td>Sensor_installationsdatum</td>
 <td>Wetter_und_Fahrradnutzung_Sensor</td>
 <td>Sensor_installationsdatum</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Wettersensor</td>
+<td>Sensor_Messung_key</td>
+<td>Wetter_und_Fahrradnutzung_Sensor</td>
+<td>Sensor_Messung_key</td>
 </tr>
 <tr>
 <td>AS_Messung</td>
@@ -615,5 +645,6 @@ title: "Fragestellung 1"
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::

@@ -9,7 +9,7 @@ title: Fragestellung 2
 <table class="table table-sm table-bordered mapping">
 <thead>
 <tr><th rowspan="2">Thema</th><th colspan="3">Staging</th><th colspan="3">Core</th><th colspan="2">Reporting</th></tr>
-<tr><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th></tr>
+<tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
 <tr>
@@ -31,7 +31,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltung_name</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Name_key</td>
+<td>Veranstaltung_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -41,7 +41,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltung_beschreibung</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Beschreibung_key</td>
+<td>Veranstaltung_Beschreibung</td>
 </tr>
 <tr>
 <td></td>
@@ -51,7 +51,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltung_id_typ</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Veranstaltung_Typ_key</td>
 </tr>
 <tr>
 <td></td>
@@ -61,7 +61,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltung_id_veranstalter</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Veranstaltung_Veranstalter_key</td>
 </tr>
 <tr>
 <td>CE_Veranstalter</td>
@@ -81,17 +81,17 @@ title: Fragestellung 2
 <td>CE_Veranstalter_name</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Veranstalter_Name_key</td>
+<td>Veranstaltung_Veranstalter_Name</td>
 </tr>
 <tr>
 <td></td>
 <td>organisationstyp</td>
 <td></td>
 <td>Topic_Veranstaltungen_und_ÖPNV</td>
-<td>Ce_Veranstalter_organisationstyp</td>
+<td>CE_Veranstalter_organisationstyp</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Veranstalter_Organisationstyp_key</td>
+<td>Veranstaltung_Veranstalter_Organisationstyp</td>
 </tr>
 <tr>
 <td>CE_Veranstaltungstyp</td>
@@ -111,7 +111,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungstyp_bezeichnung</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Veranstaltungstyp_Bezeichnung_key</td>
+<td>Veranstaltung_Veranstaltungstyp_Bezeichnung</td>
 </tr>
 <tr>
 <td>CE_Veranstaltungstermin</td>
@@ -131,7 +131,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungstermin_id_veranstaltung</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Veranstaltung_key</td>
 </tr>
 <tr>
 <td></td>
@@ -141,7 +141,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_id_veranstaltungsort</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Veranstaltung_Ort_key</td>
 </tr>
 <tr>
 <td></td>
@@ -151,7 +151,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_beginn_geplant</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Beginn_geplant_key</td>
+<td>Veranstaltung_Beginn_geplant</td>
 </tr>
 <tr>
 <td></td>
@@ -161,7 +161,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_ende_geplant</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Ende_geplant_key</td>
+<td>Veranstaltung_Ende_geplant</td>
 </tr>
 <tr>
 <td></td>
@@ -171,7 +171,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_beginn_tatsaechlich</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Beginn_tatsaechlich_key</td>
+<td>Veranstaltung_Beginn_tatsaechlich</td>
 </tr>
 <tr>
 <td></td>
@@ -181,7 +181,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_ende_tatsaechlich</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Ende_tatsaechlich_key</td>
+<td>Veranstaltung_Ende_tatsaechlich</td>
 </tr>
 <tr>
 <td></td>
@@ -191,7 +191,7 @@ title: Fragestellung 2
 <td>CE_Veranstalter_status</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Status_key</td>
+<td>Veranstaltung_Status</td>
 </tr>
 <tr>
 <td>CE_Ticket</td>
@@ -211,7 +211,7 @@ title: Fragestellung 2
 <td>CE_Ticket_tickettyp</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_tickettyp_key</td>
+<td>Veranstaltung_tickettyp</td>
 </tr>
 <tr>
 <td></td>
@@ -221,7 +221,7 @@ title: Fragestellung 2
 <td>CE_Ticket_status</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Ticket_status_key</td>
+<td>Veranstaltung_Ticket_status</td>
 </tr>
 <tr>
 <td>CE_Einlass</td>
@@ -231,7 +231,7 @@ title: Fragestellung 2
 <td>CE_Einlass_id_ticket</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Veranstaltung_Ticket_key</td>
 </tr>
 <tr>
 <td></td>
@@ -241,7 +241,7 @@ title: Fragestellung 2
 <td>CE_Einlass_einlass_status</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Einlass_status_key</td>
+<td>Veranstaltung_Einlass_status</td>
 </tr>
 <tr>
 <td></td>
@@ -251,7 +251,7 @@ title: Fragestellung 2
 <td>CE_Einlass_einlass_zeitpunkt</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Einlass_Startzeit_key</td>
+<td>Veranstaltung_Einlass_Startzeit</td>
 </tr>
 <tr>
 <td>CE_Veranstaltungsort</td>
@@ -261,7 +261,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungsort_name</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Veranstaltungsort_Name_key</td>
+<td>Veranstaltung_Veranstaltungsort_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -271,7 +271,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungsort_stadtteil</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_Stadtteil_key</td>
+<td>Veranstaltung_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -281,7 +281,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungsort_latitude</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_latitude_key</td>
+<td>Veranstaltung_latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -291,7 +291,7 @@ title: Fragestellung 2
 <td>CE_Veranstaltungsort_longitude</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Veranstaltung_longitude_key</td>
+<td>Veranstaltung_longitude</td>
 </tr>
 <tr>
 <td></td>
@@ -321,7 +321,7 @@ title: Fragestellung 2
 <td>CM_Linie_liniennummer</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Liniennummer_key</td>
+<td>Linie_Liniennummer</td>
 </tr>
 <tr>
 <td></td>
@@ -331,7 +331,7 @@ title: Fragestellung 2
 <td>CM_Linie_bezeichnung</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Bezeichnung_key</td>
+<td>Linie_Bezeichnung</td>
 </tr>
 <tr>
 <td></td>
@@ -341,7 +341,7 @@ title: Fragestellung 2
 <td>CM_Linie_verkehrsmittel</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Verkehrsmittel_key</td>
+<td>Linie_Verkehrsmittel</td>
 </tr>
 <tr>
 <td></td>
@@ -351,7 +351,7 @@ title: Fragestellung 2
 <td>CM_Linie_gueltig_ab</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Gueltig_ab_key</td>
+<td>Linie_Gueltig_ab</td>
 </tr>
 <tr>
 <td></td>
@@ -361,7 +361,7 @@ title: Fragestellung 2
 <td>CM_Linie_gueltig_bis</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Gueltig_bis_key</td>
+<td>Linie_Gueltig_bis</td>
 </tr>
 <tr>
 <td>CM_Fahrzeug</td>
@@ -401,7 +401,7 @@ title: Fragestellung 2
 <td>CM_Fahrt_id_linie</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_key</td>
 </tr>
 <tr>
 <td></td>
@@ -409,9 +409,9 @@ title: Fragestellung 2
 <td></td>
 <td>Topic_Veranstaltungen_und_ÖPNV</td>
 <td>CM_Fahrt_fahrzeug</td>
-<td></td>
+<td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrzeug_key</td>
 </tr>
 <tr>
 <td></td>
@@ -421,7 +421,7 @@ title: Fragestellung 2
 <td>CM_Fahrt_datum</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Fahrt_Datum_key</td>
+<td>Linie_Fahrt_Datum</td>
 </tr>
 <tr>
 <td></td>
@@ -431,7 +431,7 @@ title: Fragestellung 2
 <td>CM_Fahrt_fahrtrichtung</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Fahrtrichtung_key</td>
+<td>Linie_Fahrtrichtung</td>
 </tr>
 <tr>
 <td>CM_Fahrgastaufkommen</td>
@@ -441,7 +441,7 @@ title: Fragestellung 2
 <td>CM_Fahrgastaufkommen_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -451,7 +451,7 @@ title: Fragestellung 2
 <td>CM_Fahrgastaufkommen_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -481,7 +481,7 @@ title: Fragestellung 2
 <td>CM_Fahrplan_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -491,7 +491,7 @@ title: Fragestellung 2
 <td>CM_Fahrplan_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -521,7 +521,7 @@ title: Fragestellung 2
 <td>CM_Fahrt_Haltestelle_id_fahrt</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td></td>
@@ -531,7 +531,7 @@ title: Fragestellung 2
 <td>CM_Fahrt_Haltestelle_id_haltestelle</td>
 <td>Degenerierte Dimension</td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td></td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td></td>
@@ -571,7 +571,7 @@ title: Fragestellung 2
 <td>CM_Haltestelle_name</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Haltestelle_Name_key</td>
+<td>Linie_Haltestelle_Name</td>
 </tr>
 <tr>
 <td></td>
@@ -581,7 +581,7 @@ title: Fragestellung 2
 <td>CM_Haltestelle_stadtteil</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Haltestelle_Stadtteil_key</td>
+<td>Linie_Haltestelle_Stadtteil</td>
 </tr>
 <tr>
 <td></td>
@@ -591,7 +591,7 @@ title: Fragestellung 2
 <td>CM_Haltestelle_latitude</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Haltestelle_latitude_key</td>
+<td>Linie_Haltestelle_latitude</td>
 </tr>
 <tr>
 <td></td>
@@ -601,10 +601,11 @@ title: Fragestellung 2
 <td>CM_Haltestelle_longitude</td>
 <td></td>
 <td>Veranstaltungen_und_ÖPNV</td>
-<td>Linie_Haltestelle_longitude_key</td>
+<td>Linie_Haltestelle_longitude</td>
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::
 
@@ -618,7 +619,8 @@ title: Fragestellung 2
 <tr><th>Tabelle</th><th>Spalte</th><th>Verarbeitung</th><th>Tabelle</th><th>Spalte</th><th>Tabelle</th><th>Spalte</th></tr>
 </thead>
 <tbody>
-<td rowspan="67" class="grp">Veranstaltungen und ÖPNV</td>
+<tr>
+<td rowspan="79" class="grp">Veranstaltungen und ÖPNV</td>
 <td></td>
 <td></td>
 <td>Autogenerated</td>
@@ -673,6 +675,15 @@ title: Fragestellung 2
 <td></td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Veranstalter_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Veranstalter_key</td>
+</tr>
+<tr>
 <td>CE_Veranstalter</td>
 <td>id</td>
 <td></td>
@@ -700,6 +711,15 @@ title: Fragestellung 2
 <td>Veranstaltung_Veranstalter_organisationstyp</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Veranstaltungstyp_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Veranstaltungstyp_key</td>
+</tr>
+<tr>
 <td>CE_Veranstaltungstyp</td>
 <td>id</td>
 <td></td>
@@ -716,6 +736,15 @@ title: Fragestellung 2
 <td>Veranstaltung_Veranstaltungstyp</td>
 <td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
 <td>Veranstaltung_Veranstaltungstyp</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Veranstaltungstermin_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Veranstaltungstermin_key</td>
 </tr>
 <tr>
 <td>CE_Veranstaltungstermin</td>
@@ -790,6 +819,15 @@ title: Fragestellung 2
 <td>Veranstaltung_termin_status</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Ticket_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Ticket_key</td>
+</tr>
+<tr>
 <td>CE_Ticket</td>
 <td>id</td>
 <td></td>
@@ -817,6 +855,15 @@ title: Fragestellung 2
 <td>Veranstaltung_Ticket_status</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Einlass_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Einlass_key</td>
+</tr>
+<tr>
 <td>CE_Einlass</td>
 <td>id_ticket</td>
 <td>Join mit CE_Ticket id</td>
@@ -842,6 +889,15 @@ title: Fragestellung 2
 <td>Veranstaltung_einlass_zeitpunkt</td>
 <td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
 <td>Veranstaltung_einlass_zeitpunkt</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Veranstaltung</td>
+<td>Veranstaltung_Veranstaltungsort_key</td>
+<td>Veranstaltungen_und_ÖPNV_Versanstaltung</td>
+<td>Veranstaltung_Veranstaltungsort_key</td>
 </tr>
 <tr>
 <td>CE_Veranstaltungsort</td>
@@ -952,6 +1008,15 @@ title: Fragestellung 2
 <td>Linie_gueltig_bis</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrzeug_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Fahrzeug_key</td>
+</tr>
+<tr>
 <td>CM_Fahrzeug</td>
 <td>id</td>
 <td></td>
@@ -968,6 +1033,15 @@ title: Fragestellung 2
 <td>Linie_Fahrzeug_kapazität</td>
 <td>Veranstaltungen_und_ÖPNV_Linie</td>
 <td>Linie_Fahrzeug_kapazität</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrt_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Fahrt_key</td>
 </tr>
 <tr>
 <td>CM_Fahrt</td>
@@ -1015,6 +1089,15 @@ title: Fragestellung 2
 <td>Linie_fahrtrichtung</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrgastaufkommen_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Fahrgastaufkommen_key</td>
+</tr>
+<tr>
 <td>CM_Fahrgastaufkommen</td>
 <td>id_fahrt</td>
 <td>Join mit CM_Fahrt id</td>
@@ -1049,6 +1132,15 @@ title: Fragestellung 2
 <td>Linie_aussteiger</td>
 <td>Veranstaltungen_und_ÖPNV_Linie</td>
 <td>Linie_aussteiger</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrplan_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Fahrplan_key</td>
 </tr>
 <tr>
 <td>CM_Fahrplan</td>
@@ -1087,6 +1179,15 @@ title: Fragestellung 2
 <td>Linie_ankunft_geplant</td>
 </tr>
 <tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Fahrt_Haltestelle_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Fahrt_Haltestelle_key</td>
+</tr>
+<tr>
 <td>CM_Fahrt_Haltestelle</td>
 <td>id_fahrt</td>
 <td>Join mit CM_Fahrt id</td>
@@ -1121,6 +1222,15 @@ title: Fragestellung 2
 <td>Linie_abfahrt_tatsaechlich</td>
 <td>Veranstaltungen_und_ÖPNV_Linie</td>
 <td>Linie_abfahrt_tatsaechlich</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Autogenerated</td>
+<td>DIM_Linie</td>
+<td>Linie_Haltestelle_key</td>
+<td>Veranstaltungen_und_ÖPNV_Linie</td>
+<td>Linie_Haltestelle_key</td>
 </tr>
 <tr>
 <td>CM_Haltestelle</td>
@@ -1173,7 +1283,7 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Datum_Key</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Datum_Key</td>
 </tr>
 <tr>
@@ -1182,7 +1292,7 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Stunde</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Stunde</td>
 </tr>
 <tr>
@@ -1191,7 +1301,7 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Datum</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Datum</td>
 </tr>
 <tr>
@@ -1200,7 +1310,7 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Monat</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Monat</td>
 </tr>
 <tr>
@@ -1209,7 +1319,7 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Quartal</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Quartal</td>
 </tr>
 <tr>
@@ -1218,10 +1328,11 @@ title: Fragestellung 2
 <td>Autogenerated</td>
 <td>DIM_Datum</td>
 <td>Jahr</td>
-<td>Wetter_und_Fahrradnutzung_Datum</td>
+<td>Veranstaltungen_und_ÖPNV_Datum</td>
 <td>Jahr</td>
 </tr>
 </tbody>
 </table>
+<br>
 ```
 :::

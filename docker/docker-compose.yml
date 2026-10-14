@@ -61,8 +61,8 @@ services:
       - smart-city-network
 
   dwh:
-    image: postgres:16
-    container_name: smart-city-dwh
+    build: ./dwh/sources
+    container_name: dwh_
     ports:
       - "${DWH_PORT}:5432"
     environment:
@@ -70,11 +70,27 @@ services:
       POSTGRES_PASSWORD: ${DWH_PASSWORD}
       POSTGRES_DB: ${DWH_DB}
     volumes:
-      - ./data/dwh:/var/lib/postgresql/data
-      - ./sql/dwh:/docker-entrypoint-initdb.d
+      - ./dwh/data:/var/lib/postgresql/
     networks:
       - smart-city-network
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: "MeinSicheresPasswort123!"
+    networks:
+        - smart-city-network 
 
 networks:
   smart-city-network:
     driver: bridge
+
+volumes:
+  grafana-data:

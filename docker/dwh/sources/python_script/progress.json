@@ -1,0 +1,11 @@
+{
+  "citymove": {
+    "linie_id": 0,
+    "haltestelle_id": 0,
+    "fahrzeug_id": 0,
+    "fahrt_id": 0,
+    "fahrplan_id": 0,
+    "fahrt_haltestelle_id": 0,
+    "fahrgastaufkommen_id": 0
+  }
+}

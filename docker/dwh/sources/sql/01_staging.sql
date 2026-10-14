@@ -1,0 +1,205 @@
+CREATE SCHEMA staging;
+
+CREATE TABLE staging.BS_Station (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    stadtteil VARCHAR(100),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7),
+    kapazitaet INT
+);
+
+CREATE TABLE staging.BS_Fahrt (
+    id INT PRIMARY KEY,
+    id_startstation INT,
+    id_zielstation INT,
+    startzeit TIMESTAMP,
+    endzeit TIMESTAMP,
+    status VARCHAR(20),
+    FOREIGN KEY (id_startstation)
+        REFERENCES staging.BS_Station(id),
+
+    FOREIGN KEY (id_zielstation)
+        REFERENCES staging.BS_Station(id)
+);
+
+CREATE TABLE staging.AS_Station (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100),
+    stadtteil VARCHAR(100),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7),
+    stations_typ VARCHAR(30),
+    installationsdatum DATE,
+    status VARCHAR(20)
+);
+
+CREATE TABLE staging.AS_Sensor (
+    id BIGINT PRIMARY KEY,
+    id_station BIGINT,
+    sensortyp VARCHAR(50),
+    einheit VARCHAR(20),
+    installationsdatum DATE,
+
+    FOREIGN KEY (id_station)
+        REFERENCES staging.AS_Station(id)
+);
+
+CREATE TABLE staging.AS_Messung (
+    id BIGINT PRIMARY KEY,
+    id_sensor BIGINT,
+    messzeitpunkt TIMESTAMP,
+    messwert DECIMAL(10,2),
+
+    FOREIGN KEY (id_sensor)
+        REFERENCES staging.AS_Sensor(id)
+);
+
+CREATE TABLE staging.CE_Veranstaltungstyp (
+    id BIGINT PRIMARY KEY,
+    bezeichnung VARCHAR(50)
+);
+
+CREATE TABLE staging.CE_Veranstalter (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100),
+    organisationstyp VARCHAR(50)
+);
+
+CREATE TABLE staging.CE_Veranstaltungsort (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100),
+    stadtteil VARCHAR(100),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7),
+    kapazitaet INT
+);
+
+CREATE TABLE staging.CE_Veranstaltung (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100),
+    id_typ BIGINT,
+    id_veranstalter BIGINT,
+    beschreibung VARCHAR(255),
+
+    FOREIGN KEY (id_typ)
+        REFERENCES staging.CE_Veranstaltungstyp(id),
+
+    FOREIGN KEY (id_veranstalter)
+        REFERENCES staging.CE_Veranstalter(id)
+);
+
+CREATE TABLE staging.CE_Veranstaltungstermin (
+    id BIGINT PRIMARY KEY,
+    id_veranstaltung BIGINT,
+    id_veranstaltungsort BIGINT,
+    beginn_geplant TIMESTAMP,
+    ende_geplant TIMESTAMP,
+    beginn_tatsaechlich TIMESTAMP,
+    ende_tatsaechlich TIMESTAMP,
+    status VARCHAR(30),
+
+    FOREIGN KEY (id_veranstaltung)
+        REFERENCES staging.CE_Veranstaltung(id),
+
+    FOREIGN KEY (id_veranstaltungsort)
+        REFERENCES staging.CE_Veranstaltungsort(id)
+);
+
+CREATE TABLE staging.CE_Ticket (
+    id BIGINT PRIMARY KEY,
+    id_termin BIGINT,
+    tickettyp VARCHAR(30),
+    status VARCHAR(20),
+
+    FOREIGN KEY (id_termin)
+        REFERENCES staging.CE_Veranstaltungstermin(id)
+);
+
+CREATE TABLE staging.CE_Einlass (
+    id BIGINT PRIMARY KEY,
+    id_ticket BIGINT,
+    einlasszeitpunkt TIMESTAMP,
+    einlass_status VARCHAR(20),
+
+    FOREIGN KEY (id_ticket)
+        REFERENCES staging.CE_Ticket(id)
+);
+
+CREATE TABLE staging.CM_Linie (
+    id INT PRIMARY KEY,
+    liniennummer VARCHAR(10),
+    bezeichnung VARCHAR(100),
+    verkehrsmittel VARCHAR(20),
+    gueltig_ab DATE,
+    gueltig_bis DATE
+);
+
+CREATE TABLE staging.CM_Haltestelle (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    stadtteil VARCHAR(100),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7)
+);
+
+CREATE TABLE staging.CM_Fahrzeug (
+    id INT  PRIMARY KEY,
+    kapazitaet INT
+);
+
+CREATE TABLE staging.CM_Fahrt (
+    id INT PRIMARY KEY,
+    id_linie INT,
+    id_fahrzeug INT,
+    datum DATE,
+    fahrtrichtung VARCHAR(50),
+
+    FOREIGN KEY (id_linie)
+        REFERENCES staging.CM_Linie(id),
+
+    FOREIGN KEY (id_fahrzeug)
+        REFERENCES staging.CM_Fahrzeug(id)
+);
+
+CREATE TABLE staging.CM_Fahrplan (
+    id INT PRIMARY KEY,
+    id_fahrt INT,
+    id_haltestelle INT,
+    ankunft_geplant TIMESTAMP,
+    abfahrt_geplant TIMESTAMP,
+
+    FOREIGN KEY (id_fahrt)
+        REFERENCES staging.CM_Fahrt(id),
+
+    FOREIGN KEY (id_haltestelle)
+        REFERENCES staging.CM_Haltestelle(id)
+);
+
+CREATE TABLE staging.CM_Fahrt_Haltestelle (
+    id INT PRIMARY KEY,
+    id_fahrt INT,
+    id_haltestelle INT,
+    ankunft_tatsaechlich TIMESTAMP,
+    abfahrt_tatsaechlich TIMESTAMP,
+
+    FOREIGN KEY (id_fahrt)
+        REFERENCES staging.CM_Fahrt(id),
+
+    FOREIGN KEY (id_haltestelle)
+        REFERENCES staging.CM_Haltestelle(id)
+);
+
+CREATE TABLE staging.CM_Fahrgastaufkommen (
+    id INT PRIMARY KEY,
+    id_fahrt INT,
+    id_haltestelle INT,
+    einsteiger INT,
+    aussteiger INT,
+
+    FOREIGN KEY (id_fahrt)
+        REFERENCES staging.CM_Fahrt(id),
+
+    FOREIGN KEY (id_haltestelle)
+        REFERENCES staging.CM_Haltestelle(id)
+);
