@@ -263,7 +263,7 @@ CREATE TABLE core.DIM_Fahrradstation (
     Fahrt_endzeit TIMESTAMP,
     Fahrt_status VARCHAR(20),
     Fahrt_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
-    Fahrt_Station_Startstation_Wetter_und_Fahrradnutzung_Fahradstationname VARCHAR(100),
+    Fahrt_Station_Startstation_name VARCHAR(100),
     Fahrt_Station_Startstation_stadtteil VARCHAR(100),
     Fahrt_Station_Startstation_latitude DECIMAL(10,7),
     Fahrt_Station_Startstation_longitude DECIMAL(10,7),
