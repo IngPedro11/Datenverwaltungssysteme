@@ -9,7 +9,7 @@ BEGIN
         Fahrt_startzeit,
         Fahrt_endzeit,
         Fahrt_status,
-        Fahrt_Station_Startstation_Wetter_und_Fahrradnutzung_Fahradstationname,
+        Fahrt_Station_Startstation_name,
         Fahrt_Station_Startstation_stadtteil,
         Fahrt_Station_Startstation_latitude,
         Fahrt_Station_Startstation_longitude,

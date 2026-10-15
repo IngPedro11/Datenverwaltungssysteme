@@ -7,6 +7,7 @@ CREATE SCHEMA reporting;
 
 CREATE TABLE reporting.Wetter_und_Fahrradnutzung (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Fahrradstation_Startstation_key BIGINT GENERATED ALWAYS AS IDENTITY,
     Fahrradstation_Endstation_key BIGINT GENERATED ALWAYS AS IDENTITY,
     Fahrradstation_Startzeit TIMESTAMP,
@@ -38,6 +39,7 @@ CREATE TABLE reporting.Wetter_und_Fahrradnutzung (
 
 CREATE TABLE reporting.Veranstaltungen_und_ÖPNV (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Veranstaltung_Name VARCHAR(100),
     Veranstaltung_Beschreibung VARCHAR(255),
     Veranstaltung_Typ_key BIGINT GENERATED ALWAYS AS IDENTITY,
@@ -96,6 +98,7 @@ CREATE TABLE reporting.Veranstaltungen_und_ÖPNV (
 
 CREATE TABLE reporting.Veranstaltungen_und_Fahrradnutzung (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Veranstaltung_Name VARCHAR(100),
     Veranstaltung_Beschreibung VARCHAR(255),
     Veranstaltung_Typ_key BIGINT GENERATED ALWAYS AS IDENTITY,
@@ -140,6 +143,7 @@ CREATE TABLE reporting.Veranstaltungen_und_Fahrradnutzung (
 
 CREATE TABLE reporting.Wetter_und_ÖPNV (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Linie_Liniennummer VARCHAR(10),
     Linie_Bezeichnung VARCHAR(100),
     Linie_Verkehrsmittel VARCHAR(20),
@@ -185,6 +189,7 @@ CREATE TABLE reporting.Wetter_und_ÖPNV (
 
 CREATE TABLE reporting.Luftqualität_und_Mobilitätsaufkommen (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Fahrradstation_Startstation_key BIGINT GENERATED ALWAYS AS IDENTITY,
     Fahrradstation_Endstation_key BIGINT GENERATED ALWAYS AS IDENTITY,
     Fahrradstation_Startzeit TIMESTAMP,
@@ -242,9 +247,8 @@ CREATE TABLE reporting.Luftqualität_und_Mobilitätsaufkommen (
 
 CREATE TABLE reporting.Wetter_und_Fahrradnutzung_Fahradstation (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
-    Fahrt_id_startstation INT,
-    Fahrt_id_endstation INT,
     Fahrt_startzeit TIMESTAMP,
     Fahrt_endzeit TIMESTAMP,
     Fahrt_status VARCHAR(20),
@@ -263,6 +267,7 @@ CREATE TABLE reporting.Wetter_und_Fahrradnutzung_Fahradstation (
 
 CREATE TABLE reporting.Wetter_und_Fahrradnutzung_Sensor (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Sensor_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
     Sensor_name VARCHAR(100),
     Sensor_stadtteil VARCHAR(100),
@@ -272,18 +277,285 @@ CREATE TABLE reporting.Wetter_und_Fahrradnutzung_Sensor (
     Sensor_installationsdatum DATE,
     Sensor_status VARCHAR(20),
     Sensor_key BIGINT GENERATED ALWAYS AS IDENTITY,
-    Sensor_id_station BIGINT,
     Sensor_sensortyp VARCHAR(50),
     Sensor_einheit VARCHAR(20),
     Sensor_installationsdatum DATE,
     Sensor_Messung_key BIGINT GENERATED ALWAYS AS IDENTITY,
-    Sensor_id_sensor BIGINT,
     Sensor_messzeitpunkt TIMESTAMP,
     Sensor_Messwert DECIMAL(10,2)
 );
 
 CREATE TABLE core.Veranstaltungen_und_Fahrradnutzung_Datum (
     Datum_Key BIGINT PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Stunde    SMALLINT,
+    Datum     DATE,
+    Monat     SMALLINT,
+    Quartal   SMALLINT,
+    Jahr      SMALLINT
+);
+
+CREATE TABLE core.Veranstaltungen_und_ÖPNV_Versanstaltung (
+    Veranstaltung_Key BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Veranstaltung_name VARCHAR(100),
+    Veranstaltung_beschreibung VARCHAR(255),
+    Veranstaltung_Veranstalter_name VARCHAR(100),
+    Veranstaltung_Veranstalter_organisationstyp VARCHAR(50),
+    Veranstaltung_Veranstaltungstyp_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_Veranstaltungstyp VARCHAR(50),
+    Veranstaltung_Veranstaltungstermin_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_beginn_geplant TIMESTAMP,
+    Veranstaltung_ende_geplant TIMESTAMP,
+    Veranstaltung_beginn_tatsaechlich TIMESTAMP,
+    Veranstaltung_ende_tatsaechlich TIMESTAMP,
+    Veranstaltung_termin_status VARCHAR(30),
+    Veranstaltung_Ticket_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_tickettyp VARCHAR(30),
+    Veranstaltung_Ticket_status VARCHAR(20),
+    Veranstaltung_Einlass_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_einlass_status VARCHAR(20),
+    Veranstaltung_einlass_zeitpunkt TIMESTAMP,
+    Veranstaltung_Veranstaltungsort_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_Veranstaltungsort_name VARCHAR(100),
+    Veranstaltung_stadtteil VARCHAR(100),
+    Veranstaltung_latitude DECIMAL(10,7),
+    Veranstaltung_longitude DECIMAL(10,7),
+    Veranstaltung_kapazitaet INT
+);
+
+CREATE TABLE core.Veranstaltungen_und_ÖPNV_Linie (
+    Linie_Key BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Linie_liniennummer VARCHAR(10),
+    Linie_bezeichnung VARCHAR(100),
+    Linie_verkehrsmittel VARCHAR(20),
+    Linie_gueltig_ab DATE,
+    Linie_gueltig_bis DATE,
+    Linie_Fahrzeug_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Fahrzeug_kapazitaet INT,
+    Linie_Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_fahrzeug INT,
+    Linie_Fahrt_datum DATE,
+    Linie_fahrtrichtung VARCHAR(50),
+    Linie_Fahrgastaufkommen_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_einsteiger INT,
+    Linie_aussteiger INT,
+    Linie_Fahrplan_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_geplant TIMESTAMP,
+    Linie_abfahrt_geplant TIMESTAMP,
+    Linie_Fahrt_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_tatsaechlich TIMESTAMP,
+    Linie_abfahrt_tatsaechlich TIMESTAMP,
+    Linie_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Haltestelle_name VARCHAR(100),
+    Linie_Haltestelle_stadtteil VARCHAR(100),
+    Linie_Haltestelle_latitude DECIMAL(10,7),
+    Linie_Haltestelle_longitude DECIMAL(10,7)
+);
+
+CREATE TABLE core.Veranstaltungen_und_ÖPNV_Datum (
+    Datum_Key BIGINT PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Stunde    SMALLINT,
+    Datum     DATE,
+    Monat     SMALLINT,
+    Quartal   SMALLINT,
+    Jahr      SMALLINT
+);
+
+CREATE TABLE core.Veranstaltungen_und_Fahrradnutzung_Versanstaltung (
+    Veranstaltung_Key BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Veranstaltung_name VARCHAR(100),
+    Veranstaltung_beschreibung VARCHAR(255),
+    Veranstaltung_Veranstalter_name VARCHAR(100),
+    Veranstaltung_Veranstalter_organisationstyp VARCHAR(50),
+    Veranstaltung_Veranstaltungstyp_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_Veranstaltungstyp VARCHAR(50),
+    Veranstaltung_Veranstaltungstermin_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_beginn_geplant TIMESTAMP,
+    Veranstaltung_ende_geplant TIMESTAMP,
+    Veranstaltung_beginn_tatsaechlich TIMESTAMP,
+    Veranstaltung_ende_tatsaechlich TIMESTAMP,
+    Veranstaltung_termin_status VARCHAR(30),
+    Veranstaltung_Ticket_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_tickettyp VARCHAR(30),
+    Veranstaltung_Ticket_status VARCHAR(20),
+    Veranstaltung_Einlass_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_einlass_status VARCHAR(20),
+    Veranstaltung_einlass_zeitpunkt TIMESTAMP,
+    Veranstaltung_Veranstaltungsort_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Veranstaltung_Veranstaltungsort_name VARCHAR(100),
+    Veranstaltung_stadtteil VARCHAR(100),
+    Veranstaltung_latitude DECIMAL(10,7),
+    Veranstaltung_longitude DECIMAL(10,7),
+    Veranstaltung_kapazitaet INT
+);
+
+CREATE TABLE reporting.Veranstaltungen_und_Fahrradnutzung_Fahradstation (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Fahrt_startzeit TIMESTAMP,
+    Fahrt_endzeit TIMESTAMP,
+    Fahrt_status VARCHAR(20),
+    Fahrt_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Fahrt_Station_Startstation_Wetter_und_Fahrradnutzung_Fahradstationname VARCHAR(100),
+    Fahrt_Station_Startstation_stadtteil VARCHAR(100),
+    Fahrt_Station_Startstation_latitude DECIMAL(10,7),
+    Fahrt_Station_Startstation_longitude DECIMAL(10,7),
+    Fahrt_Station_Startstation_kapazität INT,
+    Fahrt_Station_Endstation_name VARCHAR(100),
+    Fahrt_Station_Endstation_stadtteil VARCHAR(100),
+    Fahrt_Station_Endstation_latitude DECIMAL(10,7),
+    Fahrt_Station_Endstation_longitude DECIMAL(10,7),
+    Fahrt_Station_Endstation_kapazität INT
+);
+
+CREATE TABLE core.Veranstaltungen_und_Fahrradnutzung_Datum (
+    Datum_Key BIGINT PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Stunde    SMALLINT,
+    Datum     DATE,
+    Monat     SMALLINT,
+    Quartal   SMALLINT,
+    Jahr      SMALLINT
+);
+
+CREATE TABLE core.Wetter_und_ÖPNV_Linie (
+    Linie_Key BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Linie_liniennummer VARCHAR(10),
+    Linie_bezeichnung VARCHAR(100),
+    Linie_verkehrsmittel VARCHAR(20),
+    Linie_gueltig_ab DATE,
+    Linie_gueltig_bis DATE,
+    Linie_Fahrzeug_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Fahrzeug_kapazitaet INT,
+    Linie_Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_fahrzeug INT,
+    Linie_Fahrt_datum DATE,
+    Linie_fahrtrichtung VARCHAR(50),
+    Linie_Fahrgastaufkommen_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_einsteiger INT,
+    Linie_aussteiger INT,
+    Linie_Fahrplan_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_geplant TIMESTAMP,
+    Linie_abfahrt_geplant TIMESTAMP,
+    Linie_Fahrt_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_tatsaechlich TIMESTAMP,
+    Linie_abfahrt_tatsaechlich TIMESTAMP,
+    Linie_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Haltestelle_name VARCHAR(100),
+    Linie_Haltestelle_stadtteil VARCHAR(100),
+    Linie_Haltestelle_latitude DECIMAL(10,7),
+    Linie_Haltestelle_longitude DECIMAL(10,7)
+);
+
+CREATE TABLE reporting.Wetter_und_ÖPNV_Sensor (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Sensor_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_name VARCHAR(100),
+    Sensor_stadtteil VARCHAR(100),
+    Sensor_latitude DECIMAL(10,7),
+    Sensor_longitude DECIMAL(10,7),
+    Sensor_stations_typ VARCHAR(30),
+    Sensor_installationsdatum DATE,
+    Sensor_status VARCHAR(20),
+    Sensor_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_sensortyp VARCHAR(50),
+    Sensor_einheit VARCHAR(20),
+    Sensor_installationsdatum DATE,
+    Sensor_Messung_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_messzeitpunkt TIMESTAMP,
+    Sensor_Messwert DECIMAL(10,2)
+);
+
+CREATE TABLE core.Wetter_und_ÖPNV_Datum (
+    Datum_Key BIGINT PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Stunde    SMALLINT,
+    Datum     DATE,
+    Monat     SMALLINT,
+    Quartal   SMALLINT,
+    Jahr      SMALLINT
+);
+
+CREATE TABLE reporting.Luftqualität_und_Mobilitätsaufkommen_Fahradstation (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Fahrt_startzeit TIMESTAMP,
+    Fahrt_endzeit TIMESTAMP,
+    Fahrt_status VARCHAR(20),
+    Fahrt_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Fahrt_Station_Startstation_Wetter_und_Fahrradnutzung_Fahradstationname VARCHAR(100),
+    Fahrt_Station_Startstation_stadtteil VARCHAR(100),
+    Fahrt_Station_Startstation_latitude DECIMAL(10,7),
+    Fahrt_Station_Startstation_longitude DECIMAL(10,7),
+    Fahrt_Station_Startstation_kapazität INT,
+    Fahrt_Station_Endstation_name VARCHAR(100),
+    Fahrt_Station_Endstation_stadtteil VARCHAR(100),
+    Fahrt_Station_Endstation_latitude DECIMAL(10,7),
+    Fahrt_Station_Endstation_longitude DECIMAL(10,7),
+    Fahrt_Station_Endstation_kapazität INT
+);
+
+CREATE TABLE core.Luftqualität_und_Mobilitätsaufkommen_Linie (
+    Linie_Key BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Linie_liniennummer VARCHAR(10),
+    Linie_bezeichnung VARCHAR(100),
+    Linie_verkehrsmittel VARCHAR(20),
+    Linie_gueltig_ab DATE,
+    Linie_gueltig_bis DATE,
+    Linie_Fahrzeug_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Fahrzeug_kapazitaet INT,
+    Linie_Fahrt_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_fahrzeug INT,
+    Linie_Fahrt_datum DATE,
+    Linie_fahrtrichtung VARCHAR(50),
+    Linie_Fahrgastaufkommen_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_einsteiger INT,
+    Linie_aussteiger INT,
+    Linie_Fahrplan_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_geplant TIMESTAMP,
+    Linie_abfahrt_geplant TIMESTAMP,
+    Linie_Fahrt_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_ankunft_tatsaechlich TIMESTAMP,
+    Linie_abfahrt_tatsaechlich TIMESTAMP,
+    Linie_Haltestelle_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Linie_Haltestelle_name VARCHAR(100),
+    Linie_Haltestelle_stadtteil VARCHAR(100),
+    Linie_Haltestelle_latitude DECIMAL(10,7),
+    Linie_Haltestelle_longitude DECIMAL(10,7)
+);
+
+CREATE TABLE reporting.Luftqualität_und_Mobilitätsaufkommen_Sensor (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
+    Sensor_Station_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_name VARCHAR(100),
+    Sensor_stadtteil VARCHAR(100),
+    Sensor_latitude DECIMAL(10,7),
+    Sensor_longitude DECIMAL(10,7),
+    Sensor_stations_typ VARCHAR(30),
+    Sensor_installationsdatum DATE,
+    Sensor_status VARCHAR(20),
+    Sensor_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_sensortyp VARCHAR(50),
+    Sensor_einheit VARCHAR(20),
+    Sensor_installationsdatum DATE,
+    Sensor_Messung_key BIGINT GENERATED ALWAYS AS IDENTITY,
+    Sensor_messzeitpunkt TIMESTAMP,
+    Sensor_Messwert DECIMAL(10,2)
+);
+
+CREATE TABLE core.Luftqualität_und_Mobilitätsaufkommen_Datum (
+    Datum_Key BIGINT PRIMARY KEY,
+    core_id BIGINT NOT NULL UNIQUE,
     Stunde    SMALLINT,
     Datum     DATE,
     Monat     SMALLINT,
