@@ -94,6 +94,7 @@ services:
       - "8888:8888"
     volumes:
       - ./machine_learning/sources/entrypoint.sh:/workspace-entrypoint.sh:ro
+      - ./machine_learning/sources/jupyter_server_config.py:/workspace/jupyter_server_config.py:ro
       - ./machine_learning/notebooks:/workspace/notebooks
       - ./machine_learning/src:/workspace/src
       - ./machine_learning/models:/workspace/models
@@ -102,11 +103,13 @@ services:
     command:
       - jupyter
       - lab
+      - --config=/workspace/jupyter_server_config.py
       - --ip=0.0.0.0
       - --port=8888
       - --no-browser
       - --ServerApp.allow_remote_access=False
       - --ServerApp.token=${JUPYTER_TOKEN}
+      - --ServerApp.allow_origin=http://localhost:7909
       - --allow-root
     networks:
       - smart-city-network
