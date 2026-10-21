@@ -1,7 +1,344 @@
 ---
-title: NoSQL Tutorial
+title: "Machine Learning-Tutorial: Vorhersage von Verspätungen (CityMove)"
+lang: de
+format:
+  html:
+    toc: true
+    toc-title: "Inhalt"
+    code-fold: false
+execute:
+  eval: false
+  echo: true
 ---
 
-# Allgemein
 
-In diesem Tutorial werden die Quellsysteme für das Data Warehouse implementiert. 
+<script type="text/x-thebe-config">
+{
+  useBinder: false,
+  useJupyterLite: false,
+  serverSettings: {
+    baseUrl: "http://localhost:8888",
+    token: "machine_learning123",
+    appendToken: true
+  },
+  selector: "pre[data-executable]",
+  mountActivateWidget: true,
+  mountStatusWidget: true
+}
+</script>
+
+
+
+
+## 1. Einleitung und Zielsetzung
+
+In diesem Tutorial werden zwei Lernarten des Machine Learning anhand von
+Daten aus dem Data-Warehouse-Projekt **CityMove** (öffentlicher Nahverkehr)
+demonstriert:
+
+| Lernart | Algorithmus | Ziel |
+|---|---|---|
+| Supervised Learning (Regression) | Decision Tree | Verspätung in Minuten vorhersagen |
+| Unsupervised Learning | K-Means | Haltestellen nach Verhalten gruppieren |
+
+Die Daten stammen aus dem PostgreSQL-Schema `citymove` (Tabellen `fahrplan`,
+`fahrgastaufkommen`, `haltestelle`, `fahrt`, `fahrt_haltestelle`).
+
+## 2. Vorbereitung: Bibliotheken und Datenbankverbindung
+
+Zuerst werden die benötigten Bibliotheken importiert. `pandas` und `numpy`
+dienen der Datenverarbeitung, `scikit-learn` liefert die ML-Algorithmen und
+`SQLAlchemy` die Verbindung zum Data Warehouse.
+
+```python
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import URL
+
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeRegressor, plot_tree
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+```
+
+Die Zugangsdaten werden **nicht im Code** gespeichert, sondern aus
+Umgebungsvariablen gelesen. Das ist eine Sicherheits-Best-Practice.
+
+```python
+DB_USER = os.getenv("POSTGRES_USER", "admin")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+
+if not DB_PASSWORD:
+    raise ValueError("POSTGRES_PASSWORD ist nicht konfiguriert.")
+
+url = URL.create(
+    drivername="postgresql+psycopg",
+    username=DB_USER,
+    password=DB_PASSWORD,
+    host="city_move",
+    port=5432,
+    database=os.getenv("CITYMOVE_DB", "city_move"),
+)
+engine = create_engine(url)
+
+# Verbindungstest
+with engine.connect() as connection:
+    print(connection.execute(text("SELECT version()")).scalar())
+```
+
+**Ausgabe:**
+
+```
+PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu ...
+```
+
+## 3. Data Collection: Daten aus dem Data Warehouse laden
+
+Die Daten werden per SQL direkt aus dem Data Warehouse geladen. So müssen
+keine CSV-Dateien manuell exportiert werden, und die Daten sind immer aktuell.
+
+```python
+df_fahrplan = pd.read_sql(
+    "SELECT id, id_fahrt, id_haltestelle, ankunft_geplant, abfahrt_geplant "
+    "FROM citymove.fahrplan;", engine)
+
+df_fahrgast = pd.read_sql(
+    "SELECT id, id_fahrt, id_haltestelle, einsteiger, aussteiger "
+    "FROM citymove.fahrgastaufkommen;", engine)
+
+df_haltestellen = pd.read_sql(
+    "SELECT id, name, stadtteil, latitude, longitude "
+    "FROM citymove.haltestelle;", engine)
+
+print("Fahrplandaten:", df_fahrplan.shape)
+print("Fahrgastdaten:", df_fahrgast.shape)
+print("Haltestellen:", df_haltestellen.shape)
+```
+
+**Ausgabe:**
+
+```
+Fahrplandaten: (2903, 5)
+Fahrgastdaten: (2065, 5)
+Haltestellen: (40, 5)
+```
+
+## 4. Exploratory Data Analysis (EDA)
+
+Bevor ein Modell trainiert wird, muss die Datenstruktur verstanden werden:
+Spalten, Datentypen und fehlende Werte.
+
+```python
+display(df_fahrplan.head())
+display(df_fahrgast.head())
+display(df_haltestellen.head())
+
+print(df_fahrplan.dtypes)
+print(df_fahrplan.isna().sum())
+print(df_fahrgast.isna().sum())
+```
+
+**Erkenntnis:** Alle Zeitstempel haben den Typ `datetime64`, und es gibt
+keine fehlenden Werte. Die Daten sind somit bereits sauber, was ein Vorteil
+der strukturierten Speicherung im Data Warehouse ist.
+
+## 5. Data Cleaning und Zielvariable berechnen
+
+Geplante und tatsächliche Ankunftszeiten liegen in verschiedenen Tabellen.
+Mit einem `JOIN` werden sie zusammengeführt.
+
+```python
+query_verspaetung = """
+SELECT
+    f.id AS fahrt_id, f.datum, f.id_linie, f.fahrtrichtung,
+    fh.id_haltestelle, fp.ankunft_geplant, fh.ankunft_tatsaechlich
+FROM citymove.fahrt_haltestelle AS fh
+JOIN citymove.fahrplan AS fp
+    ON fp.id_fahrt = fh.id_fahrt AND fp.id_haltestelle = fh.id_haltestelle
+JOIN citymove.fahrt AS f ON f.id = fh.id_fahrt
+WHERE fp.ankunft_geplant IS NOT NULL
+  AND fh.ankunft_tatsaechlich IS NOT NULL;
+"""
+df_verspaetung = pd.read_sql(query_verspaetung, engine)
+```
+
+Anschließend wird die **Verspätung in Minuten** berechnet. Positive Werte
+bedeuten Verspätung, negative Werte eine frühere Ankunft.
+
+```python
+df_verspaetung["ankunft_geplant"] = pd.to_datetime(
+    df_verspaetung["ankunft_geplant"], errors="coerce")
+df_verspaetung["ankunft_tatsaechlich"] = pd.to_datetime(
+    df_verspaetung["ankunft_tatsaechlich"], errors="coerce")
+
+df_verspaetung["verspaetung_min"] = (
+    df_verspaetung["ankunft_tatsaechlich"] - df_verspaetung["ankunft_geplant"]
+).dt.total_seconds() / 60
+
+df_verspaetung = df_verspaetung.dropna(
+    subset=["verspaetung_min", "ankunft_geplant", "datum",
+            "id_linie", "id_haltestelle"])
+print("Anzahl gültiger Datensätze:", len(df_verspaetung))
+```
+
+**Ausgabe:** `Anzahl gültiger Datensätze: 2065`
+
+## 6. Feature Engineering
+
+Aus der geplanten Ankunftszeit werden neue Merkmale (Features) abgeleitet:
+**Uhrzeit** (Stoßzeiten) und **Wochentag** (Werktag vs. Wochenende).
+
+```python
+df_verspaetung["uhrzeit_stunde"] = df_verspaetung["ankunft_geplant"].dt.hour
+df_verspaetung["wochentag"] = df_verspaetung["ankunft_geplant"].dt.dayofweek
+
+y = df_verspaetung["verspaetung_min"]
+X = df_verspaetung[["id_linie", "id_haltestelle",
+                    "uhrzeit_stunde", "wochentag"]]
+```
+
+**Wichtig:** Die tatsächliche Ankunftszeit wird bewusst **nicht** als Feature
+verwendet. Sie würde die Zielvariable direkt verraten (*Data Leakage*), und
+das Modell wäre in der Praxis nutzlos, weil diese Information erst nach der
+Ankunft vorliegt.
+
+## 7. Supervised Learning: Decision Tree (Regression)
+
+### 7.1 Funktionsweise
+
+Ein Decision Tree teilt die Daten schrittweise durch Ja/Nein-Fragen
+(z. B. „Uhrzeit > 16?") in immer homogenere Gruppen auf. In den Blättern
+steht der Mittelwert der Verspätung der jeweiligen Gruppe. Er ist leicht
+interpretierbar, was für Fachabteilungen ein großer Vorteil ist.
+
+### 7.2 Training und Evaluation
+
+Die Daten werden in 80 % Training und 20 % Test aufgeteilt. Nur so lässt
+sich prüfen, ob das Modell auch auf **unbekannten** Daten funktioniert.
+`max_depth=5` begrenzt die Baumtiefe und verhindert Overfitting.
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+tree_model = DecisionTreeRegressor(max_depth=5, random_state=42)
+tree_model.fit(X_train, y_train)
+y_pred = tree_model.predict(X_test)
+
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
+
+print(f"MAE:  {mae:.2f} Minuten")
+print(f"RMSE: {rmse:.2f} Minuten")
+print(f"R²:   {r2:.3f}")
+```
+
+### 7.3 Interpretation der Kennzahlen
+
+- **MAE:** durchschnittlicher absoluter Fehler in Minuten
+- **RMSE:** wie MAE, bestraft aber große Fehler stärker
+- **R²:** Anteil der erklärten Varianz (1 = perfekt, 0 = nicht besser als der Mittelwert)
+
+*(Hier die tatsächlichen Werte eintragen und kurz bewerten.)*
+
+### 7.4 Visualisierung des Baums
+
+```python
+plt.figure(figsize=(20, 8))
+plot_tree(tree_model, feature_names=X.columns, filled=True, max_depth=3)
+plt.show()
+```
+
+### 7.5 Praktischer Anwendungsfall im Data Warehouse
+
+Die Leitstelle erhält vor Betriebsbeginn eine Prognose, auf welchen Linien und
+zu welchen Uhrzeiten mit Verspätungen zu rechnen ist. Dadurch kann sie
+Fahrzeuge umdisponieren und Fahrgäste frühzeitig informieren.
+
+**Bedingungen für den Einsatz:**
+
+- Ausreichend historische Daten, die im DW gespeichert sind
+- Eine klar definierte Zielvariable (`verspaetung_min`)
+- Saubere Fakten- und Dimensionstabellen (Fahrt, Haltestelle, Zeit)
+- Keine Features, die erst nach dem Ereignis bekannt sind (Data Leakage)
+- Regelmäßiges Neutrainieren, z. B. nach jedem ETL-Lauf
+
+## 8. Unsupervised Learning: K-Means
+
+### 8.1 Funktionsweise
+
+K-Means gruppiert Datenpunkte **ohne vorgegebene Zielvariable** in *k*
+Cluster, indem es den Abstand zu den Cluster-Mittelpunkten minimiert.
+Hier werden Haltestellen nach ihrem Verhalten gruppiert.
+
+### 8.2 Haltestellen-Profil erstellen
+
+```python
+profil = (
+    df_verspaetung.groupby("id_haltestelle")["verspaetung_min"].mean()
+    .to_frame("mittl_verspaetung")
+    .join(df_fahrgast.groupby("id_haltestelle")[["einsteiger", "aussteiger"]]
+          .mean())
+    .dropna()
+)
+
+# K-Means ist distanzbasiert, daher müssen alle Merkmale skaliert werden.
+X_scaled = StandardScaler().fit_transform(profil)
+```
+
+### 8.3 Optimale Clusteranzahl wählen
+
+```python
+for k in range(2, 7):
+    labels = KMeans(n_clusters=k, random_state=42, n_init=10).fit_predict(X_scaled)
+    print(k, round(silhouette_score(X_scaled, labels), 3))
+```
+
+Der **Silhouette-Score** (−1 bis 1) misst, wie gut die Cluster getrennt sind.
+Das *k* mit dem höchsten Wert wird gewählt.
+
+### 8.4 Clustering und Interpretation
+
+```python
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)  # k anpassen
+profil["cluster"] = kmeans.fit_predict(X_scaled)
+print(profil.groupby("cluster").mean())
+```
+
+### 8.5 Anwendungsfall und Bedingungen im Data Warehouse
+
+Haltestellen werden in Typen eingeteilt (z. B. „Knotenpunkt mit hohem
+Fahrgastaufkommen und viel Verspätung" oder „ruhige Haltestelle"). Daraus
+leitet die Verkehrsplanung gezielte Maßnahmen ab, etwa dichtere Takte oder
+größere Fahrzeuge.
+
+**Bedingungen:** numerische, skalierbare Merkmale; Aggregation auf Haltestellen-
+Ebene im DW (z. B. über eine View); keine Labels nötig, aber die Cluster müssen
+fachlich interpretiert werden.
+
+## 9. Unterstützung durch das Data Warehouse
+
+| Arbeitsschritt | Unterstützung durch das Data Warehouse |
+|---|---|
+| **Data Collection** | Zentrale, integrierte Datenquelle durch ETL aus mehreren Systemen; Zugriff per SQL |
+| **Data Cleaning** | Bereinigung bereits im ETL-Prozess, Constraints, Datentypen, Primär-/Fremdschlüssel sichern Qualität |
+| **Feature Engineering** | Aggregationen, Joins und Zeitdimension direkt in SQL/Views; Features lassen sich wiederverwendbar speichern |
+| **EDA** | Schnelle Auswertungen über OLAP-Abfragen, Drill-down und Aggregationen auf Faktentabellen |
+
+## 10. Fazit und Jupyter-Notebook 
+
+*(2–3 Sätze: Ergebnisse beider Algorithmen, Grenzen, z. B. kleiner Datensatz
+mit 2065 Einträgen, und nächste Schritte, z. B. Random Forest.)*
+
+<iframe
+  src="http://localhost:8888/lab/tree/notebooks/02_citymove_delay_prediction.ipynb?mode=single-document&token=machine_learning123"
+  width="100%" height="800"
+  allow="local-network-access"
+  style="border: 1px solid #ddd; border-radius: 8px;">
+</iframe>
