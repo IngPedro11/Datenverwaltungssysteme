@@ -1,0 +1,15 @@
+jupyterlab
+ipykernel
+
+scikit-learn
+pandas
+numpy
+
+matplotlib
+seaborn
+
+sqlalchemy
+psycopg[binary]
+
+python-dotenv
+joblib

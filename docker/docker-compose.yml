@@ -61,8 +61,8 @@ services:
       - smart-city-network
 
   dwh:
-    build: ./dwh/sources
-    container_name: dwh_
+    image: postgres:16
+    container_name: smart-city-dwh
     ports:
       - "${DWH_PORT}:5432"
     environment:
@@ -70,10 +70,51 @@ services:
       POSTGRES_PASSWORD: ${DWH_PASSWORD}
       POSTGRES_DB: ${DWH_DB}
     volumes:
-      - ./dwh/data:/var/lib/postgresql/
+      - ./data/dwh:/var/lib/postgresql/data
+      - ./sql/dwh:/docker-entrypoint-initdb.d
     networks:
       - smart-city-network
-  
+
+  machine_learning:
+    build:
+      context: ./machine_learning/sources
+      dockerfile: Dockerfile
+    container_name: machine_learning
+    working_dir: /workspace
+    env_file:
+      - .env
+    environment:
+      DB_HOST: ${ML_DB_HOST:-dwh}
+      DB_PORT: ${ML_DB_PORT:-5432}
+      DB_NAME: ${ML_DB_NAME:-dwh}
+      DB_USER: ${ML_DB_USER}
+      DB_PASSWORD: ${ML_DB_PASSWORD}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN}
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./machine_learning/sources/entrypoint.sh:/workspace-entrypoint.sh:ro
+      - ./machine_learning/sources/jupyter_server_config.py:/workspace/jupyter_server_config.py:ro
+      - ./machine_learning/notebooks:/workspace/notebooks
+      - ./machine_learning/src:/workspace/src
+      - ./machine_learning/models:/workspace/models
+      - ./machine_learning/exports:/workspace/exports
+    entrypoint: ["/bin/sh", "/workspace-entrypoint.sh"]
+    command:
+      - jupyter
+      - lab
+      - --config=/workspace/jupyter_server_config.py
+      - --ip=0.0.0.0
+      - --port=8888
+      - --no-browser
+      - --ServerApp.allow_remote_access=False
+      - --ServerApp.token=${JUPYTER_TOKEN}
+      - --ServerApp.allow_origin=http://localhost:7909
+      - --allow-root
+    networks:
+      - smart-city-network
+    restart: unless-stopped
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -85,8 +126,6 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: "MeinSicheresPasswort123!"
-    networks:
-        - smart-city-network 
 
   airsense_nosql:
     build: ./airsense_nosql/sources
@@ -107,3 +146,4 @@ services:
 networks:
   smart-city-network:
     driver: bridge
+  
