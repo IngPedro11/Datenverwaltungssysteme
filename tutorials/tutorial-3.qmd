@@ -337,5 +337,11 @@ fachlich interpretiert werden.
 mit 2065 Einträgen, und nächste Schritte, z. B. Random Forest.)*
 
 
-<iframe src="http://localhost:8888/lab/tree/notebooks/02_citymove_delay_prediction.ipynb?mode=single-document" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 8px;"> </iframe>
+<iframe
+  src="http://localhost:8888/notebooks/notebooks/02_citymove_delay_prediction.ipynb?token=machine_learning123"
+  width="100%" height="800"
+  allow="local-network-access"
+  style="border: 1px solid #ddd; border-radius: 8px;">
+</iframe>
+
 

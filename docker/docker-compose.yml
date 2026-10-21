@@ -1,5 +1,5 @@
-services:
 
+services:
   city_move:
     build: ./city_move/sources
     container_name: city_move
@@ -30,20 +30,20 @@ services:
     networks:
       - smart-city-network
 
-  #airsense:
-  #  build: ./airsense/sources
-  #  container_name: airsense
-  #  ports:
-  #    - "${AIRSENSE_DB_PORT}:5432"
-  #    - "${AIRSENSE_API_PORT}:8000"
-  #  environment:
-  #    POSTGRES_USER: ${POSTGRES_USER}
-  #    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #    POSTGRES_DB: ${AIRSENSE_DB}
-  #  volumes:
-  #    - ./airsense/data:/var/lib/postgresql
-  #  networks:
-  #    - smart-city-network
+  # airsense:
+  #   build: ./airsense/sources
+  #   container_name: airsense
+  #   ports:
+  #     - "${AIRSENSE_DB_PORT}:5432"
+  #     - "${AIRSENSE_API_PORT}:8000"
+  #   environment:
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${AIRSENSE_DB}
+  #   volumes:
+  #     - ./airsense/data:/var/lib/postgresql
+  #   networks:
+  #     - smart-city-network
 
   cityevents:
     build: ./city_events/sources
@@ -91,10 +91,10 @@ services:
       DB_PASSWORD: ${ML_DB_PASSWORD}
       JUPYTER_TOKEN: ${JUPYTER_TOKEN}
     ports:
-      - "8888:8888"
+      - "127.0.0.1:8888:8888"
     volumes:
       - ./machine_learning/sources/entrypoint.sh:/workspace-entrypoint.sh:ro
-      - ./machine_learning/sources/jupyter_server_config.py:/workspace/jupyter_server_config.py:ro
+      - ./machine_learning/sources/jupyter_server_config.py:/etc/jupyter/jupyter_server_config.py:ro
       - ./machine_learning/notebooks:/workspace/notebooks
       - ./machine_learning/src:/workspace/src
       - ./machine_learning/models:/workspace/models
@@ -103,13 +103,10 @@ services:
     command:
       - jupyter
       - lab
-      - --config=/workspace/jupyter_server_config.py
+      - --config=/etc/jupyter/jupyter_server_config.py
       - --ip=0.0.0.0
       - --port=8888
       - --no-browser
-      - --ServerApp.allow_remote_access=False
-      - --ServerApp.token=${JUPYTER_TOKEN}
-      - --ServerApp.allow_origin=http://localhost:7909
       - --allow-root
     networks:
       - smart-city-network
@@ -126,6 +123,8 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: "MeinSicheresPasswort123!"
+    networks:
+      - smart-city-network
 
   airsense_nosql:
     build: ./airsense_nosql/sources
@@ -137,13 +136,10 @@ services:
       MONGO_URI: mongodb://127.0.0.1:27017
       MONGO_DATABASE: airsense
     volumes:
-      - ./airsense_nosql/data:/data/db  
-
+      - ./airsense_nosql/data:/data/db
     networks:
       - smart-city-network
-
 
 networks:
   smart-city-network:
     driver: bridge
-  
