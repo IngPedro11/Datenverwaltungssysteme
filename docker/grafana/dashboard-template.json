@@ -1,0 +1,347 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "smart-city-wetter-fahrrad",
+    "title": "Smart City Analytics – Wetter und Fahrradnutzung",
+    "tags": [
+      "Smart City",
+      "Wetter",
+      "Fahrrad"
+    ],
+    "timezone": "browser",
+    "schemaVersion": 41,
+    "version": 0,
+    "refresh": "5m",
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "jahr",
+          "label": "Jahr",
+          "type": "query",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "query": "SELECT DISTINCT EXTRACT(YEAR FROM fahrradstation_startzeit)::int AS __text, EXTRACT(YEAR FROM fahrradstation_startzeit)::int AS __value FROM reporting.wetter_und_fahrradnutzung WHERE fahrradstation_startzeit IS NOT NULL ORDER BY 1 DESC",
+          "refresh": 2,
+          "sort": 1,
+          "multi": false,
+          "includeAll": true,
+          "allValue": "__all",
+          "current": {
+            "selected": true,
+            "text": "All",
+            "value": "__all"
+          }
+        },
+        {
+          "name": "stadtteil",
+          "label": "Stadtteil",
+          "type": "query",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "query": "SELECT DISTINCT fahrradstation_stadtteil AS __text, fahrradstation_stadtteil AS __value FROM reporting.wetter_und_fahrradnutzung WHERE fahrradstation_stadtteil IS NOT NULL ORDER BY 1",
+          "refresh": 2,
+          "sort": 1,
+          "multi": false,
+          "includeAll": true,
+          "allValue": "__all",
+          "current": {
+            "selected": true,
+            "text": "All",
+            "value": "__all"
+          }
+        },
+        {
+          "name": "sensortyp",
+          "label": "Sensortyp",
+          "type": "query",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "query": "SELECT DISTINCT wetterstation_sensortyp AS __text, wetterstation_sensortyp AS __value FROM reporting.wetter_und_fahrradnutzung WHERE wetterstation_sensortyp IS NOT NULL ORDER BY 1",
+          "refresh": 2,
+          "sort": 1,
+          "multi": false,
+          "includeAll": true,
+          "allValue": "__all",
+          "current": {
+            "selected": true,
+            "text": "All",
+            "value": "__all"
+          }
+        },
+        {
+          "name": "station",
+          "label": "Stationssuche",
+          "type": "textbox",
+          "label": "Stationssuche",
+          "description": "Optional: nach Fahrradstation suchen",
+          "query": ""
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Verknüpfte Datensätze",
+        "type": "stat",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT COUNT(DISTINCT core_id) AS verknuepfte_datensaetze FROM reporting.wetter_und_fahrradnutzung WHERE (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM fahrradstation_startzeit)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%')",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Anzahl Fahrradstationen",
+        "type": "stat",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT COUNT(DISTINCT fahrradstation_name) AS anzahl_fahrradstationen FROM reporting.wetter_und_fahrradnutzung WHERE (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM fahrradstation_startzeit)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%')",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Durchschnittlicher Wetter-Messwert",
+        "type": "stat",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 2
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT ROUND(AVG(wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert FROM reporting.wetter_und_fahrradnutzung WHERE (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM fahrradstation_startzeit)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%')",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Wetterverlauf im Zeitverlauf",
+        "type": "timeseries",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 5
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 15,
+              "showPoints": "auto",
+              "spanNulls": false
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT $__timeGroupAlias(wetterstation_messzeitpunkt, '1h'), AVG(wetterstation_messwert) AS durchschnittlicher_messwert FROM reporting.wetter_und_fahrradnutzung WHERE $__timeFilter(wetterstation_messzeitpunkt) AND (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM wetterstation_messzeitpunkt)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%') GROUP BY 1 ORDER BY 1",
+            "format": "time_series"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Verknüpfte Datensätze nach Stadtteil",
+        "type": "barchart",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 5
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "axisLabel": "Datensätze",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "lineWidth": 1
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "orientation": "horizontal",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": 0,
+          "showValue": "auto",
+          "stacking": "none",
+          "legend": {
+            "showLegend": false
+          }
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT fahrradstation_stadtteil AS stadtteil, COUNT(DISTINCT core_id) AS anzahl_datensaetze FROM reporting.wetter_und_fahrradnutzung WHERE fahrradstation_stadtteil IS NOT NULL AND (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM fahrradstation_startzeit)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%') GROUP BY fahrradstation_stadtteil ORDER BY anzahl_datensaetze DESC",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Details: Fahrradstationen und Wetter",
+        "type": "table",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
+        "options": {
+          "showHeader": true,
+          "cellHeight": "sm",
+          "footer": {
+            "show": false
+          }
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT core_id, fahrradstation_name, fahrradstation_stadtteil, fahrradstation_startzeit, wetterstation_sensortyp, wetterstation_messzeitpunkt, wetterstation_messwert FROM reporting.wetter_und_fahrradnutzung WHERE (${jahr:sqlstring} = '__all' OR EXTRACT(YEAR FROM fahrradstation_startzeit)::text = ${jahr:sqlstring}) AND (${stadtteil:sqlstring} = '__all' OR fahrradstation_stadtteil = ${stadtteil:sqlstring}) AND (${sensortyp:sqlstring} = '__all' OR wetterstation_sensortyp = ${sensortyp:sqlstring}) AND (${station:sqlstring} = '' OR fahrradstation_name ILIKE '%' || ${station:sqlstring} || '%') ORDER BY fahrradstation_startzeit DESC NULLS LAST LIMIT 500",
+            "format": "table"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true,
+  "folderId": 0,
+  "message": "Dashboard Smart City Analytics aktualisiert"
+}

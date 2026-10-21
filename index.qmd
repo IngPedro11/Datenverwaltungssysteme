@@ -23,6 +23,7 @@ Hier kann ich Folgendes speichern:
 
 Hier findest du die Tutorials.
 
+### [NoSQL Tutorial](tutorials/tutorial-3.qmd)
 
 ### [Tutorial 1: Einführung in die Datenbankmodellierung](tutorials/tutorial-1.qmd)
 

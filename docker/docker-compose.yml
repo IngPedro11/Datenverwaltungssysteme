@@ -30,20 +30,20 @@ services:
     networks:
       - smart-city-network
 
-  airsense:
-    build: ./airsense/sources
-    container_name: airsense
-    ports:
-      - "${AIRSENSE_DB_PORT}:5432"
-      - "${AIRSENSE_API_PORT}:8000"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${AIRSENSE_DB}
-    volumes:
-      - ./airsense/data:/var/lib/postgresql
-    networks:
-      - smart-city-network
+  #airsense:
+  #  build: ./airsense/sources
+  #  container_name: airsense
+  #  ports:
+  #    - "${AIRSENSE_DB_PORT}:5432"
+  #    - "${AIRSENSE_API_PORT}:8000"
+  #  environment:
+  #    POSTGRES_USER: ${POSTGRES_USER}
+  #    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #    POSTGRES_DB: ${AIRSENSE_DB}
+  #  volumes:
+  #    - ./airsense/data:/var/lib/postgresql
+  #  networks:
+  #    - smart-city-network
 
   cityevents:
     build: ./city_events/sources
@@ -81,16 +81,29 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - grafana-data:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: "MeinSicheresPasswort123!"
     networks:
         - smart-city-network 
 
+  airsense_nosql:
+    build: ./airsense_nosql/sources
+    container_name: airsense_nosql
+    restart: unless-stopped
+    ports:
+      - "${AIRSENSE_API_PORT}:8000"
+    environment:
+      MONGO_URI: mongodb://127.0.0.1:27017
+      MONGO_DATABASE: airsense
+    volumes:
+      - ./airsense_nosql/data:/data/db  
+
+    networks:
+      - smart-city-network
+
+
 networks:
   smart-city-network:
     driver: bridge
-
-volumes:
-  grafana-data:
