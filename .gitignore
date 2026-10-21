@@ -11,3 +11,8 @@
 /.luarc.json
 /docker/airsense_nosql/data
 
+/docker/grafana/data/plugins/
+/docker/grafana/data/csv/
+/docker/grafana/data/pdf/
+/docker/grafana/data/png/
+/docker/grafana/data/unified-search/
