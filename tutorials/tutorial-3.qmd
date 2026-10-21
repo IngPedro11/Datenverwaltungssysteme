@@ -342,3 +342,6 @@ mit 2065 Einträgen, und nächste Schritte, z. B. Random Forest.)*
   allow="local-network-access"
   style="border: 1px solid #ddd; border-radius: 8px;">
 </iframe>
+
+Wenn diese **Iframe** nicht funktioniert, versuchen Sie bitte direkt den Notebook zu öffnen.
+[Prediction City Move Notebook](http://localhost:8888/lab/tree/notebooks/02_citymove_delay_prediction.ipynb?mode=single-document&token=machine_learning123)
