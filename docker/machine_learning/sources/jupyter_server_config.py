@@ -20,3 +20,5 @@ c.ServerApp.tornado_settings = {
     # Cookie _xsrf con las mismas opciones
     "xsrf_cookie_kwargs": {"samesite": "None", "secure": True},
 }
+
+c.ServerApp.disable_check_xsrf = True
