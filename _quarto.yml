@@ -34,3 +34,6 @@ format:
 
 execute:
   freeze: auto
+
+filters:
+  - filters/include-html.lua

@@ -8,3 +8,6 @@
 /docker/city_move/data/
 /docker/city_events/data/
 /docker/dwh/data
+/.luarc.json
+/docker/airsense_nosql/data
+
