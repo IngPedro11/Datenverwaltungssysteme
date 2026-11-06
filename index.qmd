@@ -1,9 +1,9 @@
 ﻿---
-title: "Mein Wiki"
+title: "Projektarbeit DVS"
 ---
-
-# Willkommen 👋
 <!--
+# Willkommen 👋
+
 Willkommen in meinem persönlichen Wiki.
 
 Hier kann ich Folgendes speichern:
@@ -21,17 +21,17 @@ Hier kann ich Folgendes speichern:
 
 ## 📚 Tutorials
 
-Hier findest du die Tutorials.
-
-### [NoSQL Tutorial](tutorials/tutorial-3.qmd)
+### [NoSQL Tutorial](tutorials/tutorial-4.qmd)
 
 ### [Tutorial 1: Einführung in die Datenbankmodellierung](tutorials/tutorial-1.qmd)
 
 
 ### [Tutorial 2: Grundlegende Konzepte der Datenbankmodellierung](tutorials/tutorial-2.qmd)
 
+### [Machine Learning Tutorial](tutorials/tutorial-3.qmd)
 
----
+
+<!---
 
 ::: {.callout-tip}
 
@@ -40,4 +40,4 @@ Hier findest du die Tutorials.
 Du kannst dieses Wiki verwenden, um deine Notizen und Lösungen zu speichern
 und sie später über jeden Browser abzurufen.
 
-:::
+:::-->

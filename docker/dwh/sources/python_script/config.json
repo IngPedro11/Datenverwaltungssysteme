@@ -192,7 +192,7 @@
       }
     },
     "airsense": {
-      "api_url": "http://airsense:8000/get_data",
+      "api_url": "http://airsense_nosql:8000/get_data",
       "schema": "staging",
       "tables": {
         "station": {

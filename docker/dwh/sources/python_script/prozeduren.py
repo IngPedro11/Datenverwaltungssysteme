@@ -16,22 +16,23 @@ def transfer_all():
             with conn.cursor() as cur:
                 procedures = [
                     # Dimensionen
-                    "core.transfer_dim_fahrradstation",
-                    "core.transfer_dim_wettersensor",
-                    "core.transfer_dim_veranstaltung",
-                    "core.transfer_dim_linie",
+                    "core.transfer_dim_fahrradstation()",
+                    "core.transfer_dim_wettersensor()",
+                    "core.transfer_dim_veranstaltung()",
+                    "core.transfer_dim_linie()",
 
                     # Topics
-                    "core.transfer_topic_wetter_und_fahrradnutzung",
-                    "core.transfer_topic_veranstaltungen_und_oepnv",
-                    "core.transfer_topic_veranstaltungen_und_fahrradnutzung",
-                    "core.transfer_topic_wetter_und_oepnv",
-                    "core.transfer_topic_luftqualitaet_und_mobilitaetsaufkommen",
+                    "core.transfer_topic_wetter_und_fahrradnutzung()",
+                    "core.transfer_topic_veranstaltungen_und_oepnv()",
+                    "core.transfer_topic_veranstaltungen_und_fahrradnutzung()",
+                    "core.transfer_topic_wetter_und_oepnv()",
+                    "core.transfer_topic_luftqualitaet_und_mobilitaetsaufkommen()",
+                    "core.fill_dim_datum(2026, 2026)",
                 ]
 
                 for procedure in procedures:
                     print(f"Starte {procedure} ...")
-                    cur.execute(f"CALL {procedure}();")
+                    cur.execute(f"CALL {procedure};")
                     print(f"{procedure} erfolgreich abgeschlossen.")
 
         print("Alle Dimension- und Topic-Transfers erfolgreich abgeschlossen.")

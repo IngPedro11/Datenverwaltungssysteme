@@ -1,0 +1,644 @@
+# Integration einer NoSQL-Datenbank in ein Data Warehouse
+
+## 1. Einleitung
+
+Im Rahmen des bestehenden Data-Warehouse-Projekts werden Daten aus vier unterschiedlichen Quellsystemen zusammengeführt, aufbereitet und für analytische Auswertungen bereitgestellt. Die bisherigen Quellsysteme basieren auf relationalen Datenbanken.
+
+Um die Einsatzmöglichkeiten von NoSQL-Datenbanken zu untersuchen, wurde eines dieser Quellsysteme auf eine dokumentenorientierte Datenbank umgestellt. Hierfür kommt **MongoDB** zum Einsatz.
+
+Das betreffende Quellsystem trägt den Namen AirSense und simuliert mehrere Sensorstationen, welche unterschiedliche Umweltdaten erfassen. Dazu gehören beispielsweise Temperatur, Luftfeuchtigkeit, Stickstoffdioxid, Ozon und Lärmbelastung.
+
+Die erfassten Informationen werden in MongoDB gespeichert und über eine FastAPI-Schnittstelle für das Data Warehouse bereitgestellt. Die Integration erfolgt analog zu den bereits vorhandenen relationalen Quellsystemen.
+
+Ziel dieser Implementierung ist es, die grundlegenden Eigenschaften einer NoSQL-Datenbank zu demonstrieren, deren Vor- und Nachteile gegenüber relationalen Datenbanken zu untersuchen und die Integration der gespeicherten Daten in ein bestehendes Data Warehouse praktisch umzusetzen.
+
+## 2. Anwendungsfall und Auswahl der NoSQL-Datenbank
+
+### 2.1 Beschreibung des Anwendungsfalls
+
+Ein geeigneter Anwendungsfall für den Einsatz einer NoSQL-Datenbank ist die Speicherung und Verarbeitung von Sensordaten im Bereich des Internet of Things (IoT).
+
+In einem solchen System erfassen zahlreiche Sensoren kontinuierlich Informationen über ihre Umgebung. Je nach Einsatzgebiet können dabei unterschiedliche Messgrößen entstehen.
+
+Im AirSense-Quellsystem werden mehrere Sensorstationen simuliert, die beispielsweise folgende Messwerte erfassen:
+
+- Temperatur
+- Luftfeuchtigkeit
+- Stickstoffdioxid (NO2)
+- Ozon (O3)
+- Feinstaub (PM10)
+- Lärmbelastung
+
+Neben den eigentlichen Messwerten werden auch Informationen über die Sensorstationen und die darin verbauten Sensoren gespeichert. Dazu gehören beispielsweise der Standort, der Hersteller, das Modell, die Maßeinheit und der aktuelle Betriebsstatus.
+
+Die unterschiedlichen Sensortypen besitzen dabei nicht zwangsläufig dieselben Eigenschaften. Während beispielsweise ein Temperatursensor seine Messwerte in Grad Celsius liefert, verwendet ein Lärmsensor die Einheit Dezibel.
+
+Eine solche Datenstruktur lässt sich zwar auch mit relationalen Datenbanken abbilden, erfordert jedoch eine entsprechende Modellierung und gegebenenfalls zusätzliche Tabellen oder Anpassungen am bestehenden Schema.
+
+Für diesen Anwendungsfall bietet sich daher eine dokumentenorientierte NoSQL-Datenbank an.
+
+### 2.2 Warum MongoDB?
+
+Für die Implementierung wurde MongoDB ausgewählt. MongoDB ist eine dokumentenorientierte NoSQL-Datenbank, welche Informationen in JSON-ähnlichen Dokumenten speichert. Intern verwendet MongoDB dafür das BSON-Format (Binary JSON).
+
+Die Dokumente werden innerhalb sogenannter Collections organisiert. Eine Collection ist dabei vergleichbar mit einer Tabelle in einer relationalen Datenbank.
+
+Ein wesentlicher Unterschied besteht darin, dass Dokumente innerhalb einer Collection unterschiedliche Attribute besitzen können. Dadurch ist es möglich, verschiedene Sensortypen mit jeweils individuellen Eigenschaften abzubilden, ohne ein vollständig einheitliches Tabellenschema definieren zu müssen.
+
+Diese Flexibilität ist insbesondere für das AirSense-Quellsystem interessant, da unterschiedliche Sensoren verschiedene Messgrößen und Eigenschaften besitzen.
+
+### 2.3 Vorteile und Nachteile gegenüber relationalen Datenbanken
+
+Der Einsatz von MongoDB bietet verschiedene Vorteile, bringt allerdings auch einige Einschränkungen mit sich.
+
+| Kriterium | MongoDB (NoSQL) | Relationale Datenbanken |
+|---|---|---|
+| Datenstruktur | Flexible Dokumente | Fest definierte Tabellen |
+| Schema | Dynamisch und flexibel | Vorab definiertes Schema |
+| Beziehungen | Eingebettete Dokumente und Referenzen | Foreign Keys und Joins |
+| Skalierbarkeit | Horizontale Skalierung durch Sharding | Häufig zunächst vertikale Skalierung |
+| Datenintegrität | Validierung und Anwendungskontrollen | Umfangreiche Integritätsbedingungen |
+| Transaktionen | Werden unterstützt | Werden unterstützt |
+| Abfragen | Dokumentorientierte Abfragen | SQL |
+| Komplexe Beziehungen | Teilweise aufwendiger | Gut durch Joins abbildbar |
+| Datenmodellierung | Gut für heterogene und verschachtelte Daten | Gut für strukturierte und relationale Daten |
+
+**Vorteile von MongoDB:**
+
+- **Flexible Datenstruktur:** Neue Attribute können ohne vorherige Anpassung eines festen Tabellenschemas ergänzt werden.
+- **Geeignet für heterogene Daten:** Unterschiedliche Sensortypen können mit individuellen Eigenschaften gespeichert werden.
+- **Verschachtelte Dokumente:** Zusammengehörige Informationen können direkt innerhalb eines Dokuments abgelegt werden.
+- **Horizontale Skalierbarkeit:** MongoDB unterstützt die Verteilung von Daten auf mehrere Server mittels Sharding.
+- **Anpassungsfähigkeit:** Änderungen an der Datenstruktur lassen sich vergleichsweise unkompliziert umsetzen.
+
+**Nachteile von MongoDB:**
+
+- **Keine klassischen Foreign Keys:** Beziehungen zwischen Dokumenten müssen über Referenzen und entsprechende Anwendungslogik verwaltet werden.
+- **Datenredundanz:** Durch eingebettete Dokumente können Informationen mehrfach gespeichert werden.
+- **Komplexe Beziehungen:** Stark relationale Datenmodelle lassen sich häufig einfacher mit relationalen Datenbanken abbilden.
+- **Datenintegrität:** Die Einhaltung bestimmter Integritätsregeln muss teilweise durch die Anwendung sichergestellt werden.
+- **Abweichende Abfragesprache:** SQL-Kenntnisse lassen sich nicht unmittelbar auf die MongoDB-Abfragesprache übertragen.
+
+Für den betrachteten Anwendungsfall überwiegen die Vorteile. Die flexible Dokumentenstruktur eignet sich besonders gut für die Speicherung unterschiedlicher Sensortypen und ihrer Messwerte.
+
+Für das Data Warehouse selbst bleibt hingegen eine relationale Datenbank sinnvoll, da dort strukturierte Daten, Beziehungen und analytische Auswertungen im Vordergrund stehen.
+
+## 3. Implementierung der NoSQL-Datenbank
+
+### 3.1 Technische Umsetzung
+
+Im bestehenden Projekt wurde MongoDB als Datenbank für das AirSense-Quellsystem implementiert.
+
+Die Datenbank trägt den Namen `airsense` und besteht aus drei fachlichen Collections sowie einer zusätzlichen Collection für technische Metadaten.
+
+| Collection | Beschreibung |
+|---|---|
+| `stations` | Enthält Informationen zu den Sensorstationen einschließlich der eingebetteten Sensoren. |
+| `messungen` | Speichert die von den Sensoren erfassten Messwerte. |
+| `sensorwartungen` | Enthält Informationen zu Wartungsmaßnahmen der Sensoren. |
+| `metadata` | Speichert technische Informationen zum Initialimport. |
+
+Die folgende Darstellung zeigt den grundsätzlichen Aufbau:
+
+```text
+MongoDB
+│
+└── airsense
+    │
+    ├── stations
+    │   └── Stationsinformationen
+    │       └── sensoren[]
+    │
+    ├── messungen
+    │   └── Einzelne Messwerte
+    │
+    ├── sensorwartungen
+    │   └── Wartungsinformationen
+    │
+    └── metadata
+        └── Importstatus
+```
+
+Eine Besonderheit der Implementierung ist die Kombination aus eingebetteten Dokumenten und separat gespeicherten Dokumenten.
+
+Die Sensoren werden direkt innerhalb der jeweiligen Stationsdokumente gespeichert. Die Messwerte befinden sich hingegen in einer eigenen Collection und werden über die `sensor_id` dem jeweiligen Sensor zugeordnet.
+
+### 3.2 Datenmodellierung: Embedded Documents und Referenzen
+
+MongoDB bietet verschiedene Möglichkeiten, Beziehungen zwischen Daten abzubilden. In der vorliegenden Implementierung werden zwei dieser Möglichkeiten kombiniert.
+
+**Einbettung von Dokumenten (Embedded Documents)**
+
+Die Sensoren einer Station werden direkt innerhalb des Stationsdokuments als Array gespeichert.
+
+Ein vereinfachtes Beispiel:
+
+```json
+{
+    "_id": 1,
+    "name": "Measurement Station Cotta 1",
+    "stadtteil": "Cotta",
+    "latitude": 51.061084,
+    "longitude": 13.672263,
+    "stations_typ": "Industrial",
+    "status": "active",
+    "sensoren": [
+        {
+            "sensor_id": 1,
+            "sensortyp": "Noise",
+            "hersteller": "Vaisala",
+            "modell": "VAI-189",
+            "einheit": "dB",
+            "status": "active"
+        },
+        {
+            "sensor_id": 2,
+            "sensortyp": "NO2",
+            "hersteller": "Vaisala",
+            "modell": "VAI-685",
+            "einheit": "µg/m³",
+            "status": "maintenance"
+        }
+    ]
+}
+```
+
+Der Vorteil dieser Modellierung besteht darin, dass Stationsinformationen und die zugehörigen Sensoren gemeinsam abgerufen werden können. Ein zusätzlicher Join ist dafür nicht notwendig.
+
+**Referenzierung über IDs**
+
+Die eigentlichen Messwerte werden unabhängig von den Stationsdokumenten in der Collection `messungen` gespeichert.
+
+Eine beispielhafte Messung:
+
+```json
+{
+    "_id": 1001,
+    "sensor_id": 1,
+    "messzeitpunkt": "2026-10-20T10:30:00Z",
+    "messwert": 18.7
+}
+```
+
+Die Zuordnung erfolgt über die `sensor_id`, welche auf den entsprechenden Sensor innerhalb eines Stationsdokuments verweist.
+
+Diese Trennung ist sinnvoll, da Sensoren vergleichsweise wenige Stammdaten besitzen, während kontinuierlich neue Messwerte entstehen. Würden sämtliche Messwerte direkt in das Stationsdokument eingebettet, würde dieses mit der Zeit immer größer werden.
+
+Durch die separate Speicherung können Messwerte unabhängig von den Stationsinformationen abgefragt und verarbeitet werden.
+
+**Bewertung der Modellierung**
+
+Die Kombination beider Ansätze ermöglicht eine flexible Datenstruktur:
+
+- Stationsinformationen und Sensorstammdaten werden gemeinsam gespeichert.
+- Messwerte werden unabhängig davon verwaltet.
+- Die Zuordnung zwischen Messungen und Sensoren erfolgt über eine fachliche ID.
+
+Damit nutzt die Implementierung die Möglichkeiten der dokumentenorientierten Datenmodellierung gezielt aus.
+
+### 3.3 Import der Ausgangsdaten
+
+Die initialen Daten werden aus einer vorbereiteten JSON-Datei in MongoDB importiert.
+
+Hierfür wurde ein Python-Skript mit der Bibliothek PyMongo implementiert.
+
+Der Importprozess umfasst mehrere Schritte:
+
+1. Laden der JSON-Datei.
+2. Validierung der erwarteten Collections.
+3. Prüfung auf vorhandene und eindeutige Dokument-IDs.
+4. Aufbau der Verbindung zu MongoDB.
+5. Import der Dokumente in die entsprechenden Collections.
+6. Erstellung von Indizes für häufig verwendete Abfragen.
+7. Speicherung des erfolgreichen Importstatus.
+
+Die Dokumente werden anhand ihrer `_id` mithilfe von `replace_one()` und `upsert=True` importiert.
+
+Dadurch werden vorhandene Dokumente aktualisiert und noch nicht existierende Dokumente neu angelegt. Wiederholte Importversuche führen somit nicht zu doppelten Dokumenten.
+
+Zusätzlich wird in der Collection `metadata` ein Importmarker gespeichert. Dieser verhindert, dass ein bereits erfolgreich abgeschlossener Initialimport erneut ausgeführt wird.
+
+Für die Collections `messungen` und `sensorwartungen` werden außerdem Indizes auf dem Attribut `sensor_id` angelegt. Diese verbessern die Effizienz entsprechender Abfragen.
+
+### 3.4 CRUD-Operationen
+
+Um die grundlegende Funktionsweise von MongoDB zu demonstrieren, werden im Folgenden die vier grundlegenden Datenbankoperationen anhand des AirSense-Datenmodells vorgestellt.
+
+CRUD steht für:
+
+- **Create:** Erstellen von Datensätzen.
+- **Read:** Auslesen von Datensätzen.
+- **Update:** Aktualisieren von Datensätzen.
+- **Delete:** Löschen von Datensätzen.
+
+Die Beispiele verwenden die MongoDB-Shell `mongosh`.
+
+#### 3.4.1 Create – Datensätze erstellen
+
+Mit `insertOne()` kann ein neues Dokument in einer Collection angelegt werden.
+
+Das folgende Beispiel erstellt eine neue Sensorstation einschließlich eines eingebetteten Sensors:
+
+```javascript
+db.stations.insertOne({
+    _id: 10,
+    name: "Measurement Station Neustadt 1",
+    stadtteil: "Neustadt",
+    latitude: 51.065,
+    longitude: 13.75,
+    stations_typ: "Urban",
+    status: "active",
+    sensoren: [
+        {
+            sensor_id: 20,
+            sensortyp: "Temperature",
+            hersteller: "Testo",
+            modell: "TES-100",
+            einheit: "°C",
+            status: "active"
+        }
+    ]
+});
+```
+
+Für das Einfügen einer neuen Messung wird die Collection `messungen` verwendet:
+
+```javascript
+db.messungen.insertOne({
+    _id: 1001,
+    sensor_id: 20,
+    messzeitpunkt: new Date(),
+    messwert: 18.7
+});
+```
+
+#### 3.4.2 Read – Datensätze auslesen
+
+Mit `find()` können Dokumente aus einer Collection abgefragt werden.
+
+Alle Sensorstationen lassen sich folgendermaßen ausgeben:
+
+```javascript
+db.stations.find();
+```
+
+Um beispielsweise alle Messungen eines bestimmten Sensors abzurufen, kann ein Filter verwendet werden:
+
+```javascript
+db.messungen.find({
+    sensor_id: 20
+});
+```
+
+Auch die Abfrage anhand bestimmter Messwerte ist möglich:
+
+```javascript
+db.messungen.find({
+    messwert: {
+        $gt: 20
+    }
+});
+```
+
+Dieses Beispiel liefert alle Messungen, deren Messwert größer als 20 ist.
+
+#### 3.4.3 Update – Datensätze aktualisieren
+
+Mit `updateOne()` kann ein bestimmtes Dokument aktualisiert werden.
+
+Das folgende Beispiel verändert den Status eines Sensors innerhalb einer Station:
+
+```javascript
+db.stations.updateOne(
+    {
+        _id: 10,
+        "sensoren.sensor_id": 20
+    },
+    {
+        $set: {
+            "sensoren.$.status": "maintenance"
+        }
+    }
+);
+```
+
+Der Positionsoperator `$` ermöglicht die Aktualisierung des passenden Elements innerhalb des Sensor-Arrays.
+
+Alternativ können auch Informationen einer Station aktualisiert werden:
+
+```javascript
+db.stations.updateOne(
+    {
+        _id: 10
+    },
+    {
+        $set: {
+            status: "maintenance"
+        }
+    }
+);
+```
+
+#### 3.4.4 Delete – Datensätze löschen
+
+Mit `deleteOne()` kann ein einzelnes Dokument gelöscht werden.
+
+Das folgende Beispiel entfernt eine bestimmte Messung:
+
+```javascript
+db.messungen.deleteOne({
+    _id: 1001
+});
+```
+
+Sollen mehrere Dokumente gelöscht werden, kann `deleteMany()` verwendet werden.
+
+```javascript
+db.messungen.deleteMany({
+    sensor_id: 20
+});
+```
+
+Damit werden sämtliche Messungen des angegebenen Sensors entfernt.
+
+Die Beispiele zeigen, dass MongoDB die grundlegenden Datenbankoperationen bereitstellt, die auch aus relationalen Datenbanken bekannt sind. Die Umsetzung erfolgt allerdings über dokumentenorientierte Abfragen anstelle von SQL.
+
+## 4. Integration der MongoDB-Daten in das Data Warehouse
+
+### 4.1 Ausgangssituation
+
+Das bestehende Data Warehouse verarbeitet Daten aus insgesamt vier unterschiedlichen Quellsystemen.
+
+Die bisherigen Quellsysteme basieren auf relationalen Datenbanken. Durch die Einführung von MongoDB wird nun auch eine dokumentenorientierte Datenbank in die bestehende Architektur integriert.
+
+Die Integration erfolgt über eine REST-Schnittstelle, welche mit FastAPI implementiert wurde.
+
+Dadurch muss das Data Warehouse nicht direkt auf die MongoDB-Datenbank zugreifen. Stattdessen werden die benötigten Informationen über HTTP-Anfragen bereitgestellt.
+
+### 4.2 Architektur der Datenübertragung
+
+Die Datenübertragung lässt sich in mehrere Schritte unterteilen:
+
+1. **Datenerzeugung:** Die simulierten Sensoren erzeugen Messwerte.
+2. **Datenspeicherung:** Die erzeugten Messwerte werden in MongoDB gespeichert.
+3. **Datenbereitstellung:** FastAPI stellt die Daten über einen REST-Endpunkt bereit.
+4. **Datenübertragung:** Das Data Warehouse ruft die Daten über die API ab.
+5. **Datenaufbereitung:** Die empfangenen Daten werden an das relationale Datenmodell angepasst.
+6. **Integration:** Die aufbereiteten Daten werden in die entsprechenden Tabellen des Data Warehouse übernommen.
+7. **Reporting:** Die Daten stehen anschließend für analytische Auswertungen zur Verfügung.
+
+Die folgende Abbildung verdeutlicht den Datenfluss:
+
+```text
+┌──────────────────────────────┐
+│       Sensorsimulation      │
+│                              │
+│  Mehrere Sensorstationen     │
+│  Unterschiedliche Sensoren   │
+│  Kontinuierliche Messwerte   │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│           MongoDB            │
+│                              │
+│  Database: airsense          │
+│                              │
+│  stations                    │
+│  messungen                   │
+│  sensorwartungen             │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│           FastAPI            │
+│                              │
+│  REST-Endpunkt: /get_data    │
+│                              │
+│  JSON-Bereitstellung         │
+│  Datenaufbereitung           │
+│  Inkrementeller Datenabruf   │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│       Data Warehouse         │
+│                              │
+│  Datenabruf                  │
+│  Transformation              │
+│  Schlüsselzuordnung          │
+│  Datenintegration            │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│       Reporting-Schicht      │
+│                              │
+│  Analytische Auswertungen    │
+│  OLAP-Funktionen             │
+│  Grafana-Dashboards          │
+└──────────────────────────────┘
+```
+
+Die API übernimmt dabei die Entkopplung zwischen dem Quellsystem und dem Data Warehouse. Das Data Warehouse muss somit nicht die interne Datenstruktur von MongoDB kennen, sondern kann die benötigten Daten über eine einheitliche Schnittstelle beziehen.
+
+### 4.3 Bereitstellung der Daten über FastAPI
+
+Für die Kommunikation zwischen MongoDB und dem Data Warehouse wurde eine REST-Schnittstelle mit FastAPI implementiert.
+
+Der zentrale Endpunkt lautet:
+
+```http
+GET /get_data
+```
+
+Über diesen Endpunkt werden drei Parameter übergeben:
+
+| Parameter | Beschreibung |
+|---|---|
+| `station_id` | Letzte bereits verarbeitete Stations-ID |
+| `sensor_id` | Letzte bereits verarbeitete Sensor-ID |
+| `messung_id` | Letzte bereits verarbeitete Messungs-ID |
+
+Die API liefert anschließend die jeweils neueren Datensätze zurück.
+
+Die Antwort besteht aus drei getrennten Bereichen:
+
+```json
+{
+    "station": [],
+    "sensor": [],
+    "messung": []
+}
+```
+
+Eine Besonderheit der Implementierung ist die Transformation der eingebetteten Sensoren.
+
+Da diese innerhalb der Stationsdokumente gespeichert sind, werden sie mithilfe einer MongoDB-Aggregation-Pipeline extrahiert.
+
+Hierfür kommen folgende Operatoren zum Einsatz:
+
+| Operator | Funktion |
+|---|---|
+| `$unwind` | Zerlegt das Sensor-Array in einzelne Dokumente. |
+| `$match` | Filtert die Sensoren anhand ihrer ID. |
+| `$sort` | Sortiert die Ergebnisse aufsteigend. |
+| `$project` | Bestimmt die auszugebenden Attribute und benennt diese um. |
+
+Dadurch werden die eingebetteten Sensoren für die API als eigenständige Datensätze ausgegeben.
+
+Die Messungen werden hingegen direkt aus der Collection `messungen` abgefragt. Auch hier erfolgt eine Filterung anhand der übergebenen ID.
+
+Die API übernimmt somit bereits einen Teil der Transformation, indem sie die dokumentenorientierte Struktur in ein für das Data Warehouse geeignetes Antwortformat überführt.
+
+### 4.4 Inkrementelle Datenübertragung
+
+Ein wichtiger Bestandteil der Implementierung ist der inkrementelle Datenabruf.
+
+Anstatt bei jedem Aufruf sämtliche Dokumente erneut zu übertragen, werden nur Datensätze mit einer größeren ID als der jeweils übergebenen ID zurückgegeben.
+
+Dies wird beispielsweise bei den Stationsdaten folgendermaßen umgesetzt:
+
+```python
+station_documents = db["stations"].find(
+    {
+        "_id": {
+            "$gt": station_id
+        }
+    }
+).sort("_id", ASCENDING)
+```
+
+Die gleiche Vorgehensweise wird für Sensoren und Messungen verwendet.
+
+Dadurch kann das Data Warehouse bei einem erneuten Abruf an der zuletzt verarbeiteten ID ansetzen.
+
+Das reduziert die zu übertragende Datenmenge und vermeidet die wiederholte Verarbeitung bereits übertragener Datensätze.
+
+Voraussetzung dafür ist, dass die IDs eine geeignete aufsteigende Reihenfolge besitzen und die Datenübernahme den jeweiligen Verarbeitungsstand korrekt speichert.
+
+### 4.5 Transformation und Integration in das Data Warehouse
+
+Die von MongoDB gelieferten Dokumente liegen zunächst in einer dokumentenorientierten Struktur vor.
+
+Das Data Warehouse verwendet hingegen ein relationales Datenmodell. Daher müssen die empfangenen Daten vor der Speicherung entsprechend aufbereitet werden.
+
+Dieser Vorgang wird als ETL-Prozess bezeichnet:
+
+- **Extract:** Abruf der Daten aus MongoDB über die FastAPI-Schnittstelle.
+- **Transform:** Anpassung der Daten an das relationale Datenmodell.
+- **Load:** Übernahme der transformierten Daten in das Data Warehouse.
+
+Bei der Transformation sind insbesondere folgende Aspekte relevant:
+
+**1. Strukturtransformation**
+
+Die JSON-Dokumente werden den entsprechenden Tabellen und Attributen des Data Warehouse zugeordnet.
+
+**2. Auflösung eingebetteter Dokumente**
+
+Die Sensoren werden bereits durch die FastAPI aus den Stationsdokumenten extrahiert und als eigenständige Datensätze bereitgestellt.
+
+Dadurch können sie im Data Warehouse unabhängig von den Stationsinformationen verarbeitet werden.
+
+**3. Datentypen**
+
+Die Datentypen müssen mit den Definitionen des Data Warehouse übereinstimmen. Beispielsweise müssen Zeitstempel korrekt interpretiert und numerische Messwerte in geeignete Datentypen überführt werden.
+
+**4. Schlüsselzuordnung**
+
+Die fachlichen IDs aus MongoDB müssen den entsprechenden Datensätzen im Data Warehouse zugeordnet werden.
+
+Beispielsweise wird eine Messung über ihre `sensor_id` dem zugehörigen Sensor zugeordnet.
+
+Da MongoDB keine klassischen Foreign-Key-Beziehungen verwendet, müssen diese Beziehungen bei der Integration in das Data Warehouse hergestellt werden.
+
+**5. Datenqualität**
+
+Vor dem Laden sollten die Daten auf Vollständigkeit und Plausibilität geprüft werden. Fehlerhafte oder unvollständige Datensätze müssen entsprechend behandelt werden.
+
+### 4.6 Beispiel einer Datenübernahme
+
+Angenommen, MongoDB liefert über die FastAPI folgende Messung:
+
+```json
+{
+    "id": 1001,
+    "id_sensor": 20,
+    "messzeitpunkt": "2026-10-20T10:30:00Z",
+    "messwert": 18.7
+}
+```
+
+Die API liefert dabei bereits eine vereinheitlichte Struktur, in der die ursprünglichen MongoDB-Attribute auf die für das Data Warehouse benötigten Feldnamen abgebildet wurden.
+
+Im Data Warehouse kann dieser Datensatz anschließend einer entsprechenden Faktentabelle zugeordnet werden.
+
+Vereinfacht dargestellt:
+
+| Attribut | Wert |
+|---|---|
+| id | 1001 |
+| id_sensor | 20 |
+| messzeitpunkt | 2026-10-20 10:30:00 |
+| messwert | 18.7 |
+
+Die fachliche Zuordnung erfolgt über die entsprechenden Dimensionstabellen.
+
+Der Datenfluss sieht somit folgendermaßen aus:
+
+```text
+MongoDB
+   │
+   ▼
+FastAPI
+   │
+   ▼
+JSON-Dokumente
+   │
+   ▼
+ETL-Prozess
+   │
+   ├── Strukturtransformation
+   ├── Datentypanpassung
+   ├── Schlüsselzuordnung
+   └── Datenvalidierung
+   │
+   ▼
+Data Warehouse
+   │
+   ├── Faktentabellen
+   └── Dimensionstabellen
+```
+
+Dadurch können die Sensordaten unabhängig von ihrer ursprünglichen Speicherung in MongoDB gemeinsam mit den Daten der anderen Quellsysteme im Data Warehouse analysiert werden.
+
+### 4.7 Vorteile der gewählten Integrationsarchitektur
+
+Die Verwendung einer FastAPI-Schnittstelle bietet verschiedene Vorteile:
+
+- **Entkopplung:** Das Data Warehouse ist nicht direkt von der verwendeten Datenbanktechnologie abhängig.
+- **Einheitliche Schnittstelle:** Unterschiedliche Quellsysteme können über HTTP angesprochen werden.
+- **Flexibilität:** Die interne Datenstruktur von MongoDB kann verändert werden, solange die API weiterhin das erwartete Datenformat liefert.
+- **Effiziente Übertragung:** Durch den inkrementellen Abruf müssen bereits verarbeitete Datensätze nicht erneut übertragen werden.
+- **Erweiterbarkeit:** Weitere Quellsysteme können nach demselben Prinzip angebunden werden.
+
+Insbesondere die Entkopplung ist für das bestehende Projekt von Bedeutung. Dadurch können relationale und dokumentenorientierte Datenbanken innerhalb derselben Data-Warehouse-Architektur verwendet werden, ohne die grundlegende Reporting- und Analyseschicht verändern zu müssen.
+
+## 5. Fazit
+
+Die Implementierung von MongoDB als zusätzliches Quellsystem zeigt, dass NoSQL-Datenbanken eine sinnvolle Ergänzung zu relationalen Datenbanksystemen darstellen können.
+
+Insbesondere bei der Speicherung von Sensordaten bietet MongoDB Vorteile durch ihre flexible Dokumentenstruktur. Unterschiedliche Sensortypen und deren individuelle Eigenschaften lassen sich innerhalb derselben Datenbank abbilden.
+
+Die Implementierung nutzt dabei sowohl eingebettete Dokumente als auch separate Collections. Während die Sensoren direkt innerhalb der Stationsdokumente gespeichert werden, befinden sich die kontinuierlich entstehenden Messwerte in einer eigenen Collection. Dadurch wird eine sinnvolle Trennung zwischen Stammdaten und Messdaten erreicht.
+
+Gleichzeitig wurde deutlich, dass NoSQL-Datenbanken nicht grundsätzlich einen Ersatz für relationale Datenbanken darstellen. Insbesondere bei stark strukturierten Daten, komplexen Beziehungen und umfangreichen analytischen Abfragen bieten relationale Datenbanken weiterhin wichtige Vorteile.
+
+Die Integration über FastAPI ermöglicht es, beide Datenbanktechnologien innerhalb einer gemeinsamen Architektur zu verwenden. Die Daten werden aus MongoDB abgerufen, über die API bereitgestellt und anschließend im Data Warehouse aufbereitet und gespeichert.
+
+Besonders die Transformation der eingebetteten Sensoren und der inkrementelle Datenabruf zeigen, dass auch dokumentenorientierte Datenbanken problemlos in bestehende ETL-Prozesse integriert werden können.
+
+**Zusammenfassend zeigt die Implementierung, dass sich relationale und dokumentenorientierte Datenbanken sinnvoll kombinieren lassen.** Während MongoDB für die flexible Speicherung heterogener Sensordaten eingesetzt wird, übernimmt das relationale Data Warehouse die strukturierte Zusammenführung und analytische Auswertung der Daten.
+
+Die gewählte Architektur verbindet somit die Vorteile beider Datenbanktechnologien und ermöglicht eine flexible Erweiterung der bestehenden Data-Warehouse-Lösung.
