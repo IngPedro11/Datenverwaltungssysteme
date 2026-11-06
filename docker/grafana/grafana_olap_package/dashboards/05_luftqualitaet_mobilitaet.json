@@ -1,0 +1,440 @@
+{
+  "dashboard": {
+    "uid": "sc-luftqualitaet-mobilitaet",
+    "title": "05 – Luftqualität und Mobilität",
+    "description": "Zusammenhang zwischen gemessener Luftqualität und Mobilitätsaufkommen.",
+    "tags": [
+      "Smart City",
+      "OLAP",
+      "PostgreSQL"
+    ],
+    "timezone": "browser",
+    "schemaVersion": 39,
+    "version": 0,
+    "refresh": "5m",
+    "editable": true,
+    "graphTooltip": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "1. Kennzahlen: Fahrrad, ÖPNV und Sensor-Messwert",
+        "description": "Kennzahlen: Fahrrad, ÖPNV und Sensor-Messwert",
+        "type": "stat",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    COALESCE(SUM(f.linie_einsteiger), 0) AS oepnv_einsteiger,\n    COALESCE(SUM(f.linie_aussteiger), 0) AS oepnv_aussteiger,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant,\n                              s.sensor_messzeitpunkt))\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 2,
+        "title": "2. Mobilitätsaufkommen im Zeitverlauf",
+        "description": "Mobilitätsaufkommen im Zeitverlauf",
+        "type": "timeseries",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 5
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT\n    $__timeGroupAlias(d.zeitpunkt, '1d'),\n\n    COUNT(DISTINCT d.fahrt_key) AS fahrradfahrten,\n\n    SUM(d.linie_einsteiger) AS oepnv_einsteiger,\n\n    SUM(d.linie_aussteiger) AS oepnv_aussteiger\n\nFROM (\n    SELECT\n        COALESCE(\n            f.fahrradstation_startzeit,\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant,\n            s.sensor_messzeitpunkt\n        ) AS zeitpunkt,\n\n        f.fahrt_key,\n        f.linie_einsteiger,\n        f.linie_aussteiger,\n        f.sensor_key,\n        f.linie_key\n\n    FROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\n\n    LEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n        ON s.sensor_key = f.sensor_key\n) d\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = d.sensor_key\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = d.linie_key\n\nWHERE $__timeFilter(d.zeitpunkt)\n\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n\nGROUP BY 1\nORDER BY 1",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 3,
+        "title": "3. Mobilitätsaufkommen nach Sensor-Stadtteil",
+        "description": "Mobilitätsaufkommen nach Sensor-Stadtteil",
+        "type": "barchart",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    s.sensor_stadtteil AS stadtteil,\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    SUM(f.linie_einsteiger) AS oepnv_einsteiger,\n    SUM(f.linie_aussteiger) AS oepnv_aussteiger,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 1",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 4,
+        "title": "4. Streudiagramm: Sensor-Messwert und Mobilitätskennzahlen",
+        "description": "Streudiagramm: Sensor-Messwert und Mobilitätskennzahlen",
+        "type": "table",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    f.wetterstation_messwert AS messwert,\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    SUM(f.linie_einsteiger) AS oepnv_einsteiger,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE f.wetterstation_messwert IS NOT NULL\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY\n    f.wetterstation_messwert,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp\nORDER BY 1\nLIMIT 5000",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 5,
+        "title": "5. Pivot-Grundlage: Stadtteil x Mobilitätsart",
+        "description": "Pivot-Grundlage: Stadtteil x Mobilitätsart",
+        "type": "table",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    s.sensor_stadtteil AS stadtteil,\n    mobilitaet.mobilitaetsart,\n    SUM(mobilitaet.anzahl) AS anzahl\n\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\n\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\n\nCROSS JOIN LATERAL (\n    VALUES\n        ('Fahrradfahrten',\n            CASE WHEN f.fahrt_key IS NOT NULL THEN 1 ELSE 0 END::numeric),\n\n        ('ÖPNV-Einsteiger',\n            COALESCE(f.linie_einsteiger, 0)::numeric),\n\n        ('ÖPNV-Aussteiger',\n            COALESCE(f.linie_aussteiger, 0)::numeric)\n\n) AS mobilitaet(mobilitaetsart, anzahl)\n\nWHERE s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n\nGROUP BY\n    s.sensor_stadtteil,\n    mobilitaet.mobilitaetsart\n\nORDER BY\n    s.sensor_stadtteil,\n    mobilitaet.mobilitaetsart",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [
+          {
+            "id": "groupingToMatrix",
+            "options": {
+              "rowField": "stadtteil",
+              "columnField": "mobilitaetsart",
+              "valueField": "anzahl"
+            }
+          }
+        ],
+        "transparent": false
+      },
+      {
+        "id": 6,
+        "title": "6. Detailtabelle",
+        "description": "Detailtabelle",
+        "type": "table",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    f.core_id,\n    d.datum,\n    s.sensor_name,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    f.wetterstation_messwert,\n    f.fahrradstation_startzeit,\n    st.fahrt_station_startstation_stadtteil,\n    l.linie_verkehrsmittel,\n    l.linie_haltestelle_name,\n    f.linie_einsteiger,\n    f.linie_aussteiger\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_datum d\n    ON d.datum_key = f.datum_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant,\n                              s.sensor_messzeitpunkt))\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nORDER BY d.datum DESC NULLS LAST\nLIMIT 500",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "stadtteil",
+          "label": "Stadtteil",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT sensor_stadtteil AS \"__text\", sensor_stadtteil AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_stadtteil IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT sensor_stadtteil AS \"__text\", sensor_stadtteil AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_stadtteil IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        },
+        {
+          "name": "sensortyp",
+          "label": "Sensortyp",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        },
+        {
+          "name": "verkehrsmittel",
+          "label": "Verkehrsmittel",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        }
+      ]
+    },
+    "time": {
+      "from": "2026-01-01T00:00:00.000Z",
+      "to": "2026-12-31T23:59:59.999Z"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h"
+      ],
+      "time_options": [
+        "6h",
+        "12h",
+        "24h",
+        "7d",
+        "30d",
+        "90d",
+        "1y"
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0,211,255,1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
+  },
+  "overwrite": true,
+  "message": "Smart City OLAP Dashboard automatisch erstellt"
+}
