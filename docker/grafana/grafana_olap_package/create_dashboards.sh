@@ -6,10 +6,10 @@ set -Eeuo pipefail
 # Aufruf: chmod +x create_dashboards.sh && ./create_dashboards.sh
 
 GRAFANA_URL="${GRAFANA_URL:-http://localhost:3000}"
-GRAFANA_TOKEN="glsa_ieAyP0amlREgguPWwOMuHD93dTzj9ahv_f0bc1bca"
+GRAFANA_TOKEN="glsa_bBIQG9JrGzq1o5qZ1xEK6gUHtb5gW7Ni_25f9e05f"
 GRAFANA_USER="${GRAFANA_USER:-admin}"
 GRAFANA_PASSWORD="${GRAFANA_PASSWORD:-admin}"
-DATASOURCE_UID="${DATASOURCE_UID:-fg1oka4v27dvkd}"
+DATASOURCE_UID="${DATASOURCE_UID:-bg3hqb7c3d8n4e}"
 SQL_DIR="${SQL_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/sql}"
 OUT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dashboards"
 mkdir -p "$OUT_DIR"

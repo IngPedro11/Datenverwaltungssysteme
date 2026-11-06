@@ -22,7 +22,7 @@
         "type": "stat",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 5,
@@ -37,7 +37,7 @@
             "rawSql": "SELECT\n    COUNT(DISTINCT f.veranstaltung_key) AS anzahl_veranstaltungen,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -68,7 +68,7 @@
         "type": "timeseries",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -83,7 +83,7 @@
             "rawSql": "SELECT\n    $__timeGroupAlias(f.fahrradstation_startzeit, '1h'),\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE f.fahrradstation_startzeit IS NOT NULL\n  AND $__timeFilter(f.fahrradstation_startzeit)\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -114,7 +114,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -129,7 +129,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nJOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1\nORDER BY 2 DESC",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -160,7 +160,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -175,7 +175,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_veranstaltungsort_name AS veranstaltungsort,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nJOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1\nORDER BY 2 DESC",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -206,7 +206,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -221,7 +221,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_name,\n    v.veranstaltung_veranstaltungsort_name,\n    st.fahrt_station_startstation_stadtteil AS stadtteil,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten,\n    ROUND((\n        6371 * ACOS(LEAST(1.0, GREATEST(-1.0,\n            COS(RADIANS(v.veranstaltung_latitude::double precision))\n            * COS(RADIANS(st.fahrt_station_startstation_latitude::double precision))\n            * COS(RADIANS(\n                st.fahrt_station_startstation_longitude::double precision\n                - v.veranstaltung_longitude::double precision\n            ))\n            + SIN(RADIANS(v.veranstaltung_latitude::double precision))\n            * SIN(RADIANS(st.fahrt_station_startstation_latitude::double precision))\n        )))\n    )::numeric, 2) AS entfernung_km\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nJOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE v.veranstaltung_latitude IS NOT NULL\n  AND v.veranstaltung_longitude IS NOT NULL\n  AND st.fahrt_station_startstation_latitude IS NOT NULL\n  AND st.fahrt_station_startstation_longitude IS NOT NULL\n  AND $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\nGROUP BY\n    v.veranstaltung_name,\n    v.veranstaltung_veranstaltungsort_name,\n    st.fahrt_station_startstation_stadtteil,\n    v.veranstaltung_latitude,\n    v.veranstaltung_longitude,\n    st.fahrt_station_startstation_latitude,\n    st.fahrt_station_startstation_longitude\nORDER BY entfernung_km",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -252,7 +252,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -267,7 +267,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    st.fahrt_station_startstation_stadtteil AS stadtteil,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nJOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1, 2\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -307,7 +307,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -322,7 +322,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_name,\n    v.veranstaltung_veranstaltungstyp,\n    v.veranstaltung_veranstaltungsort_name,\n    v.veranstaltung_stadtteil,\n    f.fahrradstation_startzeit,\n    f.fahrradstation_endzeit,\n    st.fahrt_station_startstation_stadtteil,\n    st.fahrt_station_endstation_stadtteil,\n    f.fahrradstation_startstation_name,\n    f.fahrradstation_endstation_name\nFROM reporting.veranstaltungen_und_fahrradnutzung f\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.veranstaltung_beginn_tatsaechlich,\n                              f.veranstaltung_beginn_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nORDER BY f.fahrradstation_startzeit DESC NULLS LAST\nLIMIT 500",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -355,7 +355,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_fahrradnutzung_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_fahrradnutzung_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
@@ -385,7 +385,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_fahrradnutzung_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_fahrradnutzung_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",

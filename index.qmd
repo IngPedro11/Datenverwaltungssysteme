@@ -22,20 +22,27 @@ Hier kann ich Folgendes speichern:
 ## ⚠️ Zuerst erledigen: Vorbereitung ⚠️
 
 ::: {.callout-important}
+
+
 ## Bitte zuerst lesen
 
 Bevor du mit den Tutorials beginnst, richte zuerst die Umgebung mit Docker ein:
-## [Getting Started](tutorials\getting-started.qmd)
+[Getting Started](tutorials\getting-started.qmd)
+:::
+
+
+
+
 
 
 ## 📚 Tutorials
 
 ### [NoSQL Tutorial](tutorials/tutorial-4.qmd)
 
-### [Tutorial 1: Einführung in die Datenbankmodellierung](tutorials/tutorial-1.qmd)
+### [Data Warehouse Tutorial](tutorials/tutorial-1.qmd)
 
 
-### [Tutorial 2: Grundlegende Konzepte der Datenbankmodellierung](tutorials/tutorial-2.qmd)
+### [Reporting Tutorial](tutorials/tutorial-2.qmd)
 
 ### [Machine Learning Tutorial](tutorials/tutorial-3.qmd)
 

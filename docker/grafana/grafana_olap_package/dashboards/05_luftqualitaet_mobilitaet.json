@@ -22,7 +22,7 @@
         "type": "stat",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 5,
@@ -37,7 +37,7 @@
             "rawSql": "SELECT\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    COALESCE(SUM(f.linie_einsteiger), 0) AS oepnv_einsteiger,\n    COALESCE(SUM(f.linie_aussteiger), 0) AS oepnv_aussteiger,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant,\n                              s.sensor_messzeitpunkt))\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -68,7 +68,7 @@
         "type": "timeseries",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -83,7 +83,7 @@
             "rawSql": "SELECT\n    $__timeGroupAlias(d.zeitpunkt, '1d'),\n\n    COUNT(DISTINCT d.fahrt_key) AS fahrradfahrten,\n\n    SUM(d.linie_einsteiger) AS oepnv_einsteiger,\n\n    SUM(d.linie_aussteiger) AS oepnv_aussteiger\n\nFROM (\n    SELECT\n        COALESCE(\n            f.fahrradstation_startzeit,\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant,\n            s.sensor_messzeitpunkt\n        ) AS zeitpunkt,\n\n        f.fahrt_key,\n        f.linie_einsteiger,\n        f.linie_aussteiger,\n        f.sensor_key,\n        f.linie_key\n\n    FROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\n\n    LEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n        ON s.sensor_key = f.sensor_key\n) d\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = d.sensor_key\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = d.linie_key\n\nWHERE $__timeFilter(d.zeitpunkt)\n\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -114,7 +114,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -129,7 +129,7 @@
             "rawSql": "SELECT\n    s.sensor_stadtteil AS stadtteil,\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    SUM(f.linie_einsteiger) AS oepnv_einsteiger,\n    SUM(f.linie_aussteiger) AS oepnv_aussteiger,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -160,7 +160,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -175,7 +175,7 @@
             "rawSql": "SELECT\n    f.wetterstation_messwert AS messwert,\n    COUNT(DISTINCT f.fahrt_key) AS fahrradfahrten,\n    SUM(f.linie_einsteiger) AS oepnv_einsteiger,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nWHERE f.wetterstation_messwert IS NOT NULL\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY\n    f.wetterstation_messwert,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp\nORDER BY 1\nLIMIT 5000",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -206,7 +206,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -221,7 +221,7 @@
             "rawSql": "SELECT\n    s.sensor_stadtteil AS stadtteil,\n    mobilitaet.mobilitaetsart,\n    SUM(mobilitaet.anzahl) AS anzahl\n\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\n\nJOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\n\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\n\nCROSS JOIN LATERAL (\n    VALUES\n        ('Fahrradfahrten',\n            CASE WHEN f.fahrt_key IS NOT NULL THEN 1 ELSE 0 END::numeric),\n\n        ('ÖPNV-Einsteiger',\n            COALESCE(f.linie_einsteiger, 0)::numeric),\n\n        ('ÖPNV-Aussteiger',\n            COALESCE(f.linie_aussteiger, 0)::numeric)\n\n) AS mobilitaet(mobilitaetsart, anzahl)\n\nWHERE s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n\nGROUP BY\n    s.sensor_stadtteil,\n    mobilitaet.mobilitaetsart\n\nORDER BY\n    s.sensor_stadtteil,\n    mobilitaet.mobilitaetsart",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -261,7 +261,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -276,7 +276,7 @@
             "rawSql": "SELECT\n    f.core_id,\n    d.datum,\n    s.sensor_name,\n    s.sensor_stadtteil,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    f.wetterstation_messwert,\n    f.fahrradstation_startzeit,\n    st.fahrt_station_startstation_stadtteil,\n    l.linie_verkehrsmittel,\n    l.linie_haltestelle_name,\n    f.linie_einsteiger,\n    f.linie_aussteiger\nFROM reporting.luftqualitaet_und_mobilitaetsaufkommen f\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_linie l\n    ON l.linie_key = f.linie_key\nLEFT JOIN reporting.luftqualitaet_und_mobilitaetsaufkommen_datum d\n    ON d.datum_key = f.datum_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit,\n                              f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant,\n                              s.sensor_messzeitpunkt))\n  AND s.sensor_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nORDER BY d.datum DESC NULLS LAST\nLIMIT 500",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -309,7 +309,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT sensor_stadtteil AS \"__text\", sensor_stadtteil AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_stadtteil IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT sensor_stadtteil AS \"__text\", sensor_stadtteil AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_stadtteil IS NOT NULL ORDER BY 1",
@@ -339,7 +339,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
@@ -369,7 +369,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.luftqualitaet_und_mobilitaetsaufkommen_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",

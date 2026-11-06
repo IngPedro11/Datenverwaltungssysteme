@@ -1,10 +1,10 @@
 # Überblick
-
 | Schritt | Befehl |
 |---|---|
-| 1. In den Ordner wechseln | `cd docker` |
-| 2. Image bauen | `docker build -t .` |
-| 3. Container starten | `docker compose up` |
+| 1. Landen Sie diese Datei herunter und entpacken [Docker files](https://downgit.github.io/#/home?url=https://github.com/IngPedro11/Datenverwaltungssysteme/tree/main/docker) |  |
+| 2. In den Ordner wechseln | `cd docker` |
+| 3. Image bauen | `docker build -t .` |
+| 4. Container starten | `docker compose up` |
 
 # Voraussetzungen
 
