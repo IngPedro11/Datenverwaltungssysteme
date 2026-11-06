@@ -62,6 +62,11 @@ services:
 
   dwh:
     build: ./dwh/sources
+    depends_on:
+      - bikeshare
+      - city_move
+      - airsense_nosql
+      - cityevents
     container_name: dwh_
     ports:
       - "${DWH_PORT}:5432"

@@ -70,8 +70,6 @@ Die Dashboards dienen somit als Grundlage für eine datenbasierte Betrachtung st
 
 ## 3.1 Data Warehouse
 
-Als Datenbasis wird ein relationales Data Warehouse verwendet, dessen Daten in einer PostgreSQL-Datenbank gespeichert sind.
-
 Das Data Warehouse stellt Daten aus unterschiedlichen Themenbereichen für analytische Abfragen bereit. Die Daten werden dabei nicht ausschließlich in ihrer ursprünglichen Form ausgewertet, sondern über eine Reporting-Schicht für die spätere Analyse aufbereitet.
 
 Diese Reporting-Schicht enthält Fakten- und Dimensionstabellen.
@@ -704,16 +702,6 @@ Auch die Qualität der Auswertungen hängt stark von der zugrunde liegenden Date
 Bei der Interpretation der Ergebnisse muss außerdem berücksichtigt werden, dass ein statistischer Zusammenhang nicht automatisch einen ursächlichen Zusammenhang bedeutet.
 
 Beispielsweise lässt sich aus einer gleichzeitigen Veränderung von Luftqualität und Mobilitätsaufkommen nicht unmittelbar ableiten, dass die Mobilität die Veränderung der Luftqualität verursacht hat.
-
-## 8.3 Bedeutung der Reporting-Schicht
-
-Die Reporting-Schicht ist eine wichtige Grundlage für die Umsetzung.
-
-Durch die thematische Aufteilung in Fakten- und Dimensionstabellen können die einzelnen Dashboards gezielt auf die benötigten Daten zugreifen.
-
-Die vorbereiteten Tabellen erleichtern außerdem die Erstellung der SQL-Abfragen und ermöglichen eine einheitliche Auswertung der verschiedenen Datenbereiche.
-
-Dadurch wird die Komplexität der Datenanalyse reduziert und die Wartbarkeit der Dashboards verbessert.
 
 # 9. Fazit
 

@@ -22,7 +22,7 @@
         "type": "stat",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 5,
@@ -37,7 +37,7 @@
             "rawSql": "SELECT\n    COALESCE(SUM(f.linie_einsteiger), 0) AS einsteiger,\n    COALESCE(SUM(f.linie_aussteiger), 0) AS aussteiger,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.wetter_und_oepnv f\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nLEFT JOIN reporting.wetter_und_oepnv_datum d\n    ON d.datum_key = f.datum_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant,\n                              s.sensor_messzeitpunkt))\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n  AND l.linie_haltestelle_stadtteil IN (${stadtteil:sqlstring})",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -68,7 +68,7 @@
         "type": "timeseries",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -83,7 +83,7 @@
             "rawSql": "SELECT\n    $__timeGroupAlias(d.zeitpunkt, '1h'),\n    SUM(d.linie_einsteiger) AS einsteiger,\n    SUM(d.linie_aussteiger) AS aussteiger,\n    AVG(d.wetterstation_messwert) AS wetter_messwert\n\nFROM (\n    SELECT\n        COALESCE(\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant\n        ) AS zeitpunkt,\n\n        f.linie_einsteiger,\n        f.linie_aussteiger,\n        f.wetterstation_messwert,\n        f.sensor_key,\n        f.linie_key\n\n    FROM reporting.wetter_und_oepnv f\n) d\n\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = d.sensor_key\n\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = d.linie_key\n\nWHERE $__timeFilter(d.zeitpunkt)\n\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n\n  AND l.linie_haltestelle_stadtteil IN (${stadtteil:sqlstring})\n\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -114,7 +114,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -129,7 +129,7 @@
             "rawSql": "SELECT\n    f.wetterstation_messwert AS wetter_messwert,\n    f.linie_einsteiger AS einsteiger,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit\nFROM reporting.wetter_und_oepnv f\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE f.wetterstation_messwert IS NOT NULL\n  AND f.linie_einsteiger IS NOT NULL\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nLIMIT 5000",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -160,7 +160,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -175,7 +175,7 @@
             "rawSql": "SELECT\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert,\n    SUM(f.linie_einsteiger) AS einsteiger\nFROM reporting.wetter_und_oepnv f\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n  AND l.linie_haltestelle_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1, 2, 3\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -206,7 +206,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -221,7 +221,7 @@
             "rawSql": "SELECT\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    COALESCE(s.sensor_sensortyp, 'Unbekannt') AS sensortyp,\n    SUM(f.linie_einsteiger) AS einsteiger\nFROM reporting.wetter_und_oepnv f\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1, 2\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -261,7 +261,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -276,7 +276,7 @@
             "rawSql": "SELECT\n    f.core_id,\n    COALESCE(f.linie_ankunft_tatsaechlich, f.linie_ankunft_geplant) AS ankunft,\n    COALESCE(f.linier_abfahrt_geplant, f.linie_abfahrt_tatsaechlich) AS abfahrt,\n    l.linie_liniennummer,\n    l.linie_verkehrsmittel,\n    l.linie_haltestelle_name,\n    l.linie_haltestelle_stadtteil,\n    s.sensor_name,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    f.wetterstation_messwert,\n    f.linie_einsteiger,\n    f.linie_aussteiger\nFROM reporting.wetter_und_oepnv f\nLEFT JOIN reporting.wetter_und_oepnv_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\n  AND l.linie_haltestelle_stadtteil IN (${stadtteil:sqlstring})\nORDER BY ankunft DESC NULLS LAST\nLIMIT 500",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -309,7 +309,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.wetter_und_oepnv_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.wetter_und_oepnv_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
@@ -339,7 +339,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.wetter_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.wetter_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
@@ -369,7 +369,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT linie_haltestelle_stadtteil AS \"__text\", linie_haltestelle_stadtteil AS \"__value\" FROM reporting.wetter_und_oepnv_linie WHERE linie_haltestelle_stadtteil IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT linie_haltestelle_stadtteil AS \"__text\", linie_haltestelle_stadtteil AS \"__value\" FROM reporting.wetter_und_oepnv_linie WHERE linie_haltestelle_stadtteil IS NOT NULL ORDER BY 1",
