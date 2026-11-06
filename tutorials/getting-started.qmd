@@ -3,7 +3,7 @@
 | Schritt | Befehl |
 |---|---|
 | 1. In den Ordner wechseln | `cd docker` |
-| 2. Image bauen | `docker build -t meine-app .` |
+| 2. Image bauen | `docker build -t .` |
 | 3. Container starten | `docker compose up` |
 
 # Voraussetzungen
@@ -64,7 +64,7 @@ cd ~/Pfad/zum/Projekt/docker
 Im Ordner `docker`, in dem das `Dockerfile` liegt, ausführen:
 
 ```bash
-docker build -t meine-app .
+docker build -t  .
 ```
 
 - `-t meine-app` legt den Namen des Images fest.
