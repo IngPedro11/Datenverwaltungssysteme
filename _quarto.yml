@@ -37,3 +37,4 @@ execute:
 
 filters:
   - filters/include-html.lua
+  - filters/include-sql.lua

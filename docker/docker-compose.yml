@@ -109,12 +109,10 @@ services:
       - --allow-root
     networks:
       - smart-city-network
-    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
@@ -128,7 +126,6 @@ services:
   airsense_nosql:
     build: ./airsense_nosql/sources
     container_name: airsense_nosql
-    restart: unless-stopped
     ports:
       - "${AIRSENSE_API_PORT}:8000"
     environment:

@@ -6,15 +6,11 @@ BEGIN
         src_bs_fahrt_id,
         Fahrt_id_startstation,
         Fahrt_id_endstation,
-        Fahrt_startzeit,
-        Fahrt_endzeit,
         Fahrt_status,
-        Fahrt_Station_Startstation_name,
         Fahrt_Station_Startstation_stadtteil,
         Fahrt_Station_Startstation_latitude,
         Fahrt_Station_Startstation_longitude,
         Fahrt_Station_Startstation_kapazitaet,
-        Fahrt_Station_Endstation_name,
         Fahrt_Station_Endstation_stadtteil,
         Fahrt_Station_Endstation_latitude,
         Fahrt_Station_Endstation_longitude,
@@ -24,23 +20,19 @@ BEGIN
         f.id,
         f.id_startstation,
         f.id_zielstation,
-        f.startzeit,
-        f.endzeit,
         f.status,
-        s1.name,
         s1.stadtteil,
         s1.latitude,
         s1.longitude,
         s1.kapazitaet,
-        s2.name,
         s2.stadtteil,
         s2.latitude,
         s2.longitude,
         s2.kapazitaet
     FROM staging.bs_fahrt f
-    LEFT JOIN staging.bs_station s1
+    JOIN staging.bs_station s1
         ON s1.id = f.id_startstation
-    LEFT JOIN staging.bs_station s2
+    JOIN staging.bs_station s2
         ON s2.id = f.id_zielstation
     WHERE NOT EXISTS (
         SELECT 1
@@ -65,11 +57,9 @@ BEGIN
         Sensor_status,
         Sensor_id_station,
         Sensor_sensortyp,
-        Sensor_einheit,
         Sensor_installationsdatum,
         Sensor_id_sensor,
-        Sensor_messzeitpunkt,
-        Sensor_Messwert
+        Sensor_messzeitpunkt
     )
     SELECT
         m.id,
@@ -82,11 +72,9 @@ BEGIN
         st.status,
         s.id_station,
         s.sensortyp,
-        s.einheit,
         s.installationsdatum,
         s.id,
-        m.messzeitpunkt,
-        m.messwert
+        m.messzeitpunkt
     FROM staging.as_messung m
     JOIN staging.as_sensor s
         ON s.id = m.id_sensor
@@ -118,16 +106,11 @@ BEGIN
         Veranstaltung_Veranstaltungstyp,
         Veranstaltung_id_veranstaltung,
         Veranstaltung_id_veranstaltungsort,
-        Veranstaltung_beginn_geplant,
-        Veranstaltung_ende_geplant,
-        Veranstaltung_beginn_tatsaechlich,
-        Veranstaltung_ende_tatsaechlich,
         Veranstaltung_termin_status,
+        Veranstaltung_id_termin,
         Veranstaltung_tickettyp,
         Veranstaltung_Ticket_status,
         Veranstaltung_id_ticket,
-        Veranstaltung_einlass_status,
-        Veranstaltung_einlass_zeitpunkt,
         Veranstaltung_Veranstaltungsort_name,
         Veranstaltung_stadtteil,
         Veranstaltung_latitude,
@@ -148,33 +131,28 @@ BEGIN
         vt.bezeichnung,
         t.id_veranstaltung,
         t.id_veranstaltungsort,
-        t.beginn_geplant,
-        t.ende_geplant,
-        t.beginn_tatsaechlich,
-        t.ende_tatsaechlich,
         t.status,
+        ti.id_termin,
         ti.tickettyp,
         ti.status,
         e.id_ticket,
-        e.einlass_status,
-        e.einlasszeitpunkt,
         o.name,
         o.stadtteil,
         o.latitude,
         o.longitude,
         o.kapazitaet
     FROM staging.ce_veranstaltung v
-    LEFT JOIN staging.ce_veranstaltungstyp vt
+    JOIN staging.ce_veranstaltungstyp vt
         ON vt.id = v.id_typ
-    LEFT JOIN staging.ce_veranstalter va
+    JOIN staging.ce_veranstalter va
         ON va.id = v.id_veranstalter
-    LEFT JOIN staging.ce_veranstaltungstermin t
+    JOIN staging.ce_veranstaltungstermin t
         ON t.id_veranstaltung = v.id
-    LEFT JOIN staging.ce_veranstaltungsort o
+    JOIN staging.ce_veranstaltungsort o
         ON o.id = t.id_veranstaltungsort
-    LEFT JOIN staging.ce_ticket ti
+    JOIN staging.ce_ticket ti
         ON ti.id_termin = t.id
-    LEFT JOIN staging.ce_einlass e
+    JOIN staging.ce_einlass e
         ON e.id_ticket = ti.id
     WHERE NOT EXISTS (
         SELECT 1
@@ -212,12 +190,6 @@ BEGIN
         Linie_fahrtrichtung,
         Linie_id_fahrt,
         Linie_id_haltestelle,
-        Linie_einsteiger,
-        Linie_aussteiger,
-        Linie_ankunft_geplant,
-        Linie_abfahrt_geplant,
-        Linie_ankunft_tatsaechlich,
-        Linie_abfahrt_tatsaechlich,
         Linie_Haltestelle_name,
         Linie_Haltestelle_stadtteil,
         Linie_Haltestelle_latitude,
@@ -240,12 +212,6 @@ BEGIN
         f.fahrtrichtung,
         fh.id_fahrt,
         fh.id_haltestelle,
-        fg.einsteiger,
-        fg.aussteiger,
-        fp.ankunft_geplant,
-        fp.abfahrt_geplant,
-        fh.ankunft_tatsaechlich,
-        fh.abfahrt_tatsaechlich,
         h.name,
         h.stadtteil,
         h.latitude,
@@ -255,15 +221,15 @@ BEGIN
         ON f.id = fh.id_fahrt
     JOIN staging.cm_linie l
         ON l.id = f.id_linie
-    LEFT JOIN staging.cm_fahrzeug fzg
+    JOIN staging.cm_fahrzeug fzg
         ON fzg.id = f.id_fahrzeug
-    LEFT JOIN staging.cm_fahrplan fp
+    JOIN staging.cm_fahrplan fp
         ON fp.id_fahrt = fh.id_fahrt
        AND fp.id_haltestelle = fh.id_haltestelle
-    LEFT JOIN staging.cm_fahrgastaufkommen fg
+    JOIN staging.cm_fahrgastaufkommen fg
         ON fg.id_fahrt = fh.id_fahrt
        AND fg.id_haltestelle = fh.id_haltestelle
-    LEFT JOIN staging.cm_haltestelle h
+    JOIN staging.cm_haltestelle h
         ON h.id = fh.id_haltestelle
     WHERE NOT EXISTS (
         SELECT 1
@@ -296,35 +262,10 @@ BEGIN
         bs_fahrt_id_endstation,
         bs_fahrt_startzeit,
         bs_fahrt_endzeit,
-        bs_fahrt_status,
-
-        bs_station_1_name,
-        bs_station_1_stadtteil,
-        bs_station_1_latitude,
-        bs_station_1_longitude,
-        bs_station_1_kapazitaet,
-
-        bs_station_2_name,
-        bs_station_2_stadtteil,
-        bs_station_2_latitude,
-        bs_station_2_longitude,
-        bs_station_2_kapazitaet,
-
-        as_station_name,
-        as_station_stadtteil,
-        as_station_latitude,
-        as_station_longitude,
-        as_station_stations_typ,
-        as_station_installationsdatum,
-        as_station_status,
-
-        as_sensor_id_station,
-        as_sensor_sensortyp,
+        bs_station_Startstation_name,
+        bs_station_Endstation_name,
         as_sensor_einheit,
-        as_sensor_installationsdatum,
         as_sensor_id_sensor,
-
-        as_messung_messzeitpunkt,
         as_messung_messwert
     )
     SELECT
@@ -335,35 +276,13 @@ BEGIN
         bf.id_zielstation,
         bf.startzeit,
         bf.endzeit,
-        bf.status,
 
         bs1.name,
-        bs1.stadtteil,
-        bs1.latitude,
-        bs1.longitude,
-        bs1.kapazitaet,
-
         bs2.name,
-        bs2.stadtteil,
-        bs2.latitude,
-        bs2.longitude,
-        bs2.kapazitaet,
 
-        ast.name,
-        ast.stadtteil,
-        ast.latitude,
-        ast.longitude,
-        ast.stations_typ,
-        ast.installationsdatum,
-        ast.status,
-
-        s.id_station,
-        s.sensortyp,
         s.einheit,
-        s.installationsdatum,
         s.id,
 
-        m.messzeitpunkt,
         m.messwert
 
     FROM staging.as_messung m
@@ -372,7 +291,7 @@ BEGIN
     JOIN staging.as_station ast
         ON ast.id = s.id_station
 
-    LEFT JOIN staging.bs_fahrt bf
+    JOIN staging.bs_fahrt bf
         ON m.messzeitpunkt BETWEEN
             bf.startzeit
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -380,17 +299,11 @@ BEGIN
             bf.endzeit
                 + p_zeitfenster_minuten * INTERVAL '1 minute'
 
-    LEFT JOIN staging.bs_station bs1
+    JOIN staging.bs_station bs1
         ON bs1.id = bf.id_startstation
-    LEFT JOIN staging.bs_station bs2
+    JOIN staging.bs_station bs2
         ON bs2.id = bf.id_zielstation
-
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM core.topic_wetter_und_fahrradnutzung tgt
-        WHERE tgt.src_as_messung_id = m.id
-          AND tgt.src_bs_fahrt_id IS NOT DISTINCT FROM bf.id
-    );
+;
 END;
 $$;
 
@@ -410,18 +323,8 @@ BEGIN
         src_cm_fahrplan_id,
         src_cm_fahrgastaufkommen_id,
 
-        cm_linie_liniennummer,
-        cm_linie_bezeichnung,
-        cm_linie_verkehrsmittel,
-        cm_linie_gueltig_ab,
-        cm_linie_gueltig_bis,
-
-        cm_fahrzeug_kapazitaet,
-
         cm_fahrt_id_linie,
         cm_fahrt_fahrzeug,
-        cm_fahrt_datum,
-        cm_fahrt_fahrtrichtung,
 
         cm_fahrgastaufkommen_id_fahrt,
         cm_fahrgastaufkommen_id_haltestelle,
@@ -439,25 +342,10 @@ BEGIN
         cm_fahrt_haltestelle_abfahrt_tatsaechlich,
 
         cm_haltestelle_name,
-        cm_haltestelle_stadtteil,
-        cm_haltestelle_latitude,
-        cm_haltestelle_longitude,
 
-        as_station_name,
-        as_station_stadtteil,
-        as_station_latitude,
-        as_station_longitude,
-        as_station_stations_typ,
-        as_station_installationsdatum,
-        as_station_status,
-
-        as_sensor_id_station,
-        as_sensor_sensortyp,
         as_sensor_einheit,
-        as_sensor_installationsdatum,
         as_sensor_id_sensor,
 
-        as_messung_messzeitpunkt,
         as_messung_messwert
     )
     SELECT
@@ -466,18 +354,8 @@ BEGIN
         fp.id,
         fg.id,
 
-        l.liniennummer,
-        l.bezeichnung,
-        l.verkehrsmittel,
-        l.gueltig_ab,
-        l.gueltig_bis,
-
-        fzg.kapazitaet,
-
         f.id_linie,
         f.id_fahrzeug,
-        f.datum,
-        f.fahrtrichtung,
 
         fg.id_fahrt,
         fg.id_haltestelle,
@@ -495,25 +373,10 @@ BEGIN
         fh.abfahrt_tatsaechlich,
 
         h.name,
-        h.stadtteil,
-        h.latitude,
-        h.longitude,
 
-        ast.name,
-        ast.stadtteil,
-        ast.latitude,
-        ast.longitude,
-        ast.stations_typ,
-        ast.installationsdatum,
-        ast.status,
-
-        s.id_station,
-        s.sensortyp,
         s.einheit,
-        s.installationsdatum,
         s.id,
 
-        m.messzeitpunkt,
         m.messwert
 
     FROM staging.as_messung m
@@ -522,7 +385,7 @@ BEGIN
     JOIN staging.as_station ast
         ON ast.id = s.id_station
 
-    LEFT JOIN staging.cm_fahrt_haltestelle fh
+    JOIN staging.cm_fahrt_haltestelle fh
         ON m.messzeitpunkt BETWEEN
             COALESCE(fh.ankunft_tatsaechlich, fh.abfahrt_tatsaechlich)
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -530,20 +393,20 @@ BEGIN
             COALESCE(fh.abfahrt_tatsaechlich, fh.ankunft_tatsaechlich)
                 + p_zeitfenster_minuten * INTERVAL '1 minute'
 
-    LEFT JOIN staging.cm_fahrt f
+    JOIN staging.cm_fahrt f
         ON f.id = fh.id_fahrt
-    LEFT JOIN staging.cm_linie l
+    JOIN staging.cm_linie l
         ON l.id = f.id_linie
-    LEFT JOIN staging.cm_fahrzeug fzg
+    JOIN staging.cm_fahrzeug fzg
         ON fzg.id = f.id_fahrzeug
-    LEFT JOIN staging.cm_haltestelle h
+    JOIN staging.cm_haltestelle h
         ON h.id = fh.id_haltestelle
 
-    LEFT JOIN staging.cm_fahrplan fp
+    JOIN staging.cm_fahrplan fp
         ON fp.id_fahrt = fh.id_fahrt
        AND fp.id_haltestelle = fh.id_haltestelle
 
-    LEFT JOIN staging.cm_fahrgastaufkommen fg
+    JOIN staging.cm_fahrgastaufkommen fg
         ON fg.id_fahrt = fh.id_fahrt
        AND fg.id_haltestelle = fh.id_haltestelle
 
@@ -577,13 +440,8 @@ BEGIN
         src_ce_einlass_id,
         src_bs_fahrt_id,
 
-        ce_veranstaltung_name,
-        ce_veranstaltung_beschreibung,
         ce_veranstaltung_id_typ,
         ce_veranstaltung_id_veranstalter,
-        ce_veranstalter_name,
-        ce_veranstalter_organisationstyp,
-        ce_veranstaltungstyp_bezeichnung,
 
         ce_veranstaltungstermin_id_veranstaltung,
         ce_veranstalter_id_veranstaltungsort,
@@ -591,37 +449,18 @@ BEGIN
         ce_veranstalter_ende_geplant,
         ce_veranstalter_beginn_tatsaechlich,
         ce_veranstalter_ende_tatsaechlich,
-        ce_veranstalter_status,
 
-        ce_ticket_tickettyp,
-        ce_ticket_status,
+        ce_ticket_id_termin,
         ce_einlass_id_ticket,
         ce_einlass_einlass_status,
         ce_einlass_einlass_zeitpunkt,
-
-        ce_veranstaltungsort_name,
-        ce_veranstaltungsort_stadtteil,
-        ce_veranstaltungsort_latitude,
-        ce_veranstaltungsort_longitude,
-        ce_veranstaltungsort_kapazitaet,
 
         bs_fahrt_id_startstation,
         bs_fahrt_id_endstation,
         bs_fahrt_startzeit,
         bs_fahrt_endzeit,
-        bs_fahrt_status,
-
-        bs_station_1_name,
-        bs_station_1_stadtteil,
-        bs_station_1_latitude,
-        bs_station_1_longitude,
-        bs_station_1_kapazitaet,
-
-        bs_station_2_name,
-        bs_station_2_stadtteil,
-        bs_station_2_latitude,
-        bs_station_2_longitude,
-        bs_station_2_kapazitaet
+        bs_station_Startstation_name,
+        bs_station_Endstation_name
     )
     SELECT
         t.id,
@@ -629,13 +468,8 @@ BEGIN
         e.id,
         bf.id,
 
-        v.name,
-        v.beschreibung,
         v.id_typ,
         v.id_veranstalter,
-        va.name,
-        va.organisationstyp,
-        vt.bezeichnung,
 
         t.id_veranstaltung,
         t.id_veranstaltungsort,
@@ -643,54 +477,35 @@ BEGIN
         t.ende_geplant,
         t.beginn_tatsaechlich,
         t.ende_tatsaechlich,
-        t.status,
 
-        tk.tickettyp,
-        tk.status,
+        tk.id_termin,
         e.id_ticket,
         e.einlass_status,
         e.einlasszeitpunkt,
-
-        ort.name,
-        ort.stadtteil,
-        ort.latitude,
-        ort.longitude,
-        ort.kapazitaet,
 
         bf.id_startstation,
         bf.id_zielstation,
         bf.startzeit,
         bf.endzeit,
-        bf.status,
-
         bs1.name,
-        bs1.stadtteil,
-        bs1.latitude,
-        bs1.longitude,
-        bs1.kapazitaet,
-
-        bs2.name,
-        bs2.stadtteil,
-        bs2.latitude,
-        bs2.longitude,
-        bs2.kapazitaet
+        bs2.name
 
     FROM staging.ce_veranstaltungstermin t
     JOIN staging.ce_veranstaltung v
         ON v.id = t.id_veranstaltung
 
-    LEFT JOIN staging.ce_veranstaltungstyp vt
+    JOIN staging.ce_veranstaltungstyp vt
         ON vt.id = v.id_typ
-    LEFT JOIN staging.ce_veranstalter va
+    JOIN staging.ce_veranstalter va
         ON va.id = v.id_veranstalter
-    LEFT JOIN staging.ce_veranstaltungsort ort
+    JOIN staging.ce_veranstaltungsort ort
         ON ort.id = t.id_veranstaltungsort
-    LEFT JOIN staging.ce_ticket tk
+    JOIN staging.ce_ticket tk
         ON tk.id_termin = t.id
-    LEFT JOIN staging.ce_einlass e
+    JOIN staging.ce_einlass e
         ON e.id_ticket = tk.id
 
-    LEFT JOIN staging.bs_fahrt bf
+    JOIN staging.bs_fahrt bf
         ON bf.startzeit <=
             COALESCE(t.ende_tatsaechlich, t.ende_geplant)
                 + p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -698,9 +513,9 @@ BEGIN
             COALESCE(t.beginn_tatsaechlich, t.beginn_geplant)
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
 
-    LEFT JOIN staging.bs_station bs1
+    JOIN staging.bs_station bs1
         ON bs1.id = bf.id_startstation
-    LEFT JOIN staging.bs_station bs2
+    JOIN staging.bs_station bs2
         ON bs2.id = bf.id_zielstation
 
     WHERE NOT EXISTS (
@@ -732,46 +547,23 @@ BEGIN
         src_cm_fahrplan_id,
         src_cm_fahrgastaufkommen_id,
 
-        ce_veranstaltung_name,
-        ce_veranstaltung_beschreibung,
         ce_veranstaltung_id_typ,
         ce_veranstaltung_id_veranstalter,
-        ce_veranstalter_name,
-        ce_veranstalter_organisationstyp,
-        ce_veranstaltungstyp_bezeichnung,
-
         ce_veranstaltungstermin_id_veranstaltung,
+
         ce_veranstalter_id_veranstaltungsort,
         ce_veranstalter_beginn_geplant,
         ce_veranstalter_ende_geplant,
         ce_veranstalter_beginn_tatsaechlich,
         ce_veranstalter_ende_tatsaechlich,
-        ce_veranstalter_status,
 
-        ce_ticket_tickettyp,
-        ce_ticket_status,
+        ce_ticket_id_termin,
         ce_einlass_id_ticket,
         ce_einlass_einlass_status,
         ce_einlass_einlass_zeitpunkt,
 
-        ce_veranstaltungsort_name,
-        ce_veranstaltungsort_stadtteil,
-        ce_veranstaltungsort_latitude,
-        ce_veranstaltungsort_longitude,
-        ce_veranstaltungsort_kapazitaet,
-
-        cm_linie_liniennummer,
-        cm_linie_bezeichnung,
-        cm_linie_verkehrsmittel,
-        cm_linie_gueltig_ab,
-        cm_linie_gueltig_bis,
-
-        cm_fahrzeug_kapazitaet,
-
         cm_fahrt_id_linie,
         cm_fahrt_fahrzeug,
-        cm_fahrt_datum,
-        cm_fahrt_fahrtrichtung,
 
         cm_fahrgastaufkommen_id_fahrt,
         cm_fahrgastaufkommen_id_haltestelle,
@@ -788,10 +580,7 @@ BEGIN
         cm_fahrt_haltestelle_ankunft_tatsaechlich,
         cm_fahrt_haltestelle_abfahrt_tatsaechlich,
 
-        cm_haltestelle_name,
-        cm_haltestelle_stadtteil,
-        cm_haltestelle_latitude,
-        cm_haltestelle_longitude
+        cm_haltestelle_name
     )
     SELECT
         t.id,
@@ -801,46 +590,23 @@ BEGIN
         fp.id,
         fg.id,
 
-        v.name,
-        v.beschreibung,
         v.id_typ,
         v.id_veranstalter,
-        va.name,
-        va.organisationstyp,
-        vt.bezeichnung,
-
         t.id_veranstaltung,
+
         t.id_veranstaltungsort,
         t.beginn_geplant,
         t.ende_geplant,
         t.beginn_tatsaechlich,
         t.ende_tatsaechlich,
-        t.status,
 
-        tk.tickettyp,
-        tk.status,
+        tk.id_termin,
         e.id_ticket,
         e.einlass_status,
         e.einlasszeitpunkt,
 
-        ort.name,
-        ort.stadtteil,
-        ort.latitude,
-        ort.longitude,
-        ort.kapazitaet,
-
-        l.liniennummer,
-        l.bezeichnung,
-        l.verkehrsmittel,
-        l.gueltig_ab,
-        l.gueltig_bis,
-
-        fzg.kapazitaet,
-
         f.id_linie,
         f.id_fahrzeug,
-        f.datum,
-        f.fahrtrichtung,
 
         fg.id_fahrt,
         fg.id_haltestelle,
@@ -857,27 +623,24 @@ BEGIN
         fh.ankunft_tatsaechlich,
         fh.abfahrt_tatsaechlich,
 
-        h.name,
-        h.stadtteil,
-        h.latitude,
-        h.longitude
+        h.name
 
     FROM staging.ce_veranstaltungstermin t
     JOIN staging.ce_veranstaltung v
         ON v.id = t.id_veranstaltung
 
-    LEFT JOIN staging.ce_veranstaltungstyp vt
+    JOIN staging.ce_veranstaltungstyp vt
         ON vt.id = v.id_typ
-    LEFT JOIN staging.ce_veranstalter va
+    JOIN staging.ce_veranstalter va
         ON va.id = v.id_veranstalter
-    LEFT JOIN staging.ce_veranstaltungsort ort
+    JOIN staging.ce_veranstaltungsort ort
         ON ort.id = t.id_veranstaltungsort
-    LEFT JOIN staging.ce_ticket tk
+    JOIN staging.ce_ticket tk
         ON tk.id_termin = t.id
-    LEFT JOIN staging.ce_einlass e
+    JOIN staging.ce_einlass e
         ON e.id_ticket = tk.id
 
-    LEFT JOIN staging.cm_fahrt_haltestelle fh
+    JOIN staging.cm_fahrt_haltestelle fh
         ON COALESCE(fh.ankunft_tatsaechlich, fh.abfahrt_tatsaechlich)
             <= COALESCE(t.ende_tatsaechlich, t.ende_geplant)
                 + p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -885,20 +648,20 @@ BEGIN
             >= COALESCE(t.beginn_tatsaechlich, t.beginn_geplant)
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
 
-    LEFT JOIN staging.cm_fahrt f
+    JOIN staging.cm_fahrt f
         ON f.id = fh.id_fahrt
-    LEFT JOIN staging.cm_linie l
+    JOIN staging.cm_linie l
         ON l.id = f.id_linie
-    LEFT JOIN staging.cm_fahrzeug fzg
+    JOIN staging.cm_fahrzeug fzg
         ON fzg.id = f.id_fahrzeug
-    LEFT JOIN staging.cm_haltestelle h
+    JOIN staging.cm_haltestelle h
         ON h.id = fh.id_haltestelle
 
-    LEFT JOIN staging.cm_fahrplan fp
+    JOIN staging.cm_fahrplan fp
         ON fp.id_fahrt = fh.id_fahrt
        AND fp.id_haltestelle = fh.id_haltestelle
 
-    LEFT JOIN staging.cm_fahrgastaufkommen fg
+    JOIN staging.cm_fahrgastaufkommen fg
         ON fg.id_fahrt = fh.id_fahrt
        AND fg.id_haltestelle = fh.id_haltestelle
 
@@ -939,49 +702,15 @@ BEGIN
         bs_fahrt_id_endstation,
         bs_fahrt_startzeit,
         bs_fahrt_endzeit,
-        bs_fahrt_status,
+        bs_station_Startstation_name,
+        bs_station_Endstation_name,
 
-        bs_station_1_name,
-        bs_station_1_stadtteil,
-        bs_station_1_latitude,
-        bs_station_1_longitude,
-        bs_station_1_kapazitaet,
-
-        bs_station_2_name,
-        bs_station_2_stadtteil,
-        bs_station_2_latitude,
-        bs_station_2_longitude,
-        bs_station_2_kapazitaet,
-
-        as_station_name,
-        as_station_stadtteil,
-        as_station_latitude,
-        as_station_longitude,
-        as_station_stations_typ,
-        as_station_installationsdatum,
-        as_station_status,
-
-        as_sensor_id_station,
-        as_sensor_sensortyp,
         as_sensor_einheit,
-        as_sensor_installationsdatum,
         as_sensor_id_sensor,
-
-        as_messung_messzeitpunkt,
         as_messung_messwert,
-
-        cm_linie_liniennummer,
-        cm_linie_bezeichnung,
-        cm_linie_verkehrsmittel,
-        cm_linie_gueltig_ab,
-        cm_linie_gueltig_bis,
-
-        cm_fahrzeug_kapazitaet,
 
         cm_fahrt_id_linie,
         cm_fahrt_fahrzeug,
-        cm_fahrt_datum,
-        cm_fahrt_fahrtrichtung,
 
         cm_fahrgastaufkommen_id_fahrt,
         cm_fahrgastaufkommen_id_haltestelle,
@@ -998,10 +727,7 @@ BEGIN
         cm_fahrt_haltestelle_ankunft_tatsaechlich,
         cm_fahrt_haltestelle_abfahrt_tatsaechlich,
 
-        cm_haltestelle_name,
-        cm_haltestelle_stadtteil,
-        cm_haltestelle_latitude,
-        cm_haltestelle_longitude
+        cm_haltestelle_name
     )
     SELECT
         bf.id,
@@ -1014,49 +740,15 @@ BEGIN
         bf.id_zielstation,
         bf.startzeit,
         bf.endzeit,
-        bf.status,
-
         bs1.name,
-        bs1.stadtteil,
-        bs1.latitude,
-        bs1.longitude,
-        bs1.kapazitaet,
-
         bs2.name,
-        bs2.stadtteil,
-        bs2.latitude,
-        bs2.longitude,
-        bs2.kapazitaet,
 
-        ast.name,
-        ast.stadtteil,
-        ast.latitude,
-        ast.longitude,
-        ast.stations_typ,
-        ast.installationsdatum,
-        ast.status,
-
-        s.id_station,
-        s.sensortyp,
         s.einheit,
-        s.installationsdatum,
         s.id,
-
-        m.messzeitpunkt,
         m.messwert,
-
-        l.liniennummer,
-        l.bezeichnung,
-        l.verkehrsmittel,
-        l.gueltig_ab,
-        l.gueltig_bis,
-
-        fzg.kapazitaet,
 
         f.id_linie,
         f.id_fahrzeug,
-        f.datum,
-        f.fahrtrichtung,
 
         fg.id_fahrt,
         fg.id_haltestelle,
@@ -1073,10 +765,7 @@ BEGIN
         fh.ankunft_tatsaechlich,
         fh.abfahrt_tatsaechlich,
 
-        h.name,
-        h.stadtteil,
-        h.latitude,
-        h.longitude
+        h.name
 
     FROM staging.as_messung m
     JOIN staging.as_sensor s
@@ -1084,7 +773,7 @@ BEGIN
     JOIN staging.as_station ast
         ON ast.id = s.id_station
 
-    LEFT JOIN staging.bs_fahrt bf
+    JOIN staging.bs_fahrt bf
         ON m.messzeitpunkt BETWEEN
             bf.startzeit
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -1097,7 +786,7 @@ BEGIN
     JOIN staging.bs_station bs2
         ON bs2.id = bf.id_zielstation
 
-    LEFT JOIN staging.cm_fahrt_haltestelle fh
+    JOIN staging.cm_fahrt_haltestelle fh
         ON m.messzeitpunkt BETWEEN
             fh.ankunft_tatsaechlich
                 - p_zeitfenster_minuten * INTERVAL '1 minute'
@@ -1131,5 +820,62 @@ BEGIN
           AND tgt.src_cm_fahrplan_id = fp.id
           AND tgt.src_cm_fahrgastaufkommen_id = fg.id
     );
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE core.fill_dim_datum(
+    IN p_start_jahr INTEGER,
+    IN p_end_jahr   INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_anzahl BIGINT;
+BEGIN
+    -- Parameter prüfen
+    IF p_start_jahr IS NULL OR p_end_jahr IS NULL THEN
+        RAISE EXCEPTION 'Startjahr und Endjahr dürfen nicht NULL sein.';
+    END IF;
+
+    IF p_start_jahr > p_end_jahr THEN
+        RAISE EXCEPTION
+            'Das Startjahr (%) darf nicht größer als das Endjahr (%) sein.',
+            p_start_jahr, p_end_jahr;
+    END IF;
+
+    IF p_start_jahr < 1 OR p_end_jahr > 9999 THEN
+        RAISE EXCEPTION
+            'Die Jahre müssen zwischen 1 und 9999 liegen.';
+    END IF;
+
+    -- Stundendatensätze erzeugen
+    INSERT INTO core.DIM_Datum (
+        Datum_Key,
+        Stunde,
+        Datum,
+        Monat,
+        Quartal,
+        Jahr
+    )
+    SELECT
+        TO_CHAR(ts, 'YYYYMMDDHH24')::BIGINT AS Datum_Key,
+        EXTRACT(HOUR FROM ts)::SMALLINT     AS Stunde,
+        ts::DATE                            AS Datum,
+        EXTRACT(MONTH FROM ts)::SMALLINT    AS Monat,
+        EXTRACT(QUARTER FROM ts)::SMALLINT  AS Quartal,
+        EXTRACT(YEAR FROM ts)::SMALLINT     AS Jahr
+    FROM generate_series(
+        MAKE_TIMESTAMP(p_start_jahr, 1, 1, 0, 0, 0),
+        MAKE_TIMESTAMP(p_end_jahr, 12, 31, 23, 0, 0),
+        INTERVAL '1 hour'
+    ) AS ts
+    ON CONFLICT (Datum_Key) DO NOTHING;
+
+    -- Anzahl der tatsächlich eingefügten Datensätze
+    GET DIAGNOSTICS v_anzahl = ROW_COUNT;
+
+    RAISE NOTICE
+        'DIM_Datum: % neue Stunden für den Zeitraum % bis % eingefügt.',
+        v_anzahl, p_start_jahr, p_end_jahr;
 END;
 $$;

@@ -7,36 +7,29 @@ import os
 # --------------------------------------------------
 
 PROCEDURES = [
-    # 1–3: Fahrradstation
-    "reporting.transfer_wetter_und_fahrradnutzung_fahradstation",#
-    "reporting.transfer_veranstaltungen_und_fahrradnutzung_fahradstation",#
-    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_fahradstation",#
-
-    # 4–6: Sensor
-    "reporting.transfer_wetter_und_fahrradnutzung_sensor",#
-    "reporting.transfer_wetter_und_oepnv_sensor",#
-    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_sensor",#
-
-    # 7–10: Datum
-    "reporting.transfer_veranstaltungen_und_fahrradnutzung_datum",#
-    "reporting.transfer_veranstaltungen_und_oepnv_datum",#
-    "reporting.transfer_wetter_und_oepnv_datum",#
-    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_datum",#
-
-    # 11–12: Veranstaltung
-    "reporting.transfer_veranstaltungen_und_oepnv_versanstaltung",#
-    "reporting.transfer_veranstaltungen_und_fahrradnutzung_versanstaltung",#
-
-    # 13–15: Linie
-    "reporting.transfer_veranstaltungen_und_oepnv_linie",#
-    "reporting.transfer_wetter_und_oepnv_linie",#
-    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_linie",#
-
-    "reporting.transfer_wetter_und_fahrradnutzung",#
-    "reporting.transfer_veranstaltungen_und_oepnv",#
-    "reporting.transfer_veranstaltungen_und_fahrradnutzung",#
-    "reporting.transfer_wetter_und_oepnv",#
-    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen"#
+    #Dimensionen zuerst:
+    "reporting.transfer_wetter_und_fahrradnutzung_fahradstation",
+    "reporting.transfer_wetter_und_fahrradnutzung_sensor",
+    "reporting.transfer_wetter_und_fahrradnutzung_datum",
+    "reporting.transfer_veranstaltungen_und_oepnv_versanstaltung",
+    "reporting.transfer_veranstaltungen_und_oepnv_linie",
+    "reporting.transfer_veranstaltungen_und_oepnv_datum",
+    "reporting.transfer_veranstaltungen_und_fahrradnutzung_versanstaltung",
+    "reporting.transfer_veranstaltungen_und_fahrradnutzung_fahradstation",
+    "reporting.transfer_veranstaltungen_und_fahrradnutzung_datum",
+    "reporting.transfer_wetter_und_oepnv_linie",
+    "reporting.transfer_wetter_und_oepnv_sensor",
+    "reporting.transfer_wetter_und_oepnv_datum",
+    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_fahradstation",
+    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_sensor",
+    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_linie",
+    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen_datum",
+    #Danach die fünf Faktentransfers:
+    "reporting.transfer_wetter_und_fahrradnutzung",
+    "reporting.transfer_veranstaltungen_und_oepnv",
+    "reporting.transfer_veranstaltungen_und_fahrradnutzung",
+    "reporting.transfer_wetter_und_oepnv",
+    "reporting.transfer_luftqualitaet_und_mobilitaetsaufkommen"
 ]
 
 
