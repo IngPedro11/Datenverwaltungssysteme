@@ -1,51 +1,111 @@
-# Überblick
-| Schritt | Befehl |
-|---|---|
-| 1. Landen Sie diese Datei herunter und entpacken [Docker files](https://downgit.github.io/#/home?url=https://github.com/IngPedro11/Datenverwaltungssysteme/tree/main/docker) |  |
-| 2. In den Ordner wechseln | `cd docker` |
-| 3. Image bauen | `docker build -t .` |
-| 4. Container starten | `docker compose up` |
+# Docker – Installation und Inbetriebnahme
+
+## Überblick
+
+| Schritt | Beschreibung | Befehl |
+|---|---|---|
+| 1. | Docker-Dateien herunterladen und entpacken | [Docker files](https://downgit.github.io/#/home?url=https://github.com/IngPedro11/Datenverwaltungssysteme/tree/main/docker) |
+| 2. | In das Docker-Verzeichnis wechseln | `cd docker` |
+| 3. | Docker-Image bauen | `docker compose build` |
+| 4. | Container starten | `docker compose up -d` |
+| 5. | Container stoppen | `docker compose down` |
 
 # Voraussetzungen
 
+Für die Ausführung des Projekts wird eine funktionierende Docker-Installation benötigt.
+
 ## Windows
 
-Zuerst muss **Docker Desktop** heruntergeladen und installiert werden.
+Unter Windows wird **Docker Desktop** benötigt.
 
-1. Download: <https://www.docker.com/products/docker-desktop/>
-2. Installer ausführen und, falls gefragt, **WSL 2** aktivieren.
-3. Den PC neu starten, falls nötig.
-4. **Docker Desktop starten** und warten, bis unten links „Engine running“ steht.
+1. [Docker Desktop herunterladen](https://www.docker.com/products/docker-desktop/).
+2. Den Installer ausführen und, falls erforderlich, **WSL 2** aktivieren.
+3. Den PC gegebenenfalls neu starten.
+4. Docker Desktop starten und warten, bis die Docker Engine betriebsbereit ist.
 
 ## Linux
 
-Unter Linux wird **Docker Engine** mit dem Compose-Plugin benötigt. Docker Desktop ist nicht zwingend erforderlich.
+Unter Linux wird die **Docker Engine** zusammen mit dem Docker-Compose-Plugin benötigt. Docker Desktop ist nicht zwingend erforderlich.
+
+Beispiel für Ubuntu / Debian:
 
 ```bash
-# Beispiel für Ubuntu / Debian
 sudo apt update
 sudo apt install docker.io docker-compose-v2
+```
 
-# Eigenen Benutzer zur Docker-Gruppe hinzufügen (danach neu einloggen)
+Optional kann der eigene Benutzer zur Docker-Gruppe hinzugefügt werden, damit Docker-Befehle ohne `sudo` ausgeführt werden können:
+
+```bash
 sudo usermod -aG docker $USER
 ```
 
-Installation prüfen:
+Anschließend einmal abmelden und wieder anmelden, damit die Gruppenänderung wirksam wird.
+
+### Installation überprüfen
+
+Mit folgenden Befehlen lässt sich überprüfen, ob Docker korrekt installiert wurde:
 
 ```bash
 docker --version
 docker compose version
 ```
 
-# Anweisungen
+# Inbetriebnahme
 
-## Schritt 1: Ordner `docker` öffnen und Konsole starten
+## Schritt 0: Projektarchitektur und Docker-Übersicht
+
+### Warum Docker?
+
+Für dieses Projekt wird Docker verwendet, um die verschiedenen Komponenten der Smart-City-Datenplattform voneinander isoliert und unabhängig betreiben zu können.
+
+Jeder Dienst läuft in einem eigenen Docker-Container und besitzt seine eigenen Abhängigkeiten und Konfigurationen. Dadurch müssen beispielsweise PostgreSQL, MongoDB, FastAPI oder Grafana nicht separat auf dem eigenen Betriebssystem installiert werden.
+
+Die Vorteile dieser Architektur sind:
+
+- **Plattformunabhängigkeit:** Das Projekt kann sowohl unter Windows als auch unter Linux ausgeführt werden.
+- **Isolation:** Jeder Dienst läuft in einer eigenen Umgebung.
+- **Reproduzierbarkeit:** Die Container werden anhand festgelegter Konfigurationen erstellt und gestartet.
+- **Einfache Verwaltung:** Alle benötigten Dienste können zentral über Docker Compose gestartet und gestoppt werden.
+- **Erweiterbarkeit:** Einzelne Dienste können unabhängig voneinander angepasst oder erweitert werden.
+
+### Übersicht der Docker-Container
+
+Die Projektarchitektur besteht aus mehreren Containern, die unterschiedliche Aufgaben innerhalb der Datenplattform übernehmen.
+
+| Container | Technologie | Aufgabe |
+|---|---|---|
+| Grafana | Grafana | Bereitstellung der Dashboards und Visualisierungen zur Analyse der Daten. |
+| AirSense | MongoDB, FastAPI | Quellsystem für Luftqualitätsdaten. MongoDB dient als Datenbank, FastAPI stellt die Schnittstelle bereit. |
+| CityMove | PostgreSQL, FastAPI | Quellsystem für Mobilitätsdaten. PostgreSQL dient als Datenbank, FastAPI stellt die Schnittstelle bereit. |
+| CityEvents | PostgreSQL, FastAPI | Quellsystem für Veranstaltungsdaten. PostgreSQL dient als Datenbank, FastAPI stellt die Schnittstelle bereit. |
+| BikeShare | PostgreSQL, FastAPI | Quellsystem für Fahrradverleih- und Nutzungsdaten. PostgreSQL dient als Datenbank, FastAPI stellt die Schnittstelle bereit. |
+| DWH | PostgreSQL | Zentrale Datenbank des Data Warehouse. Hier werden die aufbereiteten und integrierten Daten gespeichert. |
+| Machine Learning | Python / Machine Learning | Ausführung von Machine-Learning-Prozessen zur Analyse der integrierten Daten. |
+
+### Zusammenspiel der Komponenten
+
+Die einzelnen Container bilden gemeinsam die Datenplattform:
+
+1. **Quellsysteme:** AirSense, CityMove, CityEvents und BikeShare stellen die Daten über ihre jeweiligen Datenbanken und FastAPI-Schnittstellen bereit.
+2. **Datenintegration:** Die Daten werden aus den Quellsystemen extrahiert, transformiert und in das Data Warehouse übertragen.
+3. **Data Warehouse:** Die integrierten Daten werden zentral in PostgreSQL gespeichert.
+4. **Machine Learning:** Der Machine-Learning-Container ermöglicht die Durchführung weiterführender Analysen und Prognosen.
+5. **Visualisierung:** Grafana greift auf die bereitgestellten Daten zu und stellt diese in Form von Dashboards und Visualisierungen dar.
+
+Die gesamte Infrastruktur wird über eine gemeinsame `docker-compose.yml` verwaltet.
+
+## Schritt 1: Docker-Verzeichnis öffnen
+
+Zunächst muss das Verzeichnis `docker` geöffnet werden. In diesem Verzeichnis befinden sich die benötigten Docker-Konfigurationsdateien, insbesondere die `Dockerfile` und die `docker-compose.yml`.
 
 ### Windows
 
-Den Ordner `docker` im Explorer öffnen, mit der rechten Maustaste in den Ordner klicken und **„In Terminal öffnen“** wählen. Alternativ `cmd` in die Adressleiste tippen und Enter drücken.
+Den Ordner `docker` im Windows-Explorer öffnen.
 
-Oder manuell in der PowerShell:
+Anschließend mit der rechten Maustaste in den Ordner klicken und **„Im Terminal öffnen“** auswählen.
+
+Alternativ kann über die PowerShell in das Verzeichnis gewechselt werden:
 
 ```powershell
 cd C:\Pfad\zum\Projekt\docker
@@ -53,7 +113,7 @@ cd C:\Pfad\zum\Projekt\docker
 
 ### Linux
 
-Terminal öffnen (`Strg + Alt + T`) und in den Ordner wechseln:
+Ein Terminal öffnen (`Strg + Alt + T`) und in das entsprechende Verzeichnis wechseln:
 
 ```bash
 cd ~/Pfad/zum/Projekt/docker
@@ -61,50 +121,171 @@ cd ~/Pfad/zum/Projekt/docker
 
 ## Schritt 2: Docker-Image bauen
 
-Im Ordner `docker`, in dem das `Dockerfile` liegt, ausführen:
+Im Docker-Verzeichnis wird das benötigte Image erstellt:
 
 ```bash
-docker build -t  .
+docker compose build
 ```
 
-- `-t meine-app` legt den Namen des Images fest.
-- `.` steht für den aktuellen Ordner als Build-Kontext.
+Docker Compose verwendet dafür die Build-Konfiguration aus der `docker-compose.yml` und das zugehörige `Dockerfile`.
 
-::: {.callout-note}
-**Linux:** Erscheint die Meldung „permission denied“, entweder `sudo` voranstellen (`sudo docker build ...`) oder den Benutzer zur Docker-Gruppe hinzufügen (siehe oben).
-:::
+Dieser Schritt muss nach Änderungen an der Build-Konfiguration oder am Image-Inhalt erneut ausgeführt werden.
 
 ## Schritt 3: Container starten
 
-Im selben Ordner, in dem die `docker-compose.yml` liegt:
+Die Container werden mit folgendem Befehl gestartet:
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
-Nützliche Varianten:
+Die Option `-d` sorgt dafür, dass die Container im Hintergrund ausgeführt werden und das Terminal weiterhin verwendet werden kann.
+
+Weitere nützliche Befehle:
 
 ```bash
-docker compose up -d           # im Hintergrund starten
-docker compose up --build      # neu bauen und starten
+docker compose up          # Container starten und Logs anzeigen
+docker compose up --build  # Images neu bauen und Container starten
 ```
 
-## Schritt 4: Container stoppen 
+### Containerstatus überprüfen
+
+Mit folgendem Befehl kann überprüft werden, ob die Container laufen:
 
 ```bash
-# Im laufenden Terminal:
-Strg + C
+docker compose ps
+```
 
-# Container stoppen und entfernen:
+Die Ausgabe zeigt den Status der einzelnen Container sowie gegebenenfalls die zugehörigen Portfreigaben.
+
+## Schritt 4: Initialisierung der Daten und ETL-Prozess
+
+Nach dem Start der Container mit `docker compose up -d` müssen zunächst die Quellsysteme ihre Daten einlesen und bereitstellen.
+
+Dieser Vorgang kann einige Zeit in Anspruch nehmen. Daher sollte gewartet werden, bis die Initialisierung der Quellsysteme abgeschlossen ist.
+
+### ETL-Prozess ausführen
+
+Sobald die Quellsysteme bereit sind, muss der ETL-Prozess innerhalb des entsprechenden Docker-Containers gestartet werden.
+
+Dazu wird folgender Befehl verwendet:
+
+```bash
+docker exec -it dwh_ ./call_python.sh
+```
+
+Nach dem Start des ETL-Prozesses muss erneut gewartet werden, bis die Daten vollständig verarbeitet und in das Data Warehouse übertragen wurden.
+
+**Hinweis:** Der ETL-Prozess sollte erst ausgeführt werden, wenn die Quellsysteme ihre Initialisierung abgeschlossen haben.
+
+## Schritt 5: Grafana aufrufen
+
+Nach erfolgreicher Initialisierung und Datenübertragung kann das Grafana-Dashboard über den Browser aufgerufen werden:
+
+**URL:** http://localhost:3000
+
+- `Benutzername`: admin
+- `Passwort`: MeinSicheresPasswort123!
+
+Dort stehen die vorbereiteten Dashboards und Visualisierungen zur Verfügung.
+
+## Schritt 6: Zugriff auf Docker-Container und Datenbanken
+
+Über die Docker-CLI kann direkt auf die laufenden Container zugegriffen werden. Dadurch lassen sich beispielsweise Logs überprüfen, Skripte ausführen oder Datenbankinhalte untersuchen.
+
+### Container anzeigen
+
+```bash
+docker ps
+```
+
+Zeigt alle aktuell laufenden Container einschließlich ihrer Namen und IDs an.
+
+### Auf einen Container zugreifen
+
+```bash
+docker exec -it <container-name> bash
+```
+
+Damit wird eine interaktive Shell innerhalb des ausgewählten Containers geöffnet.
+
+Falls `bash` im Container nicht verfügbar ist, kann alternativ `sh` verwendet werden:
+
+```bash
+docker exec -it <container-name> sh
+```
+
+### Auf eine PostgreSQL-Datenbank zugreifen
+
+Um direkt auf eine PostgreSQL-Datenbank innerhalb eines Containers zuzugreifen, kann der PostgreSQL-Client `psql` verwendet werden:
+
+```bash
+docker exec -it <postgres-container> psql -U <benutzer> -d <datenbank>
+```
+
+Dabei werden folgende Platzhalter ersetzt:
+
+- `<postgres-container>`: Name des PostgreSQL-Containers. (dwh_, city_move, cityevents, bikeshare)
+- `<benutzer>`: Datenbankbenutzer. (admin, für dwh: dwh_admin)
+- `<datenbank>`: Name der Datenbank. (dwh, city_move, bike_share, city_events)
+
+Alternativ können auch alle Namen, Passwörter usw. auch in der .env Datei im Docker Verzeichnis gefunden werden. Innerhalb von `psql` können anschließend SQL-Abfragen ausgeführt werden.
+
+Beispiele:
+
+```sql
+-- Vorhandene Tabellen anzeigen
+\dt
+
+-- Datenbanken anzeigen
+\l
+
+-- Tabelleninhalte untersuchen
+SELECT * FROM <tabellenname>;
+
+-- Verbindung beenden
+\q
+```
+
+Damit ist es möglich, die importierten Daten direkt in den PostgreSQL-Datenbanken zu überprüfen und die einzelnen Verarbeitungsschritte des Data Warehouse nachzuvollziehen.
+
+## Schritt 7: Container stoppen
+
+Um die laufenden Container zu stoppen und die zugehörigen Container-Ressourcen zu entfernen, wird folgender Befehl verwendet:
+
+```bash
 docker compose down
+```
+
+Alternativ können die Container lediglich gestoppt werden, ohne sie zu entfernen:
+
+```bash
+docker compose stop
 ```
 
 # Häufige Probleme
 
-| Problem | Lösung |
+| Problem | Mögliche Lösung |
 |---|---|
-| `Cannot connect to the Docker daemon` | **Windows:** Docker Desktop starten. **Linux:** `sudo systemctl start docker` |
-| `docker: command not found` | Docker ist nicht installiert oder nicht im PATH. |
-| `permission denied` (Linux) | `sudo` verwenden oder `sudo usermod -aG docker $USER` ausführen. |
-| `no configuration file provided` | Man befindet sich im falschen Ordner. Mit `cd docker` wechseln. |
-| Port ist belegt | In der `docker-compose.yml` einen anderen Port eintragen. |
+| `Cannot connect to the Docker daemon` | **Windows:** Docker Desktop starten. **Linux:** Docker-Dienst mit `sudo systemctl start docker` starten. |
+| `docker: command not found` | Docker ist nicht installiert oder befindet sich nicht im PATH. |
+| `permission denied` (Linux) | `sudo` verwenden oder den Benutzer zur Docker-Gruppe hinzufügen. |
+| `no configuration file provided` | Das Terminal befindet sich nicht im Verzeichnis der `docker-compose.yml`. |
+| `port is already allocated` | Der verwendete Port ist bereits belegt. In der `docker-compose.yml` einen anderen Host-Port konfigurieren. |
+| Container startet nicht | Mit `docker compose logs` die Container-Logs überprüfen. |
+| Änderungen werden nicht übernommen | Images mit `docker compose up --build -d` neu bauen und starten. |
+
+# Nützliche Docker-Befehle
+
+| Befehl | Beschreibung |
+|---|---|
+| `docker ps` | Laufende Container anzeigen |
+| `docker ps -a` | Alle Container anzeigen |
+| `docker compose ps` | Status der Compose-Container anzeigen |
+| `docker compose logs` | Logs aller Compose-Dienste anzeigen |
+| `docker compose logs -f` | Logs live verfolgen |
+| `docker compose restart` | Container neu starten |
+| `docker compose down` | Container stoppen und entfernen |
+| `docker compose down -v` | Container stoppen, entfernen und zugehörige Volumes löschen |
+
+**Hinweis:** Der Befehl `docker compose down -v` sollte mit Vorsicht verwendet werden, da dadurch auch persistente Daten in den zugehörigen Docker-Volumes gelöscht werden können.

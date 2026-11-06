@@ -436,11 +436,11 @@ Die Analyse ermöglicht eine gemeinsame Betrachtung von Mobilitäts- und Umweltd
 
 ## Data Warehouse
 
-Das Data Warehouse dient als zentrale Datenbasis für die zuvor beschriebenen Analysefragestellungen. Hierfür werden die Daten aus den vier operativen Quellsystemen extrahiert, aufbereitet, integriert und in einer für analytische Abfragen geeigneten Struktur gespeichert.
+Das Data Warehouse dient als zentrale Datenbasis für die zuvor beschriebenen Analysefragestellungen. Hierfür werden die Daten aus den vier operativen Quellsystemen extrahiert, aufbereitet, integriert und in einer für analytische Abfragen geeigneten Struktur gespeichert. Die Übertragung der Daten erfolgt über die jeweiligen APIs der Quellsysteme. Dabei werden die Daten in den Quellsystemen aufbereitet und mittels http an das Data-Warehouse übergeben. 
 
-Die Architektur des Data Warehouses wird in drei aufeinander aufbauende Bereiche unterteilt: **Staging**, **Core** und **Reporting**.
+Die Architektur des Data Warehouses wird in drei aufeinander aufbauende Bereiche unterteilt: **Staging**, **Core** und **Reporting**. 
 
-Diese Aufteilung ermöglicht eine klare Trennung zwischen der Übernahme der Quelldaten, ihrer Integration in eine einheitliche Datenstruktur und der Bereitstellung für analytische Auswertungen.
+Diese Aufteilung ermöglicht eine klare Trennung zwischen der Übernahme der Quelldaten, ihrer Integration in eine einheitliche Datenstruktur und der Bereitstellung für analytische Auswertungen. Die Übertragung der Daten zwischen den Schichten wurde mithilfe von Prozeduren realisiert. 
 
 ### Staging
 
@@ -470,6 +470,10 @@ Die Core-Schicht stellt damit die Grundlage für die verschiedenen analytischen 
 
 [SQL Statements](01_tutorial/SQL_core.qmd)
 
+**Übertragung von der Staging Schicht in die Core Schicht:**
+
+[Prozeduren](01_tutorial/proz_core.qmd)
+
 ### Reporting
 
 Die Reporting-Schicht bildet die oberste Ebene des Data Warehouses und stellt die aufbereiteten Daten für analytische Auswertungen und Visualisierungen bereit.
@@ -483,3 +487,7 @@ Die Reporting-Schicht bildet somit die Schnittstelle zwischen dem Data Warehouse
 **SQL-Implementierung:**
 
 [SQL Statements](01_tutorial/SQL_reporting.qmd)
+
+**Übertragung von der Core Schicht in die Reporting Schicht:**
+
+[Prozeduren](01_tutorial/proz_reporting.qmd)

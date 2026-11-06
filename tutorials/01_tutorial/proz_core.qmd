@@ -1,0 +1,7 @@
+---
+title: Core Prozeduren
+---
+
+```{.include-sql}
+../../docker/dwh/sources/sql/04_core_prozeduren.sql
+```

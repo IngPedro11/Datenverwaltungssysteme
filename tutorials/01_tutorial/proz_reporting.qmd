@@ -1,0 +1,7 @@
+---
+title: Reporting Prozeduren
+---
+
+```{.include-sql}
+../../docker/dwh/sources/sql/05_reporting_prozeduren_neu.sql
+```

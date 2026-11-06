@@ -2,9 +2,7 @@
 
 ## 1. Einleitung
 
-Im Rahmen des bestehenden Data-Warehouse-Projekts werden Daten aus vier unterschiedlichen Quellsystemen zusammengeführt, aufbereitet und für analytische Auswertungen bereitgestellt. Die bisherigen Quellsysteme basieren auf relationalen Datenbanken.
-
-Um die Einsatzmöglichkeiten von NoSQL-Datenbanken zu untersuchen, wurde eines dieser Quellsysteme auf eine dokumentenorientierte Datenbank umgestellt. Hierfür kommt **MongoDB** zum Einsatz.
+Um die Einsatzmöglichkeiten von NoSQL-Datenbanken zu untersuchen, wurde ein Quellsystem auf eine dokumentenorientierte Datenbank umgestellt. Hierfür kommt **MongoDB** zum Einsatz.
 
 Das betreffende Quellsystem trägt den Namen AirSense und simuliert mehrere Sensorstationen, welche unterschiedliche Umweltdaten erfassen. Dazu gehören beispielsweise Temperatur, Luftfeuchtigkeit, Stickstoffdioxid, Ozon und Lärmbelastung.
 
@@ -386,59 +384,6 @@ Die Datenübertragung lässt sich in mehrere Schritte unterteilen:
 5. **Datenaufbereitung:** Die empfangenen Daten werden an das relationale Datenmodell angepasst.
 6. **Integration:** Die aufbereiteten Daten werden in die entsprechenden Tabellen des Data Warehouse übernommen.
 7. **Reporting:** Die Daten stehen anschließend für analytische Auswertungen zur Verfügung.
-
-Die folgende Abbildung verdeutlicht den Datenfluss:
-
-```text
-┌──────────────────────────────┐
-│       Sensorsimulation      │
-│                              │
-│  Mehrere Sensorstationen     │
-│  Unterschiedliche Sensoren   │
-│  Kontinuierliche Messwerte   │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│           MongoDB            │
-│                              │
-│  Database: airsense          │
-│                              │
-│  stations                    │
-│  messungen                   │
-│  sensorwartungen             │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│           FastAPI            │
-│                              │
-│  REST-Endpunkt: /get_data    │
-│                              │
-│  JSON-Bereitstellung         │
-│  Datenaufbereitung           │
-│  Inkrementeller Datenabruf   │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│       Data Warehouse         │
-│                              │
-│  Datenabruf                  │
-│  Transformation              │
-│  Schlüsselzuordnung          │
-│  Datenintegration            │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│       Reporting-Schicht      │
-│                              │
-│  Analytische Auswertungen    │
-│  OLAP-Funktionen             │
-│  Grafana-Dashboards          │
-└──────────────────────────────┘
-```
 
 Die API übernimmt dabei die Entkopplung zwischen dem Quellsystem und dem Data Warehouse. Das Data Warehouse muss somit nicht die interne Datenstruktur von MongoDB kennen, sondern kann die benötigten Daten über eine einheitliche Schnittstelle beziehen.
 
