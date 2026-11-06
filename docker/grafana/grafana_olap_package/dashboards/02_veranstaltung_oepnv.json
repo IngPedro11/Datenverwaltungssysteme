@@ -22,7 +22,7 @@
         "type": "stat",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 5,
@@ -37,7 +37,7 @@
             "rawSql": "SELECT\n    COUNT(DISTINCT f.veranstaltung_key) AS anzahl_veranstaltungen,\n    COALESCE(SUM(f.linie_einsteiger), 0) AS einsteiger,\n    COALESCE(SUM(f.linie_aussteiger), 0) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -68,7 +68,7 @@
         "type": "timeseries",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -83,7 +83,7 @@
             "rawSql": "SELECT\n    $__timeGroupAlias(d.zeitpunkt, '1h'),\n    SUM(d.einsteiger) AS einsteiger,\n    SUM(d.aussteiger) AS aussteiger\nFROM (\n    SELECT\n        COALESCE(\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant\n        ) AS zeitpunkt,\n        f.linie_einsteiger AS einsteiger,\n        f.linie_aussteiger AS aussteiger,\n        f.veranstaltung_key,\n        f.linie_key\n    FROM reporting.veranstaltungen_und_oepnv f\n) d\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = d.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = d.linie_key\nWHERE $__timeFilter(d.zeitpunkt)\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -114,7 +114,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -129,7 +129,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    SUM(f.linie_einsteiger) AS einsteiger,\n    SUM(f.linie_aussteiger) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nJOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 2 DESC",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -160,7 +160,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -175,7 +175,7 @@
             "rawSql": "SELECT\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    COALESCE(l.linie_haltestelle_name, f.linie_haltestelle_name) AS haltestelle,\n    SUM(f.linie_einsteiger) AS einsteiger,\n    SUM(f.linie_aussteiger) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1, 2\nORDER BY 3 DESC",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -206,7 +206,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -221,7 +221,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    SUM(f.linie_einsteiger) AS einsteiger\nFROM reporting.veranstaltungen_und_oepnv f\nJOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1, 2\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -261,7 +261,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -276,7 +276,7 @@
             "rawSql": "WITH basis AS (\n    SELECT\n        v.veranstaltung_name,\n        v.veranstaltung_veranstaltungstyp,\n        v.veranstaltung_stadtteil,\n\n        COALESCE(\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant\n        ) AS verkehrszeitpunkt,\n\n        COALESCE(\n            f.veranstaltung_beginn_tatsaechlich,\n            f.veranstaltung_beginn_geplant\n        ) AS beginn,\n\n        COALESCE(\n            f.veranstaltung_ende_tatsaechlich,\n            f.veranstaltung_ende_geplant\n        ) AS ende,\n\n        f.linie_einsteiger,\n        f.linie_aussteiger\n\n    FROM reporting.veranstaltungen_und_oepnv f\n\n    JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n        ON v.veranstaltung_key = f.veranstaltung_key\n\n    WHERE COALESCE(\n              f.linie_ankunft_tatsaechlich,\n              f.linie_ankunft_geplant,\n              f.linie_abfahrt_tatsaechlich,\n              f.linier_abfahrt_geplant\n          ) IS NOT NULL\n\n      AND COALESCE(\n              f.veranstaltung_beginn_tatsaechlich,\n              f.veranstaltung_beginn_geplant\n          ) IS NOT NULL\n\n      AND COALESCE(\n              f.veranstaltung_ende_tatsaechlich,\n              f.veranstaltung_ende_geplant\n          ) IS NOT NULL\n\n      AND $__timeFilter(\n          COALESCE(\n              f.linie_ankunft_tatsaechlich,\n              f.linie_ankunft_geplant,\n              f.linie_abfahrt_tatsaechlich,\n              f.linier_abfahrt_geplant\n          )\n      )\n\n      AND v.veranstaltung_veranstaltungstyp\n          IN (${veranstaltungstyp:sqlstring})\n\n      AND v.veranstaltung_stadtteil\n          IN (${stadtteil:sqlstring})\n)\n\nSELECT\n    veranstaltung_name,\n\n    CASE\n        WHEN verkehrszeitpunkt < beginn\n         AND verkehrszeitpunkt >= beginn - INTERVAL '2 hours'\n            THEN 'Vorher'\n\n        WHEN verkehrszeitpunkt BETWEEN beginn AND ende\n            THEN 'Während'\n\n        WHEN verkehrszeitpunkt > ende\n         AND verkehrszeitpunkt <= ende + INTERVAL '2 hours'\n            THEN 'Nachher'\n\n        ELSE 'Außerhalb'\n    END AS veranstaltungsphase,\n\n    SUM(linie_einsteiger) AS einsteiger,\n    SUM(linie_aussteiger) AS aussteiger\n\nFROM basis\n\nGROUP BY\n    veranstaltung_name,\n    veranstaltungsphase\n\nORDER BY\n    veranstaltung_name,\n    veranstaltungsphase",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -307,7 +307,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -322,7 +322,7 @@
             "rawSql": "SELECT\n    v.veranstaltung_name,\n    v.veranstaltung_veranstaltungstyp,\n    v.veranstaltung_stadtteil,\n    l.linie_verkehrsmittel,\n    COALESCE(l.linie_haltestelle_name, f.linie_haltestelle_name) AS haltestelle,\n    COALESCE(f.linie_ankunft_tatsaechlich, f.linie_ankunft_geplant) AS ankunft,\n    COALESCE(f.linier_abfahrt_geplant, f.linie_abfahrt_tatsaechlich) AS abfahrt,\n    f.linie_einsteiger,\n    f.linie_aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nORDER BY ankunft DESC NULLS LAST\nLIMIT 500",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -355,7 +355,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
@@ -385,7 +385,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",
@@ -415,7 +415,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",

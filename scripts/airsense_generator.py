@@ -187,7 +187,7 @@ def generate_data(number_of_stations, number_of_measurements, start_date, end_da
             "status": random.choice(STATION_STATUS), "sensoren": [],
         }
 
-        count = random.randint(2, 5)
+        count = random.randint(1, 2)
         chosen_types = random.sample(list(SENSOR_TYPES), k=min(count, len(SENSOR_TYPES)))
         for sensor_type in chosen_types:
             unit, _, _ = SENSOR_TYPES[sensor_type]
@@ -229,7 +229,7 @@ def generate_data(number_of_stations, number_of_measurements, start_date, end_da
     ]
 
     measurement_id = 1
-    interval = timedelta(minutes=10)
+    interval = timedelta(minutes=60)
 
     # generate messungen bis ende
     current_time = start_dt
@@ -331,7 +331,7 @@ def main(config=None):
     _ask = (lambda mensaje, valor: valor) if config.get("defaults") else ask_integer
 
     print("=== Synthetic Data Generator — AirSense (Dresden) ===\n")
-    number_of_stations = _ask("Wie viele Stationen sollen erzeugt werden?", 25)
+    number_of_stations = 18
     number_of_measurements = _ask("Wie viele Messungen insgesamt?", 1000)
 
     today = date.today()

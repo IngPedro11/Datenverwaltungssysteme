@@ -22,7 +22,7 @@
         "type": "stat",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 5,
@@ -37,7 +37,7 @@
             "rawSql": "SELECT\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert\nFROM reporting.wetter_und_fahrradnutzung f\nLEFT JOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_datum d\n    ON d.datum_key = f.datum_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit, s.sensor_messzeitpunkt))\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -68,7 +68,7 @@
         "type": "timeseries",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -83,7 +83,7 @@
             "rawSql": "SELECT\n    $__timeGroupAlias(f.fahrradstation_startzeit, '1d'),\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.wetter_und_fahrradnutzung f\nLEFT JOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nWHERE f.fahrradstation_startzeit IS NOT NULL\n  AND $__timeFilter(f.fahrradstation_startzeit)\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\nGROUP BY 1\nORDER BY 1",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -114,7 +114,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -129,7 +129,7 @@
             "rawSql": "SELECT\n    st.fahrt_station_startstation_stadtteil AS stadtteil,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.wetter_und_fahrradnutzung f\nJOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nWHERE st.fahrt_station_startstation_stadtteil IS NOT NULL\n  AND $__timeFilter(COALESCE(f.fahrradstation_startzeit, s.sensor_messzeitpunkt))\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\nGROUP BY 1\nORDER BY 2 DESC",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -160,7 +160,7 @@
         "type": "barchart",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 8,
@@ -175,7 +175,7 @@
             "rawSql": "SELECT\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    ROUND(AVG(f.wetterstation_messwert)::numeric, 2) AS durchschnittlicher_messwert,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.wetter_und_fahrradnutzung f\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nWHERE f.wetterstation_messwert IS NOT NULL\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\nGROUP BY s.sensor_sensortyp, f.wetterstation_einheit\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -206,7 +206,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -221,7 +221,7 @@
             "rawSql": "SELECT\n    st.fahrt_station_startstation_stadtteil AS stadtteil,\n    COALESCE(s.sensor_sensortyp, 'Unbekannt') AS sensortyp,\n    COUNT(DISTINCT f.fahrt_key) AS anzahl_fahrten\nFROM reporting.wetter_und_fahrradnutzung f\nJOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nWHERE st.fahrt_station_startstation_stadtteil IS NOT NULL\n  AND $__timeFilter(COALESCE(f.fahrradstation_startzeit, s.sensor_messzeitpunkt))\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1, 2\nORDER BY 1, 2",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -261,7 +261,7 @@
         "type": "table",
         "datasource": {
           "type": "postgres",
-          "uid": "fg1oka4v27dvkd"
+          "uid": "bg3hqb7c3d8n4e"
         },
         "gridPos": {
           "h": 9,
@@ -276,7 +276,7 @@
             "rawSql": "SELECT\n    f.core_id,\n    f.fahrradstation_startzeit,\n    f.fahrradstation_endzeit,\n    st.fahrt_station_startstation_stadtteil AS start_stadtteil,\n    st.fahrt_station_endstation_stadtteil AS ziel_stadtteil,\n    s.sensor_sensortyp,\n    f.wetterstation_einheit,\n    f.wetterstation_messwert\nFROM reporting.wetter_und_fahrradnutzung f\nLEFT JOIN reporting.wetter_und_fahrradnutzung_fahradstation st\n    ON st.fahrt_key = f.fahrt_key\nLEFT JOIN reporting.wetter_und_fahrradnutzung_sensor s\n    ON s.sensor_key = f.sensor_key\nWHERE $__timeFilter(COALESCE(f.fahrradstation_startzeit, s.sensor_messzeitpunkt))\n  AND st.fahrt_station_startstation_stadtteil IN (${stadtteil:sqlstring})\n  AND s.sensor_sensortyp IN (${sensortyp:sqlstring})\nORDER BY f.fahrradstation_startzeit DESC NULLS LAST\nLIMIT 500",
             "datasource": {
               "type": "postgres",
-              "uid": "fg1oka4v27dvkd"
+              "uid": "bg3hqb7c3d8n4e"
             },
             "editorMode": "code"
           }
@@ -309,7 +309,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT fahrt_station_startstation_stadtteil AS \"__text\", fahrt_station_startstation_stadtteil AS \"__value\" FROM reporting.wetter_und_fahrradnutzung_fahradstation WHERE fahrt_station_startstation_stadtteil IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT fahrt_station_startstation_stadtteil AS \"__text\", fahrt_station_startstation_stadtteil AS \"__value\" FROM reporting.wetter_und_fahrradnutzung_fahradstation WHERE fahrt_station_startstation_stadtteil IS NOT NULL ORDER BY 1",
@@ -339,7 +339,7 @@
           "type": "query",
           "datasource": {
             "type": "postgres",
-            "uid": "fg1oka4v27dvkd"
+            "uid": "bg3hqb7c3d8n4e"
           },
           "definition": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.wetter_und_fahrradnutzung_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
           "query": "SELECT DISTINCT sensor_sensortyp AS \"__text\", sensor_sensortyp AS \"__value\" FROM reporting.wetter_und_fahrradnutzung_sensor WHERE sensor_sensortyp IS NOT NULL ORDER BY 1",
