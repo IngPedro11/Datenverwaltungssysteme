@@ -1,0 +1,110 @@
+# Überblick
+
+| Schritt | Befehl |
+|---|---|
+| 1. In den Ordner wechseln | `cd docker` |
+| 2. Image bauen | `docker build -t meine-app .` |
+| 3. Container starten | `docker compose up` |
+
+# Voraussetzungen
+
+## Windows
+
+Zuerst muss **Docker Desktop** heruntergeladen und installiert werden.
+
+1. Download: <https://www.docker.com/products/docker-desktop/>
+2. Installer ausführen und, falls gefragt, **WSL 2** aktivieren.
+3. Den PC neu starten, falls nötig.
+4. **Docker Desktop starten** und warten, bis unten links „Engine running“ steht.
+
+## Linux
+
+Unter Linux wird **Docker Engine** mit dem Compose-Plugin benötigt. Docker Desktop ist nicht zwingend erforderlich.
+
+```bash
+# Beispiel für Ubuntu / Debian
+sudo apt update
+sudo apt install docker.io docker-compose-v2
+
+# Eigenen Benutzer zur Docker-Gruppe hinzufügen (danach neu einloggen)
+sudo usermod -aG docker $USER
+```
+
+Installation prüfen:
+
+```bash
+docker --version
+docker compose version
+```
+
+# Anweisungen
+
+## Schritt 1: Ordner `docker` öffnen und Konsole starten
+
+### Windows
+
+Den Ordner `docker` im Explorer öffnen, mit der rechten Maustaste in den Ordner klicken und **„In Terminal öffnen“** wählen. Alternativ `cmd` in die Adressleiste tippen und Enter drücken.
+
+Oder manuell in der PowerShell:
+
+```powershell
+cd C:\Pfad\zum\Projekt\docker
+```
+
+### Linux
+
+Terminal öffnen (`Strg + Alt + T`) und in den Ordner wechseln:
+
+```bash
+cd ~/Pfad/zum/Projekt/docker
+```
+
+## Schritt 2: Docker-Image bauen
+
+Im Ordner `docker`, in dem das `Dockerfile` liegt, ausführen:
+
+```bash
+docker build -t meine-app .
+```
+
+- `-t meine-app` legt den Namen des Images fest.
+- `.` steht für den aktuellen Ordner als Build-Kontext.
+
+::: {.callout-note}
+**Linux:** Erscheint die Meldung „permission denied“, entweder `sudo` voranstellen (`sudo docker build ...`) oder den Benutzer zur Docker-Gruppe hinzufügen (siehe oben).
+:::
+
+## Schritt 3: Container starten
+
+Im selben Ordner, in dem die `docker-compose.yml` liegt:
+
+```bash
+docker compose up
+```
+
+Nützliche Varianten:
+
+```bash
+docker compose up -d           # im Hintergrund starten
+docker compose up --build      # neu bauen und starten
+```
+
+## Schritt 4: Container stoppen
+
+```bash
+# Im laufenden Terminal:
+Strg + C
+
+# Container stoppen und entfernen:
+docker compose down
+```
+
+# Häufige Probleme
+
+| Problem | Lösung |
+|---|---|
+| `Cannot connect to the Docker daemon` | **Windows:** Docker Desktop starten. **Linux:** `sudo systemctl start docker` |
+| `docker: command not found` | Docker ist nicht installiert oder nicht im PATH. |
+| `permission denied` (Linux) | `sudo` verwenden oder `sudo usermod -aG docker $USER` ausführen. |
+| `no configuration file provided` | Man befindet sich im falschen Ordner. Mit `cd docker` wechseln. |
+| Port ist belegt | In der `docker-compose.yml` einen anderen Port eintragen. |
