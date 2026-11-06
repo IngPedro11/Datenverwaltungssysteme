@@ -22,13 +22,17 @@ Hier kann ich Folgendes speichern:
 ## ⚠️ Zuerst erledigen: Vorbereitung ⚠️
 
 ::: {.callout-important}
+
+
 ## Bitte zuerst lesen
 
 Bevor du mit den Tutorials beginnst, richte zuerst die Umgebung mit Docker ein:
-
+[Getting Started](tutorials\getting-started.qmd)
 :::
 
-## [Getting Started](tutorials\getting-started.qmd)
+
+
+
 
 
 ## 📚 Tutorials
