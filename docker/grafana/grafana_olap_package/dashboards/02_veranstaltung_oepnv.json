@@ -1,0 +1,486 @@
+{
+  "dashboard": {
+    "uid": "sc-veranstaltung-oepnv",
+    "title": "02 – Veranstaltungen und ÖPNV",
+    "description": "Veränderung des Fahrgastaufkommens während und im Umfeld von Veranstaltungen.",
+    "tags": [
+      "Smart City",
+      "OLAP",
+      "PostgreSQL"
+    ],
+    "timezone": "browser",
+    "schemaVersion": 39,
+    "version": 0,
+    "refresh": "5m",
+    "editable": true,
+    "graphTooltip": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "1. Kennzahlen: Veranstaltungen, Einsteiger und Aussteiger",
+        "description": "Kennzahlen: Veranstaltungen, Einsteiger und Aussteiger",
+        "type": "stat",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    COUNT(DISTINCT f.veranstaltung_key) AS anzahl_veranstaltungen,\n    COALESCE(SUM(f.linie_einsteiger), 0) AS einsteiger,\n    COALESCE(SUM(f.linie_aussteiger), 0) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 2,
+        "title": "2. Ein- und Aussteiger im Zeitverlauf",
+        "description": "Ein- und Aussteiger im Zeitverlauf",
+        "type": "timeseries",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 5
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT\n    $__timeGroupAlias(d.zeitpunkt, '1h'),\n    SUM(d.einsteiger) AS einsteiger,\n    SUM(d.aussteiger) AS aussteiger\nFROM (\n    SELECT\n        COALESCE(\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant\n        ) AS zeitpunkt,\n        f.linie_einsteiger AS einsteiger,\n        f.linie_aussteiger AS aussteiger,\n        f.veranstaltung_key,\n        f.linie_key\n    FROM reporting.veranstaltungen_und_oepnv f\n) d\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = d.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = d.linie_key\nWHERE $__timeFilter(d.zeitpunkt)\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 1",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 3,
+        "title": "3. Fahrgastaufkommen nach Veranstaltungstyp",
+        "description": "Fahrgastaufkommen nach Veranstaltungstyp",
+        "type": "barchart",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    SUM(f.linie_einsteiger) AS einsteiger,\n    SUM(f.linie_aussteiger) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nJOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1\nORDER BY 2 DESC",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 4,
+        "title": "4. Fahrgastaufkommen nach Verkehrsmittel und Haltestelle",
+        "description": "Fahrgastaufkommen nach Verkehrsmittel und Haltestelle",
+        "type": "barchart",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    COALESCE(l.linie_haltestelle_name, f.linie_haltestelle_name) AS haltestelle,\n    SUM(f.linie_einsteiger) AS einsteiger,\n    SUM(f.linie_aussteiger) AS aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nGROUP BY 1, 2\nORDER BY 3 DESC",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 5,
+        "title": "5. Pivot-Grundlage: Veranstaltungstyp x Verkehrsmittel",
+        "description": "Pivot-Grundlage: Veranstaltungstyp x Verkehrsmittel",
+        "type": "table",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    v.veranstaltung_veranstaltungstyp AS veranstaltungstyp,\n    l.linie_verkehrsmittel AS verkehrsmittel,\n    SUM(f.linie_einsteiger) AS einsteiger\nFROM reporting.veranstaltungen_und_oepnv f\nJOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nJOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\nGROUP BY 1, 2\nORDER BY 1, 2",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [
+          {
+            "id": "groupingToMatrix",
+            "options": {
+              "rowField": "veranstaltungstyp",
+              "columnField": "verkehrsmittel",
+              "valueField": "einsteiger"
+            }
+          }
+        ],
+        "transparent": false
+      },
+      {
+        "id": 6,
+        "title": "6. Veranstaltungsphasen: Vorher / Während / Nachher",
+        "description": "Veranstaltungsphasen: Vorher / Während / Nachher",
+        "type": "barchart",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "WITH basis AS (\n    SELECT\n        v.veranstaltung_name,\n        v.veranstaltung_veranstaltungstyp,\n        v.veranstaltung_stadtteil,\n\n        COALESCE(\n            f.linie_ankunft_tatsaechlich,\n            f.linie_ankunft_geplant,\n            f.linie_abfahrt_tatsaechlich,\n            f.linier_abfahrt_geplant\n        ) AS verkehrszeitpunkt,\n\n        COALESCE(\n            f.veranstaltung_beginn_tatsaechlich,\n            f.veranstaltung_beginn_geplant\n        ) AS beginn,\n\n        COALESCE(\n            f.veranstaltung_ende_tatsaechlich,\n            f.veranstaltung_ende_geplant\n        ) AS ende,\n\n        f.linie_einsteiger,\n        f.linie_aussteiger\n\n    FROM reporting.veranstaltungen_und_oepnv f\n\n    JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n        ON v.veranstaltung_key = f.veranstaltung_key\n\n    WHERE COALESCE(\n              f.linie_ankunft_tatsaechlich,\n              f.linie_ankunft_geplant,\n              f.linie_abfahrt_tatsaechlich,\n              f.linier_abfahrt_geplant\n          ) IS NOT NULL\n\n      AND COALESCE(\n              f.veranstaltung_beginn_tatsaechlich,\n              f.veranstaltung_beginn_geplant\n          ) IS NOT NULL\n\n      AND COALESCE(\n              f.veranstaltung_ende_tatsaechlich,\n              f.veranstaltung_ende_geplant\n          ) IS NOT NULL\n\n      AND $__timeFilter(\n          COALESCE(\n              f.linie_ankunft_tatsaechlich,\n              f.linie_ankunft_geplant,\n              f.linie_abfahrt_tatsaechlich,\n              f.linier_abfahrt_geplant\n          )\n      )\n\n      AND v.veranstaltung_veranstaltungstyp\n          IN (${veranstaltungstyp:sqlstring})\n\n      AND v.veranstaltung_stadtteil\n          IN (${stadtteil:sqlstring})\n)\n\nSELECT\n    veranstaltung_name,\n\n    CASE\n        WHEN verkehrszeitpunkt < beginn\n         AND verkehrszeitpunkt >= beginn - INTERVAL '2 hours'\n            THEN 'Vorher'\n\n        WHEN verkehrszeitpunkt BETWEEN beginn AND ende\n            THEN 'Während'\n\n        WHEN verkehrszeitpunkt > ende\n         AND verkehrszeitpunkt <= ende + INTERVAL '2 hours'\n            THEN 'Nachher'\n\n        ELSE 'Außerhalb'\n    END AS veranstaltungsphase,\n\n    SUM(linie_einsteiger) AS einsteiger,\n    SUM(linie_aussteiger) AS aussteiger\n\nFROM basis\n\nGROUP BY\n    veranstaltung_name,\n    veranstaltungsphase\n\nORDER BY\n    veranstaltung_name,\n    veranstaltungsphase",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      },
+      {
+        "id": 7,
+        "title": "7. Detailtabelle",
+        "description": "Detailtabelle",
+        "type": "table",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg1oka4v27dvkd"
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT\n    v.veranstaltung_name,\n    v.veranstaltung_veranstaltungstyp,\n    v.veranstaltung_stadtteil,\n    l.linie_verkehrsmittel,\n    COALESCE(l.linie_haltestelle_name, f.linie_haltestelle_name) AS haltestelle,\n    COALESCE(f.linie_ankunft_tatsaechlich, f.linie_ankunft_geplant) AS ankunft,\n    COALESCE(f.linier_abfahrt_geplant, f.linie_abfahrt_tatsaechlich) AS abfahrt,\n    f.linie_einsteiger,\n    f.linie_aussteiger\nFROM reporting.veranstaltungen_und_oepnv f\nLEFT JOIN reporting.veranstaltungen_und_oepnv_versanstaltung v\n    ON v.veranstaltung_key = f.veranstaltung_key\nLEFT JOIN reporting.veranstaltungen_und_oepnv_linie l\n    ON l.linie_key = f.linie_key\nWHERE $__timeFilter(COALESCE(f.linie_ankunft_tatsaechlich,\n                              f.linie_ankunft_geplant,\n                              f.linie_abfahrt_tatsaechlich,\n                              f.linier_abfahrt_geplant))\n  AND v.veranstaltung_veranstaltungstyp IN (${veranstaltungstyp:sqlstring})\n  AND v.veranstaltung_stadtteil IN (${stadtteil:sqlstring})\n  AND l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})\nORDER BY ankunft DESC NULLS LAST\nLIMIT 500",
+            "datasource": {
+              "type": "postgres",
+              "uid": "fg1oka4v27dvkd"
+            },
+            "editorMode": "code"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "options": {
+          "xTickLabelRotation": 45
+        },
+        "transformations": [],
+        "transparent": false
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "veranstaltungstyp",
+          "label": "Veranstaltungstyp",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT veranstaltung_veranstaltungstyp AS \"__text\", veranstaltung_veranstaltungstyp AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_veranstaltungstyp IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        },
+        {
+          "name": "stadtteil",
+          "label": "Stadtteil",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT veranstaltung_stadtteil AS \"__text\", veranstaltung_stadtteil AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_versanstaltung WHERE veranstaltung_stadtteil IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        },
+        {
+          "name": "verkehrsmittel",
+          "label": "Verkehrsmittel",
+          "type": "query",
+          "datasource": {
+            "type": "postgres",
+            "uid": "fg1oka4v27dvkd"
+          },
+          "definition": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
+          "query": "SELECT DISTINCT linie_verkehrsmittel AS \"__text\", linie_verkehrsmittel AS \"__value\" FROM reporting.veranstaltungen_und_oepnv_linie WHERE linie_verkehrsmittel IS NOT NULL ORDER BY 1",
+          "refresh": 1,
+          "sort": 1,
+          "multi": true,
+          "includeAll": true,
+          "allValue": "",
+          "current": {
+            "selected": true,
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
+          },
+          "options": [],
+          "hide": 0,
+          "skipUrlSync": false,
+          "regex": "",
+          "allowCustomValue": false
+        }
+      ]
+    },
+    "time": {
+      "from": "2026-01-01T00:00:00.000Z",
+      "to": "2026-12-31T23:59:59.999Z"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h"
+      ],
+      "time_options": [
+        "6h",
+        "12h",
+        "24h",
+        "7d",
+        "30d",
+        "90d",
+        "1y"
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0,211,255,1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
+  },
+  "overwrite": true,
+  "message": "Smart City OLAP Dashboard automatisch erstellt"
+}

@@ -1,13 +1,736 @@
 ---
-title: "Tutorial 2"
+title: "Analyse eines Smart-City-Data-Warehouse mit Grafana"
+lang: de
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-fold: false
+    code-summary: "SQL-Abfrage anzeigen"
+    theme: cosmo
 ---
 
+# 1. Einleitung
 
-## 2. HTML + CSS: Beispiel Scrollbar und feste Headers
+Im Rahmen dieser Aufgabenstellung wird ein bestehendes Data Warehouse in ein Reporting-Werkzeug eingebunden, um die darin gespeicherten Daten auszuwerten und grafisch darzustellen. Als Reporting-Werkzeug wird **Grafana** verwendet. Die Datenbasis bildet ein relationales Data Warehouse, dessen Daten über eine PostgreSQL-Datenbank bereitgestellt werden.
 
-::: {.table-scroll}
-```{=html}
-<table class="table table-sm table-bordered mapping"><thead><tr><th rowspan="2">Thema</th><th colspan="3">Staging</th><th colspan="3">Core</th><th colspan="2">Reporting</th></tr>
-<tr><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th><th>Hinweis</th><th>Tabelle</th><th>Spalte</th></tr></thead><tbody><tr><td rowspan="12" class="grp">1. Mengenanalyse</td><td>KS_Kundenmanager</td><td>PersonalNr</td><td></td><td>Topic_Mengenanalyse</td><td>Kundenmanager_PersonalNr</td><td></td><td>Mengenanalyse</td><td>Kundenmanager_Key</td></tr><tr><td>KS_Kundenmanager</td><td>KundenNr</td><td>Join-Attribut für KS_Bestellung (KundenNr)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>KS_Bestellung</td><td>BestellNr</td><td></td><td>Topic_Mengenanalyse</td><td>Bestellung_BestellNr</td><td>Degenerierte Dimension</td><td>Mengenanalyse</td><td>BestellNr</td></tr><tr><td>KS_Bestellung</td><td>ProduktNr</td><td></td><td>Topic_Mengenanalyse</td><td>Bestellung_ProduktNr</td><td></td><td>Mengenanalyse</td><td>Verkaufsprodukt_Key</td></tr><tr><td>KS_Bestellung</td><td>KundenNr</td><td></td><td>Topic_Mengenanalyse</td><td>Bestelllung_KundenNr</td><td></td><td>Mengenanalyse</td><td>Kunde_Key</td></tr><tr><td>KS_Bestellung</td><td>Bestelldatum</td><td></td><td>Topic_Mengenanalyse</td><td>Bestellung_BestellDatum</td><td></td><td>Mengenanalyse</td><td>Bestelldatum_Key</td></tr><tr><td>KS_Bestellung</td><td>Bestellmenge</td><td></td><td>Topic_Mengenanalyse</td><td>Bestellung_Bestellmenge</td><td></td><td>Mengenanalyse</td><td>Bestellmenge</td></tr><tr><td>KS_Kundenauftrag</td><td>AuftragsNr</td><td></td><td>Topic_Mengenanalyse</td><td>Kundenauftrag_AuftragsNr</td><td>Degenerierte Dimension</td><td>Mengenanalyse</td><td>Kundenauftrag</td></tr><tr><td>KS_Kundenauftrag</td><td>BestellNr</td><td>Join-Attribut für KS_Bestellung (KundenNr)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>PPS_Fertigungsauftrag</td><td>FA_ID</td><td></td><td>Topic_Mengenanalyse</td><td>Fertigungsauftrag_FA_ID</td><td>Degenerierte Dimension</td><td>Mengenanalyse</td><td>Fertigungsauftrag</td></tr><tr><td>PPS_Fertigungsauftrag</td><td>KundenauftragsNr</td><td>Join-Attribut für KS_Kundenauftrag (AuftragsNr)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>PPS_Fertigungsauftrag</td><td>Menge_Soll</td><td></td><td>Topic_Mengenanalyse</td><td>Fertigungsauftrag_Menge_Soll</td><td></td><td>Mengenanalyse</td><td>Sollmenge</td></tr><tr><td rowspan="13" class="grp">2. Rechnungsbetrag</td><td>KS_Rechnung</td><td>RechnungNr</td><td></td><td>Topic_Rechnungsbetrag</td><td>RechnungNr</td><td>Degenerierte Dimension</td><td>Rechnungsbetrag</td><td>RechnungNr</td></tr><tr><td>KS_Rechnung</td><td>AuftragsNr</td><td>Join-Attribut für KS_Lieferung (AuftragsNr)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>KS_Rechnung</td><td>Rechnungsdatum</td><td></td><td>Topic_Rechnungsbetrag</td><td>Rechnungsdatum</td><td></td><td>Rechnungsbetrag</td><td>Rechnungsdatum_Key</td></tr><tr><td>KS_Rechnung</td><td>Rechnungsbetrag</td><td></td><td>Topic_Rechnungsbetrag</td><td>Rechnungsbetrag</td><td></td><td>Rechnungsbetrag</td><td>Rechnungsbetrag</td></tr><tr><td>KS_Lieferung</td><td>AuftragsNr</td><td>Join-Attribut für PPS_Fertigungsauftrag (KundenauftragsNr)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>KS_Lieferung</td><td>LieferNr</td><td></td><td>Topic_Rechnungsbetrag</td><td>LieferNr</td><td>Degenerierte Dimension</td><td>Rechnungsbetrag</td><td>LieferNr</td></tr><tr><td>KS_Lieferung</td><td>Liefermenge</td><td></td><td>Topic_Rechnungsbetrag</td><td>Liefermenge</td><td></td><td>Rechnungsbetrag</td><td>Liefermenge</td></tr><tr><td>PPS_Fertigungsauftrag</td><td>FA_ID</td><td></td><td>Topic_Rechnungsbetrag</td><td>FA_ID</td><td>Degenerierte Dimension</td><td>Rechnungsbetrag</td><td>Fertigungsauftrag</td></tr><tr><td>PPS_Fertigungsauftrag</td><td>KundenauftragsNr</td><td></td><td>Topic_Rechnungsbetrag</td><td>KundenauftragsNr</td><td>Degenerierte Dimension</td><td>Rechnungsbetrag</td><td>Kundenauftrag</td></tr><tr><td>PPS_Fertigungsauftrag</td><td>ProduktID</td><td></td><td>Topic_Rechnungsbetrag</td><td>ProduktID</td><td></td><td>Rechnungsbetrag</td><td>Fertigungsprodukt_Key</td></tr><tr><td>PPS_Stationsbelegung</td><td>ProduktID</td><td>Join-Attribut für PPS_Fertigungsauftrag (ProduktID)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>PPS_Stationsbelegung</td><td>StationID</td><td></td><td>Topic_Rechnungsbetrag</td><td>StationID</td><td></td><td>Rechnungsbetrag</td><td>Arbeitsstation_Key</td></tr><tr><td>PPS_Stationsbelegung</td><td>Menge_Ist</td><td></td><td>Topic_Rechnungsbetrag</td><td>Menge_Ist</td><td></td><td>Rechnungsbetrag</td><td>Istmenge</td></tr></tbody></table>
+Ziel ist es, verschiedene Zusammenhänge innerhalb einer Smart City zu untersuchen. Dabei stehen insbesondere die Bereiche Mobilität, Wetter, Veranstaltungen und Luftqualität im Mittelpunkt. Mithilfe interaktiver Dashboards sollen die gespeicherten Daten analysiert und unterschiedliche Fragestellungen beantwortet werden können.
+
+Die Dashboards sollen neben Diagrammen und Tabellen auch Auswahlmöglichkeiten zur gezielten Einschränkung der dargestellten Daten enthalten. Dadurch können Nutzer selbstständig unterschiedliche Auswertungsszenarien durchführen.
+
+Ein besonderer Schwerpunkt liegt auf der Umsetzung der klassischen OLAP-Funktionen:
+
+- Slice
+- Dice
+- Drilldown
+- Pivot
+
+Diese Funktionen ermöglichen es, multidimensionale Daten aus unterschiedlichen Perspektiven zu betrachten und Zusammenhänge auf verschiedenen Detailebenen zu analysieren.
+
+# 2. Beschreibung des untersuchten Sachverhalts
+
+## 2.1 Ausgangssituation
+
+In einer Smart City entstehen täglich große Mengen an Daten. Diese stammen beispielsweise aus dem öffentlichen Personennahverkehr, Fahrradverleihsystemen, Wetterstationen, Veranstaltungskalendern und Sensoren zur Messung der Luftqualität.
+
+Für sich betrachtet liefern diese Daten bereits wichtige Informationen. Ihr eigentlicher Mehrwert entsteht jedoch häufig erst durch die gemeinsame Auswertung verschiedener Datenquellen.
+
+Beispielsweise kann untersucht werden, ob sich das Fahrgastaufkommen im öffentlichen Nahverkehr bei bestimmten Wetterbedingungen verändert oder ob Veranstaltungen zu einer erhöhten Nutzung umliegender Fahrradverleihstationen führen.
+
+Um solche Zusammenhänge untersuchen zu können, werden die Daten in einem Data Warehouse zusammengeführt und für analytische Auswertungen bereitgestellt.
+
+## 2.2 Untersuchungsziele
+
+Die Analyse konzentriert sich auf fünf zentrale Fragestellungen:
+
+| Nr. | Fragestellung | Untersuchungsbereich |
+|---|---|---|
+| 1 | Wie beeinflussen Wetterbedingungen die Nutzung des Fahrradverleihsystems? | Wetter und Fahrradnutzung |
+| 2 | Wie verändert sich das Fahrgastaufkommen des öffentlichen Nahverkehrs während bzw. im Umfeld von Veranstaltungen? | Veranstaltungen und ÖPNV |
+| 3 | Wie beeinflussen Veranstaltungen die Nutzung von Fahrradverleihstationen in deren Umgebung? | Veranstaltungen und Fahrradnutzung |
+| 4 | Welchen Zusammenhang gibt es zwischen den Wetterbedingungen und dem Fahrgastaufkommen im öffentlichen Nahverkehr? | Wetter und ÖPNV |
+| 5 | Gibt es einen Zusammenhang zwischen dem Mobilitätsaufkommen und der gemessenen Luftqualität in verschiedenen Stadtgebieten? | Luftqualität und Mobilitätsaufkommen |
+
+Für jede dieser Fragestellungen wird ein eigenes Grafana-Dashboard erstellt. Die Dashboards enthalten verschiedene Diagramme, Tabellen und Filtermöglichkeiten, mit denen die Daten aus unterschiedlichen Blickwinkeln betrachtet werden können.
+
+## 2.3 Erwarteter Nutzen
+
+Durch die Analyse sollen unter anderem folgende Erkenntnisse gewonnen werden:
+
+- Erkennen von wetterabhängigen Veränderungen bei der Nutzung von Fahrrädern und öffentlichen Verkehrsmitteln.
+- Untersuchung des Einflusses von Veranstaltungen auf das Mobilitätsaufkommen.
+- Identifikation von Stadtgebieten mit besonders hohem Mobilitätsaufkommen.
+- Untersuchung möglicher Zusammenhänge zwischen Mobilität und Luftqualität.
+- Vergleich unterschiedlicher Zeiträume, Stadtteile und Verkehrsmittel.
+
+Die Dashboards dienen somit als Grundlage für eine datenbasierte Betrachtung städtischer Mobilitäts- und Umweltbedingungen.
+
+# 3. Datengrundlage
+
+## 3.1 Data Warehouse
+
+Als Datenbasis wird ein relationales Data Warehouse verwendet, dessen Daten in einer PostgreSQL-Datenbank gespeichert sind.
+
+Das Data Warehouse stellt Daten aus unterschiedlichen Themenbereichen für analytische Abfragen bereit. Die Daten werden dabei nicht ausschließlich in ihrer ursprünglichen Form ausgewertet, sondern über eine Reporting-Schicht für die spätere Analyse aufbereitet.
+
+Diese Reporting-Schicht enthält Fakten- und Dimensionstabellen.
+
+**Faktentabellen** enthalten die zu analysierenden Kennzahlen und Messwerte. Dazu gehören beispielsweise:
+
+- Anzahl der Einsteiger und Aussteiger im öffentlichen Nahverkehr.
+- Messwerte von Wetterstationen.
+- Nutzungsdaten von Fahrradverleihstationen.
+- Messwerte zur Luftqualität.
+- Zeitpunkte und Informationen zu Veranstaltungen.
+
+**Dimensionstabellen** enthalten beschreibende Informationen, über die die Fakten gefiltert und gruppiert werden können. Beispiele hierfür sind:
+
+- Datum und Uhrzeit.
+- Stadtteil.
+- Wetterstation.
+- Fahrradverleihstation.
+- Verkehrslinie.
+- Veranstaltung.
+
+Durch die Verknüpfung von Fakten und Dimensionen können die Kennzahlen nach verschiedenen Kriterien ausgewertet werden.
+
+## 3.2 Aufbau der Reporting-Schicht
+
+Die Reporting-Schicht ist thematisch in fünf Bereiche unterteilt.
+
+| Themenbereich | Faktentabelle | Zugehörige Dimensionen |
+|---|---|---|
+| Wetter und Fahrradnutzung | `reporting.wetter_und_fahrradnutzung` | Wetterstation, Fahrradstation, Datum |
+| Veranstaltungen und ÖPNV | `reporting.veranstaltungen_und_oepnv` | Veranstaltung, Linie, Datum |
+| Veranstaltungen und Fahrradnutzung | `reporting.veranstaltungen_und_fahrradnutzung` | Veranstaltung, Fahrradstation, Datum |
+| Wetter und ÖPNV | `reporting.wetter_und_oepnv` | Linie, Wetterstation, Datum |
+| Luftqualität und Mobilitätsaufkommen | `reporting.luftqualitaet_und_mobilitaetsaufkommen` | Fahrradstation, Linie, Sensor, Datum |
+
+Die Dimensionstabellen enthalten zusätzliche Informationen, anhand derer die Daten in Grafana gefiltert und gruppiert werden können.
+
+Beispielsweise kann eine Auswertung des Fahrgastaufkommens nicht nur insgesamt erfolgen, sondern auch nach Verkehrsmittel, Haltestelle, Stadtteil oder Zeitraum aufgeschlüsselt werden.
+
+## 3.3 Zeitliche Dimension
+
+Eine wichtige Grundlage für die Analyse ist die zeitliche Dimension.
+
+Die Daten können abhängig von der jeweiligen Fragestellung beispielsweise nach folgenden Zeiträumen ausgewertet werden:
+
+- Jahr
+- Monat
+- Tag
+- Stunde
+
+Dadurch lassen sich sowohl langfristige Entwicklungen als auch kurzfristige Veränderungen erkennen.
+
+Bei der Auswertung von Verkehrs- und Wetterdaten werden die vorhandenen Zeitstempel verwendet. Je nach Datenquelle können dabei geplante oder tatsächlich erfasste Zeitpunkte berücksichtigt werden.
+
+Bei der Analyse von Veranstaltungen können beispielsweise der Veranstaltungsbeginn und das Veranstaltungsende mit den Zeitpunkten der Verkehrsdaten verglichen werden.
+
+# 4. Einbindung des Data Warehouse in Grafana
+
+## 4.1 Auswahl des Reporting-Werkzeugs
+
+Als Reporting-Werkzeug wird Grafana eingesetzt.
+
+Grafana ist eine Plattform zur Visualisierung und Überwachung von Daten. Die Software ermöglicht es, Daten aus unterschiedlichen Quellen einzubinden und in interaktiven Dashboards darzustellen.
+
+Für die vorliegende Aufgabenstellung bietet Grafana insbesondere folgende Möglichkeiten:
+
+- Verbindung zu einer PostgreSQL-Datenbank.
+- Darstellung von Daten in Diagrammen und Tabellen.
+- Verwendung von SQL-Abfragen zur Datenaufbereitung.
+- Einrichtung globaler und panelspezifischer Filter.
+- Interaktive Einschränkung von Daten.
+- Vergleich verschiedener Kennzahlen.
+- Darstellung zeitlicher Entwicklungen.
+
+## 4.2 Verbindung mit PostgreSQL
+
+Das Data Warehouse wird über die PostgreSQL-Datenquelle in Grafana eingebunden.
+
+Dazu wird in Grafana eine neue Datenquelle vom Typ PostgreSQL angelegt. Anschließend werden die Verbindungsinformationen der Datenbank hinterlegt.
+
+Nach erfolgreicher Verbindung können SQL-Abfragen direkt aus den einzelnen Dashboard-Panels ausgeführt werden.
+
+Die Abfragen greifen dabei auf die Tabellen des Schemas `reporting` zu.
+
+Die Ergebnisse werden anschließend von Grafana verarbeitet und in der jeweils ausgewählten Visualisierungsform dargestellt.
+
+## 4.3 Verwendung von SQL-Abfragen
+
+Die Daten werden mithilfe von SQL-Abfragen aus den Faktentabellen und den zugehörigen Dimensionstabellen gelesen.
+
+Dabei werden insbesondere folgende SQL-Funktionen verwendet:
+
+| SQL-Funktion | Verwendung |
+|---|---|
+| `SELECT` | Auswahl der benötigten Spalten und Kennzahlen |
+| `JOIN` | Verknüpfung von Fakten- und Dimensionstabellen |
+| `WHERE` | Einschränkung der Datensätze |
+| `GROUP BY` | Gruppierung nach Dimensionen |
+| `ORDER BY` | Sortierung der Ergebnisse |
+| `SUM()` | Berechnung von Summen |
+| `AVG()` | Berechnung von Durchschnittswerten |
+| `COUNT()` | Ermittlung von Datensatzanzahlen |
+| `COALESCE()` | Auswahl des ersten verfügbaren Wertes |
+
+Durch die Aggregationsfunktionen können große Datenmengen zusammengefasst werden. Dadurch werden beispielsweise die Gesamtzahl der Einsteiger pro Stunde oder die durchschnittliche Temperatur pro Tag ermittelt.
+
+## 4.4 Zeitliche Filterung
+
+Grafana stellt für PostgreSQL spezielle Makros zur Verfügung, mit denen Abfragen an den ausgewählten Dashboard-Zeitraum angepasst werden können.
+
+Ein Beispiel ist:
+
+```sql
+WHERE $__timeFilter(zeitpunkt)
 ```
-:::
+
+Damit werden nur Datensätze berücksichtigt, deren Zeitstempel innerhalb des aktuell ausgewählten Zeitraums liegen.
+
+Für die Gruppierung nach Zeitintervallen kann beispielsweise folgendes Makro verwendet werden:
+
+```sql
+$__timeGroupAlias(zeitpunkt, '1h')
+```
+
+In diesem Beispiel werden die Daten in einstündige Zeitintervalle gruppiert.
+
+Bei komplexeren Zeitstempelausdrücken, beispielsweise mit `COALESCE()`, kann es sinnvoll sein, den Zeitstempel zunächst in einer Unterabfrage als eigene Spalte bereitzustellen. Dadurch kann Grafana das Zeitmakro auf einen einfachen Spaltennamen anwenden.
+
+# 5. Aufbau der Grafana-Dashboards
+
+Für die fünf Untersuchungsfragen wird jeweils ein eigenes Dashboard erstellt.
+
+Die Dashboards bestehen aus mehreren Panels. Jedes Panel stellt einen bestimmten Ausschnitt der Daten dar und ermöglicht damit eine gezielte Betrachtung des jeweiligen Sachverhalts.
+
+## 5.1 Dashboard: Wetter und Fahrradnutzung
+
+**Untersuchungsfrage: Wie beeinflussen Wetterbedingungen die Nutzung des Fahrradverleihsystems?**
+
+Dieses Dashboard untersucht den Zusammenhang zwischen Wetterbedingungen und der Nutzung des Fahrradverleihsystems.
+
+Dabei werden Wetterdaten mit den Nutzungsdaten der Fahrradverleihstationen kombiniert.
+
+Mögliche Analysegrößen sind:
+
+- Anzahl der Fahrradfahrten.
+- Temperatur.
+- Niederschlag.
+- Windgeschwindigkeit.
+- Wetterbedingungen.
+- Standort der Fahrradverleihstation.
+
+Die Daten können beispielsweise zeitlich gruppiert und nach einzelnen Wetterstationen oder Fahrradverleihstationen ausgewertet werden.
+
+### Mögliche Visualisierungen
+
+| Visualisierung | Zweck |
+|---|---|
+| Zeitreihendiagramm | Entwicklung der Fahrradnutzung im Zeitverlauf |
+| Zeitreihendiagramm | Entwicklung der Wetterbedingungen |
+| Balkendiagramm | Vergleich der Fahrradnutzung nach Wetterbedingungen |
+| Tabelle | Detaillierte Gegenüberstellung von Wetter- und Nutzungsdaten |
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, ob sich die Fahrradnutzung bei Regen verändert.
+
+Dazu wird zunächst ein bestimmter Zeitraum ausgewählt. Anschließend wird die Auswertung auf eine Wetterstation oder einen Stadtteil eingeschränkt.
+
+Die dargestellten Fahrradnutzungswerte können anschließend mit den gemessenen Niederschlagswerten verglichen werden.
+
+Dadurch lässt sich untersuchen, ob zwischen Niederschlag und Fahrradnutzung ein erkennbarer Zusammenhang besteht.
+
+## 5.2 Dashboard: Veranstaltungen und ÖPNV
+
+**Untersuchungsfrage: Wie verändert sich das Fahrgastaufkommen des öffentlichen Nahverkehrs während bzw. im Umfeld von Veranstaltungen?**
+
+Dieses Dashboard untersucht, ob Veranstaltungen Auswirkungen auf das Fahrgastaufkommen des öffentlichen Nahverkehrs haben.
+
+Hierfür werden Veranstaltungsdaten mit den Verkehrs- und Fahrgastdaten verknüpft.
+
+Berücksichtigt werden unter anderem:
+
+- Name der Veranstaltung.
+- Veranstaltungstyp.
+- Veranstaltungsort.
+- Stadtteil.
+- Geplanter und tatsächlicher Veranstaltungsbeginn.
+- Geplantes und tatsächliches Veranstaltungsende.
+- Anzahl der Einsteiger.
+- Anzahl der Aussteiger.
+- Verkehrslinie und Haltestelle.
+
+Ein besonderer Schwerpunkt liegt auf der zeitlichen Betrachtung rund um Veranstaltungen.
+
+Dabei können beispielsweise drei Phasen unterschieden werden:
+
+1. Vor der Veranstaltung.
+2. Während der Veranstaltung.
+3. Nach der Veranstaltung.
+
+### Mögliche Visualisierungen
+
+| Visualisierung | Zweck |
+|---|---|
+| Zeitreihendiagramm | Entwicklung des Fahrgastaufkommens |
+| Balkendiagramm | Vergleich verschiedener Veranstaltungen |
+| Tabelle | Darstellung von Veranstaltungen und zugehörigen Verkehrsdaten |
+| Balkendiagramm | Vergleich von Ein- und Aussteigern |
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, ob eine bestimmte Veranstaltung zu einem erhöhten Fahrgastaufkommen führt.
+
+Dazu wird zunächst die gewünschte Veranstaltung ausgewählt. Anschließend kann die Auswertung auf den Veranstaltungszeitraum und eine bestimmte Verkehrslinie eingeschränkt werden.
+
+Die Anzahl der Einsteiger und Aussteiger wird vor, während und nach der Veranstaltung verglichen.
+
+Dadurch kann untersucht werden, ob sich das Fahrgastaufkommen im Umfeld der Veranstaltung verändert.
+
+## 5.3 Dashboard: Veranstaltungen und Fahrradnutzung
+
+**Untersuchungsfrage: Wie beeinflussen Veranstaltungen die Nutzung von Fahrradverleihstationen in deren Umgebung?**
+
+Dieses Dashboard untersucht, ob Veranstaltungen Auswirkungen auf die Nutzung von Fahrradverleihstationen haben.
+
+Dabei werden Veranstaltungsinformationen mit den Nutzungsdaten von Fahrradstationen kombiniert.
+
+Von besonderem Interesse ist die räumliche Nähe zwischen Veranstaltungsorten und Fahrradverleihstationen.
+
+Relevante Informationen sind:
+
+- Name und Typ der Veranstaltung.
+- Veranstaltungsort.
+- Stadtteil.
+- Geografische Koordinaten.
+- Fahrradverleihstation.
+- Anzahl der Fahrradfahrten.
+- Zeitpunkt der Nutzung.
+
+### Mögliche Visualisierungen
+
+| Visualisierung | Zweck |
+|---|---|
+| Zeitreihendiagramm | Entwicklung der Fahrradnutzung rund um Veranstaltungen |
+| Balkendiagramm | Vergleich der Nutzung verschiedener Fahrradstationen |
+| Tabelle | Darstellung der Veranstaltungen und Nutzungswerte |
+| Kartenvisualisierung | Räumliche Betrachtung von Veranstaltungsorten und Fahrradstationen, sofern die Koordinaten eingebunden sind |
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, ob eine Veranstaltung die Nutzung umliegender Fahrradstationen erhöht.
+
+Dazu wird zunächst eine Veranstaltung ausgewählt. Anschließend werden die Fahrradstationen im relevanten Umfeld betrachtet.
+
+Die Nutzungswerte werden für einen Zeitraum vor, während und nach der Veranstaltung verglichen.
+
+Dadurch kann festgestellt werden, ob sich die Nutzung der umliegenden Fahrradstationen im Veranstaltungszeitraum verändert.
+
+## 5.4 Dashboard: Wetter und ÖPNV
+
+**Untersuchungsfrage: Welchen Zusammenhang gibt es zwischen den Wetterbedingungen und dem Fahrgastaufkommen im öffentlichen Nahverkehr?**
+
+Dieses Dashboard untersucht, ob Wetterbedingungen mit Veränderungen des Fahrgastaufkommens im öffentlichen Nahverkehr zusammenhängen.
+
+Dazu werden die Messwerte der Wetterstationen mit den Verkehrs- und Fahrgastdaten kombiniert.
+
+Mögliche Analysegrößen sind:
+
+- Temperatur.
+- Niederschlag.
+- Windgeschwindigkeit.
+- Wetterstation.
+- Verkehrsmittel.
+- Haltestelle.
+- Stadtteil.
+- Anzahl der Einsteiger und Aussteiger.
+
+### Mögliche Visualisierungen
+
+| Visualisierung | Zweck |
+|---|---|
+| Zeitreihendiagramm | Entwicklung der Fahrgastzahlen |
+| Zeitreihendiagramm | Entwicklung der Wetterwerte |
+| Balkendiagramm | Vergleich des Fahrgastaufkommens nach Wetterbedingungen |
+| Tabelle | Gegenüberstellung von Wetter- und Verkehrsdaten |
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, ob bei niedrigen Temperaturen mehr Fahrgäste den öffentlichen Nahverkehr nutzen.
+
+Dazu wird zunächst ein bestimmter Zeitraum ausgewählt. Anschließend können einzelne Wetterstationen, Stadtteile oder Verkehrsmittel eingeschränkt werden.
+
+Die Fahrgastzahlen werden mit den gemessenen Temperaturen verglichen.
+
+Dadurch kann untersucht werden, ob sich bei bestimmten Temperaturbereichen Veränderungen im Fahrgastaufkommen zeigen.
+
+## 5.5 Dashboard: Luftqualität und Mobilitätsaufkommen
+
+**Untersuchungsfrage: Gibt es einen Zusammenhang zwischen dem Mobilitätsaufkommen und der gemessenen Luftqualität in verschiedenen Stadtgebieten?**
+
+Dieses Dashboard untersucht mögliche Zusammenhänge zwischen Mobilität und Luftqualität.
+
+Hierfür werden Messwerte von Sensoren zur Luftqualität mit Mobilitätsdaten des Fahrradverkehrs und des öffentlichen Nahverkehrs kombiniert.
+
+Mögliche Analysegrößen sind:
+
+- Messwerte der Luftqualität.
+- Sensorstandort.
+- Stadtteil.
+- Anzahl der Fahrradfahrten.
+- Anzahl der ÖPNV-Einsteiger.
+- Anzahl der ÖPNV-Aussteiger.
+- Zeitliche Entwicklung.
+
+### Mögliche Visualisierungen
+
+| Visualisierung | Zweck |
+|---|---|
+| Zeitreihendiagramm | Entwicklung der Luftqualität |
+| Balkendiagramm | Vergleich des Mobilitätsaufkommens nach Stadtteilen |
+| Gruppiertes Balkendiagramm | Vergleich verschiedener Mobilitätsarten |
+| Tabelle | Gegenüberstellung der Mobilitäts- und Luftqualitätswerte |
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, ob Stadtteile mit einem hohen Mobilitätsaufkommen auch höhere Messwerte bestimmter Luftschadstoffe aufweisen.
+
+Dazu wird zunächst ein bestimmter Zeitraum ausgewählt. Anschließend werden die Daten nach Stadtteilen gruppiert.
+
+Das Mobilitätsaufkommen wird dabei getrennt nach Fahrradverkehr und öffentlichem Nahverkehr betrachtet.
+
+Die Ergebnisse können anschließend mit den Messwerten der Luftqualität verglichen werden.
+
+Dabei ist zu beachten, dass ein zeitlicher oder räumlicher Zusammenhang allein noch keinen ursächlichen Zusammenhang nachweist.
+
+# 6. Umsetzung der OLAP-Funktionen in Grafana
+
+## 6.1 Grundlagen
+
+OLAP steht für *Online Analytical Processing* und beschreibt Verfahren zur multidimensionalen Analyse großer Datenmengen.
+
+Im Gegensatz zu klassischen transaktionsorientierten Datenbankabfragen steht bei OLAP die analytische Betrachtung im Vordergrund.
+
+Daten können anhand verschiedener Dimensionen untersucht werden. Dazu gehören beispielsweise:
+
+- Zeit.
+- Stadtteil.
+- Wetterstation.
+- Verkehrsmittel.
+- Veranstaltung.
+- Fahrradverleihstation.
+
+Die wichtigsten OLAP-Funktionen sind Slice, Dice, Drilldown und Pivot.
+
+Grafana stellt dafür verschiedene Möglichkeiten zur Verfügung. Dazu gehören Dashboard-Variablen, Auswahlfelder, SQL-Abfragen, Panel-Interaktionen und Transformationen.
+
+Die OLAP-Funktionen werden daher nicht durch einen einzelnen Schalter aktiviert, sondern durch die Kombination aus Datenmodell, SQL-Abfragen und interaktiven Dashboard-Elementen umgesetzt.
+
+## 6.2 Slice
+
+### Definition
+
+Slice bezeichnet die Einschränkung eines multidimensionalen Datenbestands auf einen bestimmten Wert einer Dimension.
+
+Dabei wird eine Dimension auf einen einzelnen Wert festgelegt. Die übrigen Dimensionen bleiben weiterhin auswertbar.
+
+### Umsetzung in Grafana
+
+In Grafana kann Slice mithilfe von Variablen und Auswahlfeldern umgesetzt werden.
+
+Ein Auswahlfeld ermöglicht es beispielsweise, einen bestimmten Stadtteil auszuwählen.
+
+Der ausgewählte Wert wird anschließend als Parameter an die SQL-Abfrage übergeben.
+
+Ein vereinfachtes Beispiel:
+
+```sql
+SELECT
+    s.sensor_stadtteil,
+    AVG(f.wetterstation_messwert) AS durchschnitt
+FROM reporting.wetter_und_oepnv f
+JOIN reporting.wetter_und_oepnv_sensor s
+    ON f.sensor_key = s.sensor_key
+WHERE s.sensor_stadtteil = '${stadtteil}'
+GROUP BY s.sensor_stadtteil;
+```
+
+In diesem Beispiel wird die Auswertung auf einen bestimmten Stadtteil eingeschränkt.
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte ausschließlich die Wetter- und ÖPNV-Daten des Stadtteils Cotta betrachten.
+
+Dazu wählt er im Dashboard den Stadtteil Cotta aus.
+
+Die SQL-Abfrage berücksichtigt anschließend nur noch die Datensätze, die diesem Stadtteil zugeordnet sind.
+
+Die übrigen Auswertungen beziehen sich damit ausschließlich auf diesen Stadtteil.
+
+**Ergebnis:** Der Datenbestand wird auf einen einzelnen Wert einer Dimension eingeschränkt.
+
+Damit wird die OLAP-Funktion Slice umgesetzt.
+
+## 6.3 Dice
+
+### Definition
+
+Dice bezeichnet die Einschränkung eines multidimensionalen Datenbestands anhand mehrerer Dimensionen gleichzeitig.
+
+Im Gegensatz zu Slice werden nicht nur einzelne Werte einer Dimension ausgewählt, sondern mehrere Kriterien miteinander kombiniert.
+
+### Umsetzung in Grafana
+
+In Grafana kann Dice durch die Kombination mehrerer Dashboard-Variablen und SQL-Filter realisiert werden.
+
+Beispielsweise können folgende Kriterien gleichzeitig verwendet werden:
+
+- Stadtteil.
+- Zeitraum.
+- Verkehrsmittel.
+- Wetterbedingung.
+
+Ein vereinfachtes SQL-Beispiel:
+
+```sql
+SELECT
+    l.linie_verkehrsmittel,
+    SUM(f.linie_einsteiger) AS einsteiger,
+    SUM(f.linie_aussteiger) AS aussteiger
+FROM reporting.wetter_und_oepnv f
+JOIN reporting.wetter_und_oepnv_linie l
+    ON f.linie_key = l.linie_key
+WHERE l.linie_verkehrsmittel IN (${verkehrsmittel:sqlstring})
+  AND l.linie_haltestelle_stadtteil IN (${stadtteil:sqlstring})
+GROUP BY l.linie_verkehrsmittel;
+```
+
+Zusätzlich kann der Zeitraum über den Grafana-Zeitfilter eingeschränkt werden.
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte untersuchen, wie sich das Fahrgastaufkommen bei Regen im Stadtteil Cotta entwickelt.
+
+Dazu werden mehrere Filter kombiniert:
+
+1. Auswahl des Stadtteils Cotta.
+2. Auswahl eines bestimmten Verkehrsmittels.
+3. Einschränkung auf einen bestimmten Zeitraum.
+4. Auswahl der gewünschten Wetterbedingungen.
+
+Die Abfrage berücksichtigt anschließend nur noch Datensätze, die sämtliche ausgewählten Kriterien erfüllen.
+
+**Ergebnis:** Mehrere Dimensionen werden gleichzeitig eingeschränkt.
+
+Damit wird die OLAP-Funktion Dice umgesetzt.
+
+## 6.4 Drilldown
+
+### Definition
+
+Drilldown bezeichnet das Wechseln von einer aggregierten Betrachtung zu einer detaillierteren Ebene.
+
+Dabei werden Daten schrittweise genauer untersucht.
+
+Ein typisches Beispiel ist die zeitliche Betrachtung:
+
+- Jahr
+- Monat
+- Tag
+- Stunde
+
+Eine zunächst aggregierte Jahresübersicht kann dadurch schrittweise bis auf einzelne Tage oder Stunden aufgelöst werden.
+
+### Umsetzung in Grafana
+
+In Grafana kann Drilldown beispielsweise durch unterschiedliche Zeitintervalle, verknüpfte Panels und interaktive Panel-Elemente umgesetzt werden.
+
+Eine Möglichkeit besteht darin, zunächst eine Übersicht nach Monaten darzustellen.
+
+Durch die Auswahl eines Monats wird anschließend eine detailliertere Auswertung für diesen Zeitraum angezeigt.
+
+Auch die Gruppierung der SQL-Abfrage kann entsprechend angepasst werden.
+
+Beispielsweise:
+
+```sql
+SELECT
+    $__timeGroupAlias(zeitpunkt, '1d'),
+    SUM(linie_einsteiger) AS einsteiger
+FROM reporting.veranstaltungen_und_oepnv
+WHERE $__timeFilter(zeitpunkt)
+GROUP BY 1
+ORDER BY 1;
+```
+
+Hier werden die Daten zunächst nach Tagen gruppiert.
+
+Für eine gröbere Darstellung kann das Zeitintervall beispielsweise auf einen Monat geändert werden:
+
+```sql
+$__timeGroupAlias(zeitpunkt, '1M')
+```
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte die Entwicklung des Fahrgastaufkommens untersuchen.
+
+Zunächst betrachtet er die monatlichen Fahrgastzahlen eines Jahres.
+
+Dabei fällt auf, dass im August ein besonders hohes Fahrgastaufkommen vorliegt.
+
+Anschließend wird der August genauer betrachtet. Die Auswertung wird dafür auf einzelne Tage umgestellt.
+
+Im nächsten Schritt kann zusätzlich eine stündliche Betrachtung erfolgen.
+
+Dadurch lässt sich erkennen, an welchen Tagen und zu welchen Uhrzeiten besonders viele Fahrgäste unterwegs waren.
+
+**Ergebnis:** Eine zunächst aggregierte Auswertung wird schrittweise detaillierter betrachtet.
+
+Damit wird die OLAP-Funktion Drilldown umgesetzt.
+
+## 6.5 Pivot
+
+### Definition
+
+Pivot bezeichnet das Umstrukturieren einer Auswertung, sodass Daten aus einer anderen Perspektive betrachtet werden können.
+
+Dabei werden Dimensionen und Kennzahlen anders angeordnet.
+
+Beispielsweise können Mobilitätsarten als Spalten dargestellt werden, während die Stadtteile die Zeilen bilden.
+
+Dadurch entsteht eine tabellarische Gegenüberstellung, die den Vergleich verschiedener Kategorien erleichtert.
+
+### Umsetzung in Grafana
+
+In Grafana kann Pivot mithilfe von SQL-Abfragen oder Transformationen umgesetzt werden.
+
+Eine Möglichkeit besteht darin, die Daten bereits in der SQL-Abfrage in eine vergleichende Struktur zu überführen.
+
+Ein vereinfachtes Beispiel:
+
+```sql
+SELECT
+    stadtteil,
+    SUM(fahrradfahrten) AS fahrradfahrten,
+    SUM(oepnv_einsteiger) AS oepnv_einsteiger,
+    SUM(oepnv_aussteiger) AS oepnv_aussteiger
+FROM reporting.mobilitaetsauswertung
+GROUP BY stadtteil
+ORDER BY stadtteil;
+```
+
+Die Abfrage liefert eine tabellarische Struktur, in der die Stadtteile als Zeilen und die verschiedenen Mobilitätskennzahlen als Spalten dargestellt werden.
+
+Alternativ können Grafana-Transformationen verwendet werden, um Datenfelder umzustrukturieren und in einer Tabelle zusammenzuführen.
+
+### Beispielhaftes Auswahlszenario
+
+Ein Nutzer möchte das Mobilitätsaufkommen verschiedener Stadtteile vergleichen.
+
+Dazu werden die Daten nach Stadtteilen gruppiert.
+
+Die Mobilitätsarten werden anschließend nebeneinander dargestellt:
+
+- Fahrradfahrten.
+- ÖPNV-Einsteiger.
+- ÖPNV-Aussteiger.
+
+Dadurch kann beispielsweise erkannt werden, in welchen Stadtteilen die Fahrradnutzung besonders hoch ist und wo der öffentliche Nahverkehr stärker genutzt wird.
+
+**Ergebnis:** Die Daten werden in einer anderen tabellarischen Struktur dargestellt, wodurch ein Perspektivwechsel ermöglicht wird.
+
+Damit wird die OLAP-Funktion Pivot umgesetzt.
+
+## 6.6 Zusammenfassung der OLAP-Funktionen
+
+| OLAP-Funktion | Bedeutung | Umsetzung in Grafana | Beispiel |
+|---|---|---|---|
+| Slice | Einschränkung auf einen einzelnen Dimensionswert | Auswahlfeld und SQL-Filter | Auswertung nur für Cotta |
+| Dice | Kombination mehrerer Einschränkungen | Mehrere Variablen und SQL-Filter | Stadtteil, Zeitraum und Verkehrsmittel |
+| Drilldown | Wechsel zu einer detaillierteren Ebene | Zeitintervalle, verknüpfte Panels und Interaktionen | Monatliche zu täglicher Auswertung |
+| Pivot | Umstrukturierung der Auswertung | SQL-Abfrage oder Grafana-Transformation | Mobilitätsarten als Spalten |
+
+# 7. Zusammenspiel der OLAP-Funktionen anhand der Dashboards
+
+Die vier OLAP-Funktionen können innerhalb der Dashboards miteinander kombiniert werden.
+
+Ein Nutzer kann beispielsweise zunächst einen Stadtteil auswählen (Slice), anschließend weitere Kriterien wie Zeitraum und Verkehrsmittel festlegen (Dice), danach einen auffälligen Monat genauer untersuchen (Drilldown) und schließlich verschiedene Mobilitätsarten gegenüberstellen (Pivot).
+
+Dadurch entsteht ein interaktiver Analyseprozess.
+
+Die folgenden Beispiele zeigen, wie die OLAP-Funktionen auf die fünf Untersuchungsbereiche angewendet werden können.
+
+| Dashboard | Slice | Dice | Drilldown | Pivot |
+|---|---|---|---|---|
+| Wetter und Fahrradnutzung | Auswahl einer Wetterstation | Kombination aus Wetterbedingung und Zeitraum | Von monatlicher zu täglicher Nutzung | Vergleich verschiedener Wetterbedingungen |
+| Veranstaltungen und ÖPNV | Auswahl einer Veranstaltung | Kombination aus Veranstaltung, Zeitraum und Verkehrslinie | Von der Veranstaltung zur stündlichen Fahrgastentwicklung | Vergleich von Ein- und Aussteigern |
+| Veranstaltungen und Fahrradnutzung | Auswahl einer Veranstaltung | Kombination aus Veranstaltung, Zeitraum und Fahrradstation | Von der Tages- zur Stundenbetrachtung | Vergleich verschiedener Fahrradstationen |
+| Wetter und ÖPNV | Auswahl einer Wetterstation | Kombination aus Wetterbedingung, Stadtteil und Verkehrsmittel | Von monatlichen zu stündlichen Fahrgastzahlen | Vergleich verschiedener Wetterbedingungen und Verkehrsmittel |
+| Luftqualität und Mobilitätsaufkommen | Auswahl eines Stadtteils | Kombination aus Stadtteil, Zeitraum und Mobilitätsart | Von monatlichen zu täglichen Messwerten | Gegenüberstellung von Fahrrad- und ÖPNV-Aufkommen |
+
+Die Tabelle zeigt beispielhafte Auswertungsszenarien. Die konkrete Verfügbarkeit der jeweiligen Interaktion hängt von den dafür eingerichteten Dashboard-Variablen, Panels, SQL-Abfragen und Transformationen ab.
+
+# 8. Bewertung der Umsetzung
+
+## 8.1 Vorteile von Grafana
+
+Die Verwendung von Grafana bietet verschiedene Vorteile für die Analyse des Data Warehouse.
+
+Ein wesentlicher Vorteil besteht in der flexiblen Darstellung der Daten. Unterschiedliche Visualisierungstypen können miteinander kombiniert werden, sodass sowohl zeitliche Entwicklungen als auch Vergleiche zwischen verschiedenen Dimensionen möglich sind.
+
+Durch die direkte Anbindung an PostgreSQL können SQL-Abfragen verwendet werden, um die Daten gezielt aufzubereiten und zu aggregieren.
+
+Darüber hinaus ermöglichen Dashboard-Variablen und Filter eine interaktive Analyse. Nutzer können die dargestellten Daten selbstständig einschränken und dadurch unterschiedliche Fragestellungen untersuchen.
+
+Ein weiterer Vorteil ist die Möglichkeit, mehrere thematisch unterschiedliche Dashboards bereitzustellen. Dadurch bleibt die Darstellung übersichtlich und die einzelnen Untersuchungsbereiche können unabhängig voneinander betrachtet werden.
+
+## 8.2 Grenzen der Umsetzung
+
+Trotz der umfangreichen Möglichkeiten gibt es auch Einschränkungen.
+
+Grafana ist in erster Linie ein Werkzeug zur Datenvisualisierung und zum Monitoring. Es handelt sich nicht um ein spezialisiertes OLAP-System mit einem vollständig integrierten multidimensionalen Datenmodell.
+
+Die OLAP-Funktionen müssen deshalb teilweise über SQL-Abfragen, Dashboard-Variablen und Transformationen realisiert werden.
+
+Insbesondere Drilldown und Pivot benötigen eine entsprechende Konfiguration. Ein einfaches Diagramm oder ein Auswahlfeld allein stellt noch keine vollständige OLAP-Funktionalität dar.
+
+Auch die Qualität der Auswertungen hängt stark von der zugrunde liegenden Datenstruktur ab. Wenn Fakten und Dimensionen nicht korrekt miteinander verknüpft sind oder unterschiedliche Granularitäten zusammengeführt werden, können fehlerhafte Aggregationen entstehen.
+
+Bei der Interpretation der Ergebnisse muss außerdem berücksichtigt werden, dass ein statistischer Zusammenhang nicht automatisch einen ursächlichen Zusammenhang bedeutet.
+
+Beispielsweise lässt sich aus einer gleichzeitigen Veränderung von Luftqualität und Mobilitätsaufkommen nicht unmittelbar ableiten, dass die Mobilität die Veränderung der Luftqualität verursacht hat.
+
+## 8.3 Bedeutung der Reporting-Schicht
+
+Die Reporting-Schicht ist eine wichtige Grundlage für die Umsetzung.
+
+Durch die thematische Aufteilung in Fakten- und Dimensionstabellen können die einzelnen Dashboards gezielt auf die benötigten Daten zugreifen.
+
+Die vorbereiteten Tabellen erleichtern außerdem die Erstellung der SQL-Abfragen und ermöglichen eine einheitliche Auswertung der verschiedenen Datenbereiche.
+
+Dadurch wird die Komplexität der Datenanalyse reduziert und die Wartbarkeit der Dashboards verbessert.
+
+# 9. Fazit
+
+Im Rahmen dieser Aufgabenstellung wurde ein relationales Data Warehouse als Datenbasis für ein Reporting-System verwendet. Die Daten werden über PostgreSQL in Grafana eingebunden und dort in interaktiven Dashboards visualisiert.
+
+Die fünf Dashboards behandeln unterschiedliche Fragestellungen aus den Bereichen Mobilität, Wetter, Veranstaltungen und Luftqualität.
+
+Durch die Kombination von Diagrammen, Tabellen und Auswahlfeldern können die Daten aus verschiedenen Perspektiven betrachtet und miteinander verglichen werden.
+
+Ein besonderer Schwerpunkt liegt auf der Umsetzung der OLAP-Funktionen Slice, Dice, Drilldown und Pivot.
+
+Slice und Dice ermöglichen die gezielte Einschränkung der Daten anhand einzelner oder mehrerer Dimensionen. Drilldown erlaubt die schrittweise Betrachtung detaillierterer Datenebenen. Pivot ermöglicht die Umstrukturierung der Auswertungen und damit einen Perspektivwechsel bei der Analyse.
+
+Grafana stellt hierfür verschiedene technische Möglichkeiten bereit. Die Umsetzung erfolgt insbesondere über Dashboard-Variablen, SQL-Abfragen, Zeitfilter und Transformationen.
+
+Insgesamt zeigt die Umsetzung, dass Grafana in Verbindung mit einem relationalen Data Warehouse für interaktive und multidimensionale Analysen eingesetzt werden kann.
+
+Obwohl Grafana kein spezialisiertes OLAP-System ist, lassen sich die wesentlichen OLAP-Funktionen durch eine geeignete Kombination aus Datenmodell, SQL und Dashboard-Konfiguration realisieren.
+
+Damit bietet die Lösung eine flexible Möglichkeit, komplexe Zusammenhänge innerhalb einer Smart City zu untersuchen und die gewonnenen Erkenntnisse übersichtlich darzustellen.
